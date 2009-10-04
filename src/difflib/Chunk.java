@@ -1,3 +1,21 @@
+/*
+    Copyright 2009 Dmitry Naumenko (dm.naumenko@gmail.com)
+    
+    This file is part of Java Diff Utills Library.
+
+    Java Diff Utills Library is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Java Diff Utills Library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package difflib;
 
 import java.util.*;
@@ -46,6 +64,22 @@ public class Chunk {
 		this.lines = Arrays.asList(lines);
 	}
 	
+    /**
+     * Verifies that this chunk's saved text matches the corresponding
+     * text in the given sequence.
+     * @param target the sequence to verify against.
+     */
+    public void verify(List<?> target) throws PatchFailedException{
+        if (last() > target.size()) {
+            throw new PatchFailedException("Incorrect Chunk: the position of chunk > target size");
+        }
+        for (int i = 0; i < size; i++) {
+            if (!target.get(position + i).equals(lines.get(i))) {
+            	throw new PatchFailedException("Incorrect Chunk: the chunk content doesn't match the target");
+            }
+        }
+    }
+	
 	/**
 	 * @return the start position of chunk in the text  
 	 */
@@ -84,6 +118,13 @@ public class Chunk {
 	public void setLines(List<?> lines) {
 		this.lines = lines;
 	}
+	
+    /**
+     * Returns the index of the last line of the chunk.
+     */
+    public int last(){
+        return getPosition() + getSize() - 1;
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

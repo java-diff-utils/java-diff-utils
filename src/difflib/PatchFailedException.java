@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<!--
 /*
     Copyright 2009 Dmitry Naumenko (dm.naumenko@gmail.com)
     
@@ -18,25 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
 */
- -->
-<html>
-  <head>
-    <meta name="generator" content=
-    "HTML Tidy for Cygwin (vers 1st February 2003), see www.w3.org">
-    <title></title>
-  </head>
-  <body>
-      <p>
-      The {@link difflib.myers diff.myers} package
-      implements  <a href=
-      "http://www.cs.arizona.edu/people/gene/">Gene Myers</a>'
-      differencing algorithm.
-    </p>
-    <p>
-      Myer's algorithm produces optimum results (minimum diffs), but
-      consumes considerably more memory than SimpleDiff, so its not
-      suitable for very large files.
-    </p>
-@author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
-  </body>
-</html>
+package difflib;
+
+/**
+ * Thrown whenever a delta cannot be applied as a patch to a given text.
+ *
+ * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
+ */
+public class PatchFailedException extends DiffException {
+
+	private static final long serialVersionUID = 1L;
+
+	public PatchFailedException() {
+    }
+
+    public PatchFailedException(String msg) {
+        super(msg);
+    }
+}

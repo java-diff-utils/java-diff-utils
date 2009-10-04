@@ -1,3 +1,21 @@
+/*
+    Copyright 2009 Dmitry Naumenko (dm.naumenko@gmail.com)
+    
+    This file is part of Java Diff Utills Library.
+
+    Java Diff Utills Library is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Java Diff Utills Library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package difflib;
 
 import java.util.*;
@@ -10,6 +28,7 @@ import difflib.myers.*;
  * Implements the difference and patching engine
  * 
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @version 0.4.1
  */
 public class DiffUtils {
 	private static DiffAlgorithm defaultDiffAlgorithm = new MyersDiff();
@@ -45,8 +64,9 @@ public class DiffUtils {
 	 * @param original the original text
 	 * @param patch the given patch
 	 * @return the revised text
+	 * @throws PatchFailedException if can't apply patch
 	 */
-	public static List<?> patch(List<?> original, Patch patch) {
+	public static List<?> patch(List<?> original, Patch patch) throws PatchFailedException {
 		return patch.applyTo(original);
 	}
 	
@@ -57,15 +77,15 @@ public class DiffUtils {
 	 * @param patch the given patch
 	 * @return the original text
 	 */
-	public static String unpatch(String revised, Patch patch) {
-		// TODO: Not-implemented
-		return null;
+	public static List<?> unpatch(List<?> revised, Patch patch) {
+		return patch.restore(revised);
 	}
 	
 	/**
 	 * Parse the given text in unified format and creates the list of deltas for it.
 	 * 
 	 * @param diff the text in unified format 
+	 * @return the patch with deltas.
 	 */
 	public static Patch parseUnifiedDiff(List<String> diff) {
 		boolean inPrelude = true;
@@ -104,15 +124,25 @@ public class DiffUtils {
 					rawChunk.clear();
 				}
 				// Parse the @@ header
+				old_ln = m.group(1) == null ? 1 : Integer.parseInt(m.group(1));
+				old_n  = m.group(2) == null ? 1 : Integer.parseInt(m.group(2));
+				new_ln = m.group(3) == null ? 1 : Integer.parseInt(m.group(3));
+				new_n  = m.group(4) == null ? 1 : Integer.parseInt(m.group(4));
 				old_ln = Integer.parseInt(m.group(1));
-				old_n  = Integer.parseInt(m.group(2));
-				new_ln = Integer.parseInt(m.group(3));
-				new_n  = Integer.parseInt(m.group(4));
+				
+				if (old_ln == 0) {
+					old_ln += 1; 
+				}
+				if (new_ln == 0) {
+					new_ln += 1;
+				}
 			} else {
-				tag  = line.substring(0, 1);
-				rest = line.substring(1);
-				if (tag.equals(" ") || tag.equals("+") || tag.equals("-")) {
-					rawChunk.add(new Object[] {tag, rest});
+				if (line.length() > 0) {
+					tag  = line.substring(0, 1);
+					rest = line.substring(1);
+					if (tag.equals(" ") || tag.equals("+") || tag.equals("-")) {
+						rawChunk.add(new Object[] {tag, rest});
+					}
 				}
 			}
 		}
@@ -141,15 +171,4 @@ public class DiffUtils {
 		return patch;
 	}
 	
-	/**
-	 * Get the DiffRows describing the difference between original and revised texts. Useful for
-	 * displaying side-by-side diff. Computes the Patch before generate the diffs.
-	 * 
-	 * @param original the original text
-	 * @param revised the revised text
-	 * @return the DiffRows between original and revised texts
-	 */
-	public static List<DiffRow> getDiffRows(List<?> original, List<?> revised) {
-		return null;
-	}
 }
