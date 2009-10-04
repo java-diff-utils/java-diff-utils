@@ -1,6 +1,8 @@
 package difflib;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StringUtills {
 	
@@ -44,10 +46,23 @@ public class StringUtills {
 		return result;
 	}
 	
+	/**
+	 * Wrap the text with the given column width 
+	 * @param line the text
+	 * @param columnWidth the given column
+	 * @return the wrapped text
+	 */
 	public static String wrapText(String line, int columnWidth) {
-		if (line.length() > columnWidth) {
-			return line.subSequence(0, columnWidth) + "<br>" + line.substring(columnWidth);
+		int lenght = line.length();
+		int delimiter = "<br>".length();
+		int widthIndex = columnWidth; 
+		
+		for (int count = 0; lenght > widthIndex; count++) {
+			line = line.subSequence(0, widthIndex + delimiter * count) + "<br>"
+				 + line.substring(widthIndex + delimiter * count);
+			widthIndex += columnWidth;
 		}
+		
 		return line;
 	}
 }
