@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package difflib;
 
 import java.util.*;
@@ -26,26 +26,24 @@ import java.util.*;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */
 public interface DiffAlgorithm {
-	
+    
     /**
-     * Computes the difference between the original
-     * sequence and the revised sequence and returns it
-     * as a {@link difflib.Patch Patch} object.
-     *
+     * Computes the difference between the original sequence and the revised
+     * sequence and returns it as a {@link difflib.Patch Patch} object.
+     * 
      * @param original the original text
      * @param revised the revised text
      * @return the patch
      */
-	public Patch diff(Object[] original, Object[] revised);
-	
+    public Patch diff(Object[] original, Object[] revised);
+    
     /**
-     * Computes the difference between the original
-     * sequence and the revised sequence and returns it
-     * as a {@link difflib.Patch Patch} object.
-     *
+     * Computes the difference between the original sequence and the revised
+     * sequence and returns it as a {@link difflib.Patch Patch} object.
+     * 
      * @param original the original text
      * @param revised the revised text
      * @return the patch
      */
-	public Patch diff(List<?> original, List<?> revised);
+    public Patch diff(List<?> original, List<?> revised);
 }

@@ -70,9 +70,7 @@ package difflib.myers;
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  *
  */
-public final class Snake
-    extends PathNode
-{
+public final class Snake extends PathNode {
     /**
      * Constructs a snake node.
      *
@@ -80,18 +78,16 @@ public final class Snake
      * @param the position in the revised sequence
      * @param prev the previous node in the path.
      */
-    public Snake(int i, int j, PathNode prev)
-    {
+    public Snake(int i, int j, PathNode prev) {
         super(i, j, prev);
     }
-
+    
     /**
      * {@inheritDoc}
      * @return true always
      */
-    public boolean isSnake()
-    {
+    public boolean isSnake() {
         return true;
     }
-
+    
 }

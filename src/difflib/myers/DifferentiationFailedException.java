@@ -67,17 +67,13 @@ package difflib.myers;
  * @see Diff
  * @see DiffAlgorithm
  */
-public class DifferentiationFailedException extends DiffException
-{
-	private static final long serialVersionUID = 1L;
-
-	public DifferentiationFailedException()
-    {
+public class DifferentiationFailedException extends DiffException {
+    private static final long serialVersionUID = 1L;
+    
+    public DifferentiationFailedException() {
     }
-
-    public DifferentiationFailedException(String msg)
-    {
+    
+    public DifferentiationFailedException(String msg) {
         super(msg);
     }
 }
-

@@ -64,18 +64,14 @@ package difflib.myers;
  *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  */
-public class DiffException extends Exception
-{
-
-	private static final long serialVersionUID = 1L;
-
-	public DiffException()
-    {
+public class DiffException extends Exception {
+    
+    private static final long serialVersionUID = 1L;
+    
+    public DiffException() {
     }
-
-    public DiffException(String msg)
-    {
+    
+    public DiffException(String msg) {
         super(msg);
     }
 }
-

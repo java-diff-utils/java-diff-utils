@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package difflib;
 
 /**
@@ -24,12 +24,12 @@ package difflib;
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  */
 public class PatchFailedException extends DiffException {
-
-	private static final long serialVersionUID = 1L;
-
-	public PatchFailedException() {
+    
+    private static final long serialVersionUID = 1L;
+    
+    public PatchFailedException() {
     }
-
+    
     public PatchFailedException(String msg) {
         super(msg);
     }

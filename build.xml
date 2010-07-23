@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="java-diff-utils" default="jar" basedir=".">
+    <property name="version" value="1.2"/>
+    <property name="src.dir" value="./src" />
+    <property name="build.dir" location="./build" />
+    <property name="dist.dir" value="./dist" />
+    <property name="jar.file.name" value="${dist.dir}/${ant.project.name}-${version}.jar" />
+    <property name="src.zip.file.name" value="${dist.dir}/${ant.project.name}-${version}src.zip" />
+    <property name="compiler.jdk.version" value="1.5" />
+
+    <target name="clean-compile">
+        <delete dir="${build.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+    
+    <target name="clean-all" depends="clean-compile">
+        <delete dir="${dist.dir}" />
+    </target>
+
+    <target name="compile" depends="clean-compile">
+        <echo
+            message="Building with Java version: ${java.version} for JDK version: ${compiler.jdk.version}" />
+        <javac source="${compiler.jdk.version}" target="${compiler.jdk.version}"
+            deprecation="off" fork="true" memoryinitialsize="128m"
+            memorymaximumsize="256m" optimize="on" debug="on" depend="false"
+            srcdir="${src.dir}" destdir="${build.dir}">
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${dist.dir}" />
+        <jar destfile="${jar.file.name}" basedir="${build.dir}" includes="**/*.class" />
+    </target>
+    
+    <target name="source">
+        <mkdir dir="${dist.dir}" />
+        <zip destfile="${src.zip.file.name}" basedir="${src.dir}" />
+    </target>
+    
+    <target name="all" depends="jar, source" />
+
+</project>

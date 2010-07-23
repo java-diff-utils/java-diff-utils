@@ -15,23 +15,22 @@
 
     You should have received a copy of the GNU General Public License
     along with Java Diff Utills Library.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package difflib;
 
 /**
  * Base class for all exceptions emanating from this package.
- *
+ * 
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  */
 public class DiffException extends Exception {
-
-	private static final long serialVersionUID = 1L;
-
-	public DiffException() {
+    
+    private static final long serialVersionUID = 1L;
+    
+    public DiffException() {
     }
-
+    
     public DiffException(String msg) {
         super(msg);
     }
 }
-

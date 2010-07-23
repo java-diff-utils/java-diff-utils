@@ -67,34 +67,32 @@ package difflib.myers;
  * @see Snake
  *
  */
-public abstract class PathNode
-{
+public abstract class PathNode {
     /** Position in the original sequence. */
     public final int i;
     /** Position in the revised sequence. */
     public final int j;
     /** The previous node in the path. */
     public final PathNode prev;
-
+    
     /**
      * Concatenates a new path node with an existing diffpath.
      * @param i The position in the original sequence for the new node.
      * @param j The position in the revised sequence for the new node.
      * @param prev The previous node in the path.
      */
-    public PathNode(int i, int j, PathNode prev)
-    {
+    public PathNode(int i, int j, PathNode prev) {
         this.i = i;
         this.j = j;
         this.prev = prev;
     }
-
+    
     /**
      * Is this node a {@link Snake Snake node}?
      * @return true if this is a {@link Snake Snake node}
      */
     public abstract boolean isSnake();
-
+    
     /**
      * Is this a bootstrap node?
      * <p>
@@ -102,11 +100,10 @@ public abstract class PathNode
      * less than zero.
      * @return tru if this is a bootstrap node.
      */
-    public boolean isBootstrap()
-    {
+    public boolean isBootstrap() {
         return i < 0 || j < 0;
     }
-
+    
     /**
      * Skips sequences of {@link DiffNode DiffNodes} until a
      * {@link Snake} or bootstrap node is found, or the end
@@ -115,24 +112,21 @@ public abstract class PathNode
      * <code>null</code>
      * if none found.
      */
-    public final PathNode previousSnake()
-    {
+    public final PathNode previousSnake() {
         if (isBootstrap())
             return null;
         if (!isSnake() && prev != null)
             return prev.previousSnake();
         return this;
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    public String toString() {
         StringBuffer buf = new StringBuffer("[");
         PathNode node = this;
-        while (node != null)
-        {
+        while (node != null) {
             buf.append("(");
             buf.append(Integer.toString(node.i));
             buf.append(",");
