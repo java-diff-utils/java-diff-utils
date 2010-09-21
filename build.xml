@@ -6,7 +6,8 @@
     <property name="build.dir" location="./build" />
     <property name="dist.dir" value="./dist" />
     <property name="jar.file.name" value="${dist.dir}/${ant.project.name}-${version}.jar" />
-    <property name="src.zip.file.name" value="${dist.dir}/${ant.project.name}-${version}src.zip" />
+    <property name="javadoc.jar.file.name" value="${dist.dir}/${ant.project.name}-${version}-javadoc.jar" />
+    <property name="src.jar.file.name" value="${dist.dir}/${ant.project.name}-${version}-sources.jar" />
     <property name="compiler.jdk.version" value="1.5" />
 
     <target name="clean-compile">
@@ -35,9 +36,19 @@
     
     <target name="source">
         <mkdir dir="${dist.dir}" />
-        <zip destfile="${src.zip.file.name}" basedir="${src.dir}" />
+        <jar jarfile="${src.jar.file.name}">
+            <fileset dir="${src.dir}" />
+        </jar>
+    </target>
+
+    <target name="javadoc">
+        <mkdir dir="${dist.dir}" />
+        <javadoc sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" />
+        <jar jarfile="${javadoc.jar.file.name}">
+            <fileset dir="${dist.dir}/javadoc" />
+        </jar>
     </target>
     
-    <target name="all" depends="jar, source" />
+    <target name="all" depends="clean-all, jar, source, javadoc" />
 
 </project>
