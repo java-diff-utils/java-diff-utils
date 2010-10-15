@@ -1,4 +1,4 @@
-package testcase.diffutills;
+package diffutills;
 
 import java.util.Arrays;
 import java.util.List;

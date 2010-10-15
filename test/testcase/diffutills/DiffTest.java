@@ -1,4 +1,4 @@
-package testcase.diffutills;
+package diffutills;
 
 import java.util.*;
 
@@ -64,5 +64,19 @@ public class DiffTest extends TestCase {
                 add("zzz");
             }
         }), delta.getRevised());
+    }
+    
+    public void testDiff_EmptyList() {
+        Patch patch = DiffUtils.diff(new ArrayList<String>(), new ArrayList<String>());
+        assertNotNull(patch);
+        assertEquals(patch.getDeltas().size(), 0);
+    }
+    
+    public void testDiff_EmptyListWithNonEmpty() {
+        Patch patch = DiffUtils.diff(new ArrayList<String>(), Arrays.asList("aaa"));
+        assertNotNull(patch);
+        assertEquals(patch.getDeltas().size(), 1);
+        Delta delta = patch.getDeltas().get(0);
+        assertEquals(InsertDelta.class, delta.getClass());
     }
 }
