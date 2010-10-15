@@ -89,7 +89,6 @@ public class MyersDiff implements DiffAlgorithm {
      * 
      * Return empty diff if get the error while procession the difference.
      */
-    @Override
     public Patch diff(List<?> original, List<?> revised) {
         return diff(original.toArray(), revised.toArray());
     }
@@ -99,7 +98,6 @@ public class MyersDiff implements DiffAlgorithm {
      * 
      * Return empty diff if get the error while procession the difference.
      */
-    @Override
     public Patch diff(Object[] orig, Object[] rev) {
         PathNode path;
         try {
@@ -134,7 +132,7 @@ public class MyersDiff implements DiffAlgorithm {
         
         final int MAX = N + M + 1;
         final int size = 1 + 2 * MAX;
-        final int middle = (size + 1) / 2;
+        final int middle = size / 2;
         final PathNode diagonal[] = new PathNode[size];
         
         diagonal[middle + 1] = new Snake(0, -1, null);
