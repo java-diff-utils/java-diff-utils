@@ -84,4 +84,9 @@ public class ChangeDelta extends Delta {
         return "[ChangeDelta, position: " + getOriginal().getPosition() + ", lines: "
                 + getOriginal().getLines() + " to " + getRevised().getLines() + "]";
     }
+
+    @Override
+    public TYPE getType() {
+        return Delta.TYPE.CHANGE;
+    }
 }

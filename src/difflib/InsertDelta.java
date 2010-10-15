@@ -66,6 +66,10 @@ public class InsertDelta extends Delta {
         
     }
     
+    public TYPE getType() {
+        return Delta.TYPE.INSERT;
+    }
+    
     @Override
     public String toString() {
         return "[InsertDelta, position: " + getOriginal().getPosition() + ", lines: "

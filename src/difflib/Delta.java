@@ -26,6 +26,10 @@ public abstract class Delta {
     private Chunk original;
     private Chunk revised;
     
+    public enum TYPE {
+        CHANGE, DELETE, INSERT
+    }
+    
     /**
      * Construct the delta for original and revised chunks
      * 
@@ -60,6 +64,12 @@ public abstract class Delta {
      * @param target the given revised text
      */
     public abstract void restore(List<Object> target);
+    
+    /**
+     * Returns the type of delta
+     * @return the type enum
+     */
+    public abstract TYPE getType();
     
     /**
      * @return the Chunk describing the original text

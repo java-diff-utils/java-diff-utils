@@ -59,6 +59,11 @@ public class DeleteDelta extends Delta {
     }
     
     @Override
+    public TYPE getType() {
+        return Delta.TYPE.DELETE;
+    }
+    
+    @Override
     public void verify(List<?> target) throws PatchFailedException {
         getOriginal().verify(target);
     }
