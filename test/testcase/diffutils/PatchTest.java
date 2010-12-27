@@ -1,4 +1,4 @@
-package diffutills;
+package diffutils;
 
 import java.util.Arrays;
 import java.util.List;

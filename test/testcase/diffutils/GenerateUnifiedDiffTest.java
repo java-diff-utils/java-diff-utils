@@ -1,4 +1,4 @@
-package diffutills;
+package diffutils;
 
 import difflib.DiffUtils;
 import difflib.Patch;
