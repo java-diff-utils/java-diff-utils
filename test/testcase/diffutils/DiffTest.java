@@ -1,82 +1,59 @@
 package diffutils;
 
-import java.util.*;
-
-import junit.framework.TestCase;
 import difflib.*;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class DiffTest extends TestCase {
-    private List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc");
-    private List<String> changeTest_to = Arrays.asList("aaa", "zzz", "ccc");
-    
-    private List<String> deleteTest_from = Arrays.asList("ddd", "fff", "ggg");
-    private List<String> deleteTest_to = Arrays.asList("ggg");
-    
-    private List<String> insertTest_from = Arrays.asList("hhh");
-    private List<String> insertTest_to = Arrays.asList("hhh", "jjj", "kkk");
-    
-    @SuppressWarnings("serial")
-    public void testDiff_Insert() {
-        Patch patch = DiffUtils.diff(insertTest_from, insertTest_to);
+
+    public void testDiff_Insert() throws Exception {
+        final Patch patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.asList("hhh", "jjj", "kkk"));
         assertNotNull(patch);
-        assertEquals(patch.getDeltas().size(), 1);
-        Delta delta = patch.getDeltas().get(0);
+        assertEquals(1, patch.getDeltas().size());
+        final Delta delta = patch.getDeltas().get(0);
         assertEquals(InsertDelta.class, delta.getClass());
-        assertEquals(new Chunk(1, 0, new LinkedList<String>()), delta.getOriginal());
-        assertEquals(new Chunk(1, 2, new LinkedList<String>() {
-            {
-                add("jjj");
-                add("kkk");
-            }
-        }), delta.getRevised());
+        assertEquals(new Chunk(1, Collections.EMPTY_LIST), delta.getOriginal());
+        assertEquals(new Chunk(1, Arrays.asList("jjj", "kkk")), delta.getRevised());
     }
-    
-    @SuppressWarnings("serial")
-    public void testDiff_Delete() {
-        Patch patch = DiffUtils.diff(deleteTest_from, deleteTest_to);
+
+    public void testDiff_Delete() throws Exception {
+        final Patch patch = DiffUtils.diff(Arrays.asList("ddd", "fff", "ggg"), Arrays.asList("ggg"));
         assertNotNull(patch);
-        assertEquals(patch.getDeltas().size(), 1);
-        Delta delta = patch.getDeltas().get(0);
+        assertEquals(1, patch.getDeltas().size());
+        final Delta delta = patch.getDeltas().get(0);
         assertEquals(DeleteDelta.class, delta.getClass());
-        assertEquals(new Chunk(0, 2, new LinkedList<String>() {
-            {
-                add("ddd");
-                add("fff");
-            }
-        }), delta.getOriginal());
-        assertEquals(new Chunk(0, 0, new LinkedList<String>()), delta.getRevised());
+        assertEquals(new Chunk(0, Arrays.asList("ddd", "fff")), delta.getOriginal());
+        assertEquals(new Chunk(0, Collections.EMPTY_LIST), delta.getRevised());
     }
-    
-    @SuppressWarnings("serial")
-    public void testDiff_Change() {
-        Patch patch = DiffUtils.diff(changeTest_from, changeTest_to);
+
+    public void testDiff_Change() throws Exception {
+        final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc");
+        final List<String> changeTest_to = Arrays.asList("aaa", "zzz", "ccc");
+
+        final Patch patch = DiffUtils.diff(changeTest_from, changeTest_to);
         assertNotNull(patch);
-        assertEquals(patch.getDeltas().size(), 1);
-        Delta delta = patch.getDeltas().get(0);
+        assertEquals(1, patch.getDeltas().size());
+        final Delta delta = patch.getDeltas().get(0);
         assertEquals(ChangeDelta.class, delta.getClass());
-        assertEquals(new Chunk(1, 1, new LinkedList<String>() {
-            {
-                add("bbb");
-            }
-        }), delta.getOriginal());
-        assertEquals(new Chunk(1, 1, new LinkedList<String>() {
-            {
-                add("zzz");
-            }
-        }), delta.getRevised());
+        assertEquals(new Chunk(1, Arrays.asList("bbb")), delta.getOriginal());
+        assertEquals(new Chunk(1, Arrays.asList("zzz")), delta.getRevised());
     }
-    
-    public void testDiff_EmptyList() {
-        Patch patch = DiffUtils.diff(new ArrayList<String>(), new ArrayList<String>());
+
+    public void testDiff_EmptyList() throws Exception {
+        final Patch patch = DiffUtils.diff(new ArrayList<String>(), new ArrayList<String>());
         assertNotNull(patch);
-        assertEquals(patch.getDeltas().size(), 0);
+        assertEquals(0, patch.getDeltas().size());
     }
-    
-    public void testDiff_EmptyListWithNonEmpty() {
-        Patch patch = DiffUtils.diff(new ArrayList<String>(), Arrays.asList("aaa"));
+
+    public void testDiff_EmptyListWithNonEmpty() throws Exception {
+        final Patch patch = DiffUtils.diff(new ArrayList<String>(), Arrays.asList("aaa"));
         assertNotNull(patch);
-        assertEquals(patch.getDeltas().size(), 1);
-        Delta delta = patch.getDeltas().get(0);
+        assertEquals(1, patch.getDeltas().size());
+        final Delta delta = patch.getDeltas().get(0);
         assertEquals(InsertDelta.class, delta.getClass());
     }
 }

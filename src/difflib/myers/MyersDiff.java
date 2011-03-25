@@ -57,16 +57,10 @@
 
 package difflib.myers;
 
+import difflib.*;
+
 import java.lang.reflect.Array;
 import java.util.List;
-
-import difflib.ChangeDelta;
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.Delta;
-import difflib.DiffAlgorithm;
-import difflib.InsertDelta;
-import difflib.Patch;
 
 /**
  * A clean-room implementation of <a href="http://www.cs.arizona.edu/people/gene/">
@@ -182,13 +176,13 @@ public class MyersDiff implements DiffAlgorithm {
     }
     
     /**
-     * Constructs a {@link Revision} from a difference path.
+     * Constructs a {@link Patch} from a difference path.
      *
      * @param path The path.
      * @param orig The original sequence.
      * @param rev The revised sequence.
-     * @return A {@link Revision} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Revision} could
+     * @return A {@link Patch} script corresponding to the path.
+     * @throws DifferentiationFailedException if a {@link Patch} could
      *         not be built from the given path.
      */
     public static Patch buildRevision(PathNode path, Object[] orig, Object[] rev) {
@@ -212,12 +206,12 @@ public class MyersDiff implements DiffAlgorithm {
             int ianchor = path.i;
             int janchor = path.j;
             
-            Chunk original = new Chunk(ianchor, i - ianchor, copyOfRange(orig, ianchor, i));
-            Chunk revised = new Chunk(janchor, j - janchor, copyOfRange(rev, janchor, j));
+            Chunk original = new Chunk(ianchor, copyOfRange(orig, ianchor, i));
+            Chunk revised = new Chunk(janchor, copyOfRange(rev, janchor, j));
             Delta delta = null;
-            if (original.getSize() == 0 && revised.getSize() != 0) {
+            if (original.size() == 0 && revised.size() != 0) {
                 delta = new InsertDelta(original, revised);
-            } else if (original.getSize() > 0 && revised.getSize() == 0) {
+            } else if (original.size() > 0 && revised.size() == 0) {
                 delta = new DeleteDelta(original, revised);
             } else {
                 delta = new ChangeDelta(original, revised);

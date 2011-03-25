@@ -51,7 +51,7 @@ public class InsertDelta extends Delta {
     @Override
     public void restore(List<Object> target) {
         int position = getRevised().getPosition();
-        int size = getRevised().getSize();
+        int size = getRevised().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }

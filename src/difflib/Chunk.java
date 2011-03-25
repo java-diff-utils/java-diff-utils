@@ -15,7 +15,8 @@
  */
 package difflib;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Holds the information about the part of text involved in the diff process
@@ -31,8 +32,8 @@ import java.util.*;
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
  */
 public class Chunk {
-    private int position;
-    private int size;
+
+    private final int position;
     private List<?> lines;
     
     /**
@@ -40,14 +41,11 @@ public class Chunk {
      * 
      * @param position
      *            the start position
-     * @param size
-     *            the size of a Chunk
      * @param lines
      *            the affected lines
      */
-    public Chunk(int position, int size, List<?> lines) {
+    public Chunk(int position, List<?> lines) {
         this.position = position;
-        this.size = size;
         this.lines = lines;
     }
     
@@ -56,14 +54,11 @@ public class Chunk {
      * 
      * @param position
      *            the start position
-     * @param size
-     *            the size of a Chunk
      * @param lines
      *            the affected lines
      */
-    public Chunk(int position, int size, Object[] lines) {
+    public Chunk(int position, Object[] lines) {
         this.position = position;
-        this.size = size;
         this.lines = Arrays.asList(lines);
     }
     
@@ -78,7 +73,7 @@ public class Chunk {
         if (last() > target.size()) {
             throw new PatchFailedException("Incorrect Chunk: the position of chunk > target size");
         }
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size(); i++) {
             if (!target.get(position + i).equals(lines.get(i))) {
                 throw new PatchFailedException(
                         "Incorrect Chunk: the chunk content doesn't match the target");
@@ -92,50 +87,27 @@ public class Chunk {
     public int getPosition() {
         return position;
     }
-    
-    /**
-     * @param position
-     *            the start position to set
-     */
-    public void setPosition(int position) {
-        this.position = position;
+
+    public void setLines(List<?> lines) {
+        this.lines = lines;
     }
-    
-    /**
-     * @return the size of Chunk (size of affected lines)
-     */
-    public int getSize() {
-        return size;
-    }
-    
-    /**
-     * @param size
-     *            the size of affected lines to set
-     */
-    public void setSize(int size) {
-        this.size = size;
-    }
-    
+
     /**
      * @return the affected lines
      */
     public List<?> getLines() {
         return lines;
     }
-    
-    /**
-     * @param lines
-     *            the affected lines to set
-     */
-    public void setLines(List<?> lines) {
-        this.lines = lines;
+
+    public int size() {
+        return lines.size();
     }
     
     /**
      * Returns the index of the last line of the chunk.
      */
     public int last() {
-        return getPosition() + getSize() - 1;
+        return getPosition() + size() - 1;
     }
     
     /*
@@ -149,7 +121,7 @@ public class Chunk {
         int result = 1;
         result = prime * result + ((lines == null) ? 0 : lines.hashCode());
         result = prime * result + position;
-        result = prime * result + size;
+        result = prime * result + size();
         return result;
     }
     
@@ -174,14 +146,12 @@ public class Chunk {
             return false;
         if (position != other.position)
             return false;
-        if (size != other.size)
-            return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return "[position: " + position + ", size: " + size + ", lines: " + lines + "]";
+        return "[position: " + position + ", size: " + size() + ", lines: " + lines + "]";
     }
     
 }

@@ -40,7 +40,7 @@ public class DeleteDelta extends Delta {
     public void applyTo(List<Object> target) throws PatchFailedException {
         verify(target);
         int position = getOriginal().getPosition();
-        int size = getOriginal().getSize();
+        int size = getOriginal().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }

@@ -15,7 +15,10 @@
  */
 package difflib;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Describes the patch holding all deltas between the original and revised texts.
@@ -24,11 +27,9 @@ import java.util.*;
  */
 public class Patch {
     private List<Delta> deltas = new LinkedList<Delta>();
-    private boolean isSorted = false;
-    
+
     /**
      * Apply this patch to the given target
-     * @param target
      * @return the patched text
      * @throws PatchFailedException if can't apply patch
      */
@@ -63,45 +64,14 @@ public class Patch {
      */
     public void addDelta(Delta delta) {
         deltas.add(delta);
-        isSorted = false;
     }
-    
-    /**
-     * @param deltas the deltas to set
-     */
-    public void setDeltas(List<Delta> deltas) {
-        this.deltas = deltas;
-        isSorted = false;
-    }
-    
+
     /**
      * Get the list of computed deltas
      * @return the deltas
      */
     public List<Delta> getDeltas() {
-        if (!this.isSorted) {
-            Collections.sort(deltas, new Comparator<Delta>() {
-                public int compare(Delta d1, Delta d2) {
-                    if (d1.getOriginal().getPosition() > d2.getOriginal().getPosition()) {
-                        return 1;
-                    } else if (d1.getOriginal().getPosition() > d2.getOriginal().getPosition()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-            });
-            isSorted = true;
-        }
+        Collections.sort(deltas, DeltaComparator.INSTANCE);
         return deltas;
-    }
-    
-    /**
-     * Get the specific delta from patch deltas
-     * @param index the index of delta
-     * @return the needed delta
-     */
-    public Delta getDelta(int index) {
-        return deltas.get(index);
     }
 }

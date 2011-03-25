@@ -40,7 +40,7 @@ public class ChangeDelta extends Delta {
     public void applyTo(List<Object> target) throws PatchFailedException {
         verify(target);
         int position = getOriginal().getPosition();
-        int size = getOriginal().getSize();
+        int size = getOriginal().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
@@ -57,7 +57,7 @@ public class ChangeDelta extends Delta {
     @Override
     public void restore(List<Object> target) {
         int position = getRevised().getPosition();
-        int size = getRevised().getSize();
+        int size = getRevised().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }

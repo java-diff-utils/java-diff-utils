@@ -15,14 +15,9 @@
  */
 package difflib;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import difflib.DiffRow.Tag;
+
+import java.util.*;
 
 /**
  * This class for generating DiffRows for side-by-sidy view.
@@ -195,17 +190,18 @@ public class DiffRowGenerator {
     @SuppressWarnings("unchecked")
     public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch patch) {
         // normalize the lines (expand tabs, escape html entities)
-        original = StringUtills.normalize((List<String>) original);
-        revised = StringUtills.normalize((List<String>) revised);
+        original = StringUtills.normalize(original);
+        revised = StringUtills.normalize(revised);
         
         // wrap to the column width
-        original = StringUtills.wrapText((List<String>) original, this.columnWidth);
-        revised = StringUtills.wrapText((List<String>) revised, this.columnWidth);
+        original = StringUtills.wrapText(original, this.columnWidth);
+        revised = StringUtills.wrapText(revised, this.columnWidth);
         
         List<DiffRow> diffRows = new ArrayList<DiffRow>();
         int endPos = 0;
-        for (int i = 0; i < patch.getDeltas().size(); i++) {
-            Delta delta = patch.getDelta(i);
+        final List<Delta> deltaList = patch.getDeltas();
+        for (int i = 0; i < deltaList.size(); i++) {
+            Delta delta = deltaList.get(i);
             Chunk orig = delta.getOriginal();
             Chunk rev = delta.getRevised();
             
@@ -243,18 +239,18 @@ public class DiffRowGenerator {
                 addInlineDiffs(delta);
             }
             // the changed size is match
-            if (orig.getSize() == rev.getSize()) {
-                for (int j = 0; j < orig.getSize(); j++) {
+            if (orig.size() == rev.size()) {
+                for (int j = 0; j < orig.size(); j++) {
                     diffRows.add(new DiffRow(Tag.CHANGE, (String) orig.getLines().get(j),
                             (String) rev.getLines().get(j)));
                 }
-            } else if (orig.getSize() > rev.getSize()) {
-                for (int j = 0; j < orig.getSize(); j++) {
+            } else if (orig.size() > rev.size()) {
+                for (int j = 0; j < orig.size(); j++) {
                     diffRows.add(new DiffRow(Tag.CHANGE, (String) orig.getLines().get(j), rev
                             .getLines().size() > j ? (String) rev.getLines().get(j) : ""));
                 }
             } else {
-                for (int j = 0; j < rev.getSize(); j++) {
+                for (int j = 0; j < rev.size(); j++) {
                     diffRows.add(new DiffRow(Tag.CHANGE, orig.getLines().size() > j ? (String) orig
                             .getLines().get(j) : "", (String) rev.getLines().get(j)));
                 }
@@ -294,16 +290,16 @@ public class DiffRowGenerator {
                 if (inlineDelta.getClass().equals(DeleteDelta.class)) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
-                            + inlineOrig.getSize() + 1, this.InlineOldTag, this.InlineOldCssClass);
+                            + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
                 } else if (inlineDelta.getClass().equals(InsertDelta.class)) {
                     revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.getSize() + 1, this.InlineNewTag, this.InlineNewCssClass);
+                            + inlineRev.size() + 1, this.InlineNewTag, this.InlineNewCssClass);
                 } else if (inlineDelta.getClass().equals(ChangeDelta.class)) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
-                            + inlineOrig.getSize() + 1, this.InlineOldTag, this.InlineOldCssClass);
+                            + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
                     revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.getSize() + 1, this.InlineNewTag, this.InlineNewCssClass);
+                            + inlineRev.size() + 1, this.InlineNewTag, this.InlineNewCssClass);
                 }
             }
             StringBuilder origResult = new StringBuilder(), revResult = new StringBuilder();
