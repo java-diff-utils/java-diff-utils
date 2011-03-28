@@ -18,8 +18,6 @@ package difflib;
 import difflib.myers.MyersDiff;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -189,13 +187,7 @@ public class DiffUtils {
         ret.add("+++ " + revised);
 
         if (!patch.getDeltas().isEmpty()) {
-            // Hmm, I thought the Deltas were sorted already... turns out they're not.
             List<Delta> patchDeltas = new ArrayList<Delta>(patch.getDeltas());
-            Collections.sort(patchDeltas, new Comparator<Delta>() {
-                public int compare(Delta a, Delta b) {
-                    return new Integer(a.getOriginal().getPosition()).compareTo(b.getOriginal().getPosition());
-                }
-            });
 
             // code outside the if block also works for single-delta issues.
             List<Delta> deltas = new ArrayList<Delta>(); // current list of Delta's to process
