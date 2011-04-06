@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class DiffUtils {
     private static DiffAlgorithm defaultDiffAlgorithm = new MyersDiff();
     private static Pattern unifiedDiffChunkRe =
-            Pattern.compile("@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@");
+            Pattern.compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
 
     /**
      * Compute the difference between the original and revised texts with default diff algorithm
