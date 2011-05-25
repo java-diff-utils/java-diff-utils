@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DiffTest extends TestCase {
 
-    public void testDiff_Insert() throws Exception {
+    public void testDiff_Insert() {
         final Patch patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.asList("hhh", "jjj", "kkk"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
@@ -20,7 +20,7 @@ public class DiffTest extends TestCase {
         assertEquals(new Chunk(1, Arrays.asList("jjj", "kkk")), delta.getRevised());
     }
 
-    public void testDiff_Delete() throws Exception {
+    public void testDiff_Delete() {
         final Patch patch = DiffUtils.diff(Arrays.asList("ddd", "fff", "ggg"), Arrays.asList("ggg"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
@@ -30,7 +30,7 @@ public class DiffTest extends TestCase {
         assertEquals(new Chunk(0, Collections.EMPTY_LIST), delta.getRevised());
     }
 
-    public void testDiff_Change() throws Exception {
+    public void testDiff_Change() {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc");
         final List<String> changeTest_to = Arrays.asList("aaa", "zzz", "ccc");
 
@@ -43,13 +43,13 @@ public class DiffTest extends TestCase {
         assertEquals(new Chunk(1, Arrays.asList("zzz")), delta.getRevised());
     }
 
-    public void testDiff_EmptyList() throws Exception {
+    public void testDiff_EmptyList() {
         final Patch patch = DiffUtils.diff(new ArrayList<String>(), new ArrayList<String>());
         assertNotNull(patch);
         assertEquals(0, patch.getDeltas().size());
     }
 
-    public void testDiff_EmptyListWithNonEmpty() throws Exception {
+    public void testDiff_EmptyListWithNonEmpty() {
         final Patch patch = DiffUtils.diff(new ArrayList<String>(), Arrays.asList("aaa"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
