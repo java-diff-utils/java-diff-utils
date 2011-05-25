@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class GenerateUnifiedDiffTest extends TestCase {
         List<String> revLines = fileToLines("test" + FS + "mocks" + FS + "one_delta_test_revised.txt");
 
         verify(origLines, revLines);
+    }
+
+    public void testGenerateUnifiedDiffWithoutAnyDeltas() throws Exception {
+        List<String> test = Arrays.asList("abc");
+        Patch patch = DiffUtils.diff(test, test);
+        DiffUtils.generateUnifiedDiff("abc", "abc", test, patch, 0);
     }
 
     public void testDiff_Issue10() throws Exception {
