@@ -14,6 +14,13 @@ public class DeltaComparator implements Comparator<Delta>, Serializable {
     }
 
     public int compare(final Delta a, final Delta b) {
-        return Integer.valueOf(a.getOriginal().getPosition()).compareTo(b.getOriginal().getPosition());
+        final int posA = a.getOriginal().getPosition();
+        final int posB = b.getOriginal().getPosition();
+        if (posA > posB) {
+            return 1;
+        } else if (posA < posB) {
+            return -1;
+        }
+        return 0;
     }
 }
