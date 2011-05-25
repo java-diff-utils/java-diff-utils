@@ -68,11 +68,10 @@ public class GenerateUnifiedDiffTest extends TestCase {
         verify(lines1, lines2);
     }
 
-    // commented out until I'm get a valid mock files
     public void testDiff5() {
-        // final List<String> lines1 = fileToLines("test" + FS + "mocks" + FS + "5A.txt");
-        // final List<String> lines2 = fileToLines("test" + FS + "mocks" + FS + "5B.txt");
-        // verify(lines1, lines2);
+        final List<String> lines1 = fileToLines("test" + FS + "mocks" + FS + "5A.txt");
+        final List<String> lines2 = fileToLines("test" + FS + "mocks" + FS + "5B.txt");
+        verify(lines1, lines2);
     }
 
     private void verify(List<String> origLines, List<String> revLines) {
