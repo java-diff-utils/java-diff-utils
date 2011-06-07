@@ -9,12 +9,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class GenerateUnifiedDiffTest extends TestCase {
-    static final String FS = File.separator;
+    private static final String FS = File.separator;
+    private static final String MOCK_FOLDER = "test" + FS + "mocks" + FS;
 
     public List<String> fileToLines(String filename) {
         List<String> lines = new LinkedList<String>();
@@ -32,17 +34,17 @@ public class GenerateUnifiedDiffTest extends TestCase {
     }
 
     public void testGenerateUnified() {
-        List<String> origLines = fileToLines("test" + FS + "mocks" + FS + "original.txt");
-        List<String> revLines = fileToLines("test" + FS + "mocks" + FS + "revised.txt");
+        List<String> origLines = fileToLines(MOCK_FOLDER + "original.txt");
+        List<String> revLines = fileToLines(MOCK_FOLDER + "revised.txt");
 
-        verify(origLines, revLines);
+        verify(origLines, revLines, "original.txt", "revised.txt");
     }
 
     public void testGenerateUnifiedWithOneDelta() {
-        List<String> origLines = fileToLines("test" + FS + "mocks" + FS + "one_delta_test_original.txt");
-        List<String> revLines = fileToLines("test" + FS + "mocks" + FS + "one_delta_test_revised.txt");
+        List<String> origLines = fileToLines(MOCK_FOLDER + "one_delta_test_original.txt");
+        List<String> revLines = fileToLines(MOCK_FOLDER + "one_delta_test_revised.txt");
 
-        verify(origLines, revLines);
+        verify(origLines, revLines, "one_delta_test_original.txt", "one_delta_test_revised.txt");
     }
 
     public void testGenerateUnifiedDiffWithoutAnyDeltas() {
@@ -52,8 +54,8 @@ public class GenerateUnifiedDiffTest extends TestCase {
     }
 
     public void testDiff_Issue10() {
-        final List<String> baseLines = fileToLines("test" + FS + "mocks" + FS + "issue10_base.txt");
-        final List<String> patchLines = fileToLines("test" + FS + "mocks" + FS + "issue10_patch.txt");
+        final List<String> baseLines = fileToLines(MOCK_FOLDER + "issue10_base.txt");
+        final List<String> patchLines = fileToLines(MOCK_FOLDER + "issue10_patch.txt");
         final Patch p = DiffUtils.parseUnifiedDiff(patchLines);
         try {
             DiffUtils.patch(baseLines, p);
@@ -62,22 +64,51 @@ public class GenerateUnifiedDiffTest extends TestCase {
         }
     }
 
-    public void testDiff_Issue11() {
-        final List<String> lines1 = fileToLines("test" + FS + "mocks" + FS + "issue11_1.txt");
-        final List<String> lines2 = fileToLines("test" + FS + "mocks" + FS + "issue11_2.txt");
-        verify(lines1, lines2);
+    /**
+     * Issue 12
+     */
+    public void testPatchWithNoDeltas() {
+        final List<String> lines1 = fileToLines(MOCK_FOLDER + "issue11_1.txt");
+        final List<String> lines2 = fileToLines(MOCK_FOLDER + "issue11_2.txt");
+        verify(lines1, lines2, "issue11_1.txt", "issue11_2.txt");
     }
 
     public void testDiff5() {
-        final List<String> lines1 = fileToLines("test" + FS + "mocks" + FS + "5A.txt");
-        final List<String> lines2 = fileToLines("test" + FS + "mocks" + FS + "5B.txt");
-        verify(lines1, lines2);
+        final List<String> lines1 = fileToLines(MOCK_FOLDER + "5A.txt");
+        final List<String> lines2 = fileToLines(MOCK_FOLDER + "5B.txt");
+        verify(lines1, lines2, "5A.txt", "5B.txt");
     }
 
-    private void verify(List<String> origLines, List<String> revLines) {
-        Patch p = DiffUtils.diff(origLines, revLines);
-        List<String> unifiedDiff = DiffUtils.generateUnifiedDiff(
-                "test" + FS + "mocks" + FS + "original.txt", "test" + FS + "mocks" + FS + "revised.txt", origLines, p, 10);
+    /**
+     * Issue 19
+     */
+    public void testDiffWithHeaderLineInText() {
+        List<String> original = new ArrayList<String>();
+        List<String> revised  = new ArrayList<String>();
+
+        original.add("test line1");
+        original.add("test line2");
+        original.add("test line 4");
+        original.add("test line 5");
+
+        revised.add("test line1");
+        revised.add("test line2");
+        revised.add("@@ -2,6 +2,7 @@");
+        revised.add("test line 4");
+        revised.add("test line 5");
+
+        Patch patch = DiffUtils.diff(original, revised);
+        List<String> udiff = DiffUtils.generateUnifiedDiff("original", "revised",
+                original, patch, 10);
+        DiffUtils.parseUnifiedDiff(udiff);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void verify(List<String> origLines, List<String> revLines,
+            String originalFile, String revisedFile) {
+        Patch patch = DiffUtils.diff(origLines, revLines);
+        List<String> unifiedDiff = DiffUtils.generateUnifiedDiff(originalFile, revisedFile,
+                origLines, patch, 10);
 
         Patch fromUnifiedPatch = DiffUtils.parseUnifiedDiff(unifiedDiff);
         List<String> patchedLines;
