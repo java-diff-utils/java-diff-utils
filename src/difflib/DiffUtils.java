@@ -182,11 +182,11 @@ public class DiffUtils {
      */
     public static List<String> generateUnifiedDiff(String original, String revised,
                                                    List<String> originalLines, Patch patch, int contextSize) {
-        List<String> ret = new ArrayList<String>();
-        ret.add("--- " + original);
-        ret.add("+++ " + revised);
-
         if (!patch.getDeltas().isEmpty()) {
+            List<String> ret = new ArrayList<String>();
+            ret.add("--- " + original);
+            ret.add("+++ " + revised);
+
             List<Delta> patchDeltas = new ArrayList<Delta>(patch.getDeltas());
 
             // code outside the if block also works for single-delta issues.
@@ -220,8 +220,9 @@ public class DiffUtils {
             // don't forget to process the last set of Deltas
             List<String> curBlock = processDeltas(originalLines, deltas, contextSize);
             ret.addAll(curBlock);
+            return ret;
         }
-        return ret;
+        return new ArrayList<String>();
     }
 
     /**
@@ -260,7 +261,7 @@ public class DiffUtils {
         }
 
         // output the context before the first Delta
-        for (line = contextStart; line < curDelta.getOriginal().getPosition(); line++) { // 
+        for (line = contextStart; line < curDelta.getOriginal().getPosition(); line++) { //
             buffer.add(" " + origLines.get(line));
             origTotal++;
             revTotal++;
