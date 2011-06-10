@@ -65,31 +65,44 @@ import java.util.List;
 /**
  * A clean-room implementation of <a href="http://www.cs.arizona.edu/people/gene/">
  * Eugene Myers</a> differencing algorithm.
- * 
+ *
  * <p> See the paper at <a href="http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps">
  * http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps</a></p>
  *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  */
 public class MyersDiff implements DiffAlgorithm {
+    private static final Equalizer DEFAULT_EQUALIZER = new Equalizer() {
+        public boolean equals(Object original, Object revised) {
+            return original.equals(revised);
+        }
+    };
+
+    private Equalizer equalizer = DEFAULT_EQUALIZER;
+
+
     /**
      * Constructs an instance of the Myers differencing algorithm.
      */
     public MyersDiff() {
     }
-    
+
+    public MyersDiff(Equalizer equalizer) {
+        this.equalizer = equalizer;
+    }
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * Return empty diff if get the error while procession the difference.
      */
     public Patch diff(List<?> original, List<?> revised) {
         return diff(original.toArray(), revised.toArray());
     }
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * Return empty diff if get the error while procession the difference.
      */
     public Patch diff(Object[] orig, Object[] rev) {
@@ -102,7 +115,7 @@ public class MyersDiff implements DiffAlgorithm {
         }
         return new Patch();
     }
-    
+
     /**
      * Computes the minimum diffpath that expresses de differences
      * between the original and revised sequences, according
@@ -113,22 +126,22 @@ public class MyersDiff implements DiffAlgorithm {
      * @return A minimum {@link PathNode Path} accross the differences graph.
      * @throws DifferentiationFailedException if a diff path could not be found.
      */
-    public static PathNode buildPath(Object[] orig, Object[] rev)
+    public PathNode buildPath(Object[] orig, Object[] rev)
             throws DifferentiationFailedException {
         if (orig == null)
             throw new IllegalArgumentException("original sequence is null");
         if (rev == null)
             throw new IllegalArgumentException("revised sequence is null");
-        
+
         // these are local constants
         final int N = orig.length;
         final int M = rev.length;
-        
+
         final int MAX = N + M + 1;
         final int size = 1 + 2 * MAX;
         final int middle = size / 2;
         final PathNode diagonal[] = new PathNode[size];
-        
+
         diagonal[middle + 1] = new Snake(0, -1, null);
         for (int d = 0; d < MAX; d++) {
             for (int k = -d; k <= d; k += 2) {
@@ -136,7 +149,7 @@ public class MyersDiff implements DiffAlgorithm {
                 final int kplus = kmiddle + 1;
                 final int kminus = kmiddle - 1;
                 PathNode prev = null;
-                
+
                 int i;
                 if ((k == -d) || (k != d && diagonal[kminus].i < diagonal[kplus].i)) {
                     i = diagonal[kplus].i;
@@ -145,36 +158,40 @@ public class MyersDiff implements DiffAlgorithm {
                     i = diagonal[kminus].i + 1;
                     prev = diagonal[kminus];
                 }
-                
+
                 diagonal[kminus] = null; // no longer used
-                
+
                 int j = i - k;
-                
+
                 PathNode node = new DiffNode(i, j, prev);
-                
+
                 // orig and rev are zero-based
                 // but the algorithm is one-based
                 // that's why there's no +1 when indexing the sequences
-                while (i < N && j < M && orig[i].equals(rev[j])) {
+                while (i < N && j < M && equals(orig[i], rev[j])) {
                     i++;
                     j++;
                 }
                 if (i > node.i)
                     node = new Snake(i, j, node);
-                
+
                 diagonal[kmiddle] = node;
-                
+
                 if (i >= N && j >= M) {
                     return diagonal[kmiddle];
                 }
             }
             diagonal[middle + d - 1] = null;
-            
+
         }
         // According to Myers, this cannot happen
         throw new DifferentiationFailedException("could not find a diff path");
     }
-    
+
+    private boolean equals(Object orig, Object rev) {
+        return equalizer.equals(orig, rev);
+    }
+
     /**
      * Constructs a {@link Patch} from a difference path.
      *
@@ -185,14 +202,14 @@ public class MyersDiff implements DiffAlgorithm {
      * @throws DifferentiationFailedException if a {@link Patch} could
      *         not be built from the given path.
      */
-    public static Patch buildRevision(PathNode path, Object[] orig, Object[] rev) {
+    public Patch buildRevision(PathNode path, Object[] orig, Object[] rev) {
         if (path == null)
             throw new IllegalArgumentException("path is null");
         if (orig == null)
             throw new IllegalArgumentException("original sequence is null");
         if (rev == null)
             throw new IllegalArgumentException("revised sequence is null");
-        
+
         Patch patch = new Patch();
         if (path.isSnake())
             path = path.prev;
@@ -201,11 +218,11 @@ public class MyersDiff implements DiffAlgorithm {
                 throw new IllegalStateException("bad diffpath: found snake when looking for diff");
             int i = path.i;
             int j = path.j;
-            
+
             path = path.prev;
             int ianchor = path.i;
             int janchor = path.j;
-            
+
             Chunk original = new Chunk(ianchor, copyOfRange(orig, ianchor, i));
             Chunk revised = new Chunk(janchor, copyOfRange(rev, janchor, j));
             Delta delta = null;
@@ -216,23 +233,23 @@ public class MyersDiff implements DiffAlgorithm {
             } else {
                 delta = new ChangeDelta(original, revised);
             }
-            
+
             patch.addDelta(delta);
             if (path.isSnake())
                 path = path.prev;
         }
         return patch;
     }
-    
+
     /**
      * Copied here from JDK 1.6
     */
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T[] copyOfRange(T[] original, int from, int to) {
         return copyOfRange(original, from, to, (Class<T[]>) original.getClass());
     }
-    
+
     /**
      * Copied here from JDK 1.6
      */
@@ -247,5 +264,5 @@ public class MyersDiff implements DiffAlgorithm {
         System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
         return copy;
     }
-    
+
 }

@@ -8,6 +8,11 @@
   <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java</description>
   <url>http://code.google.com/p/java-diff-utils/</url>
   <inceptionYear>2009</inceptionYear>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
   <scm>
     <connection>scm:svn:http://java-diff-utils.googlecode.com/svn/trunk/</connection>
     <developerConnection>scm:svn:https://java-diff-utils.googlecode.com/svn/trunk/</developerConnection>

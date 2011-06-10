@@ -16,27 +16,28 @@
 package difflib;
 
 import difflib.DiffRow.Tag;
+import difflib.myers.Equalizer;
 
 import java.util.*;
 
 /**
  * This class for generating DiffRows for side-by-sidy view.
- * You can customize the way of generating. For example, show inline diffs on not, ignoring 
+ * You can customize the way of generating. For example, show inline diffs on not, ignoring
  * white spaces or/and blank lines and so on. All parameters for generating are optional. If you do
  * not specify them, the class will use the default values.
- * 
+ *
  * These values are:
  * showInlineDiffs = false;
  * ignoreWhiteSpaces = true;
  * ignoreBlankLines = true;
  * ...
- * 
+ *
  * For instantiating the DiffRowGenerator you should use the its builder. Like in example
  * <code>
  *    DiffRowGenerator generator = new DiffRowGenerator.Builder().showInlineDiffs(true).
  *    	ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
- * 
+ *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
   */
 public class DiffRowGenerator {
@@ -48,7 +49,8 @@ public class DiffRowGenerator {
     private final String InlineOldCssClass;
     private final String InlineNewCssClass;
     private final int columnWidth;
-    
+    private final Equalizer equalizer;
+
     /**
      * This class used for building the DiffRowGenerator.
      * @author dmitry
@@ -56,24 +58,24 @@ public class DiffRowGenerator {
      */
     public static class Builder {
         private boolean showInlineDiffs = false;
-        private boolean ignoreWhiteSpaces = true;
-        private boolean ignoreBlankLines = true;
+        private boolean ignoreWhiteSpaces = false;
+        private boolean ignoreBlankLines = false;
         private String InlineOldTag = "span";
         private String InlineNewTag = "span";
         private String InlineOldCssClass = "editOldInline";
         private String InlineNewCssClass = "editNewInline";
         private int columnWidth = 80;
-        
+
         /**
          * Show inline diffs in generating diff rows or not.
          * @param val the value to set. Default: false.
-         * @return builder with configured showInlineDiff parameter 
+         * @return builder with configured showInlineDiff parameter
          */
         public Builder showInlineDiffs(boolean val) {
             showInlineDiffs = val;
             return this;
         }
-        
+
         /**
          * Ignore white spaces in generating diff rows or not.
          * @param val the value to set. Default: true.
@@ -83,7 +85,7 @@ public class DiffRowGenerator {
             ignoreWhiteSpaces = val;
             return this;
         }
-        
+
         /**
          * Ignore blank lines in generating diff rows or not.
          * @param val the value to set. Default: true.
@@ -93,7 +95,7 @@ public class DiffRowGenerator {
             ignoreBlankLines = val;
             return this;
         }
-        
+
         /**
          * Set the tag used for displaying changes in the original text.
          * @param tag the tag to set. Without angle brackets. Default: span.
@@ -103,7 +105,7 @@ public class DiffRowGenerator {
             InlineOldTag = tag;
             return this;
         }
-        
+
         /**
          * Set the tag used for displaying changes in the revised text.
          * @param tag the tag to set. Without angle brackets. Default: span.
@@ -113,7 +115,7 @@ public class DiffRowGenerator {
             InlineNewTag = tag;
             return this;
         }
-        
+
         /**
          * Set the css class used for displaying changes in the original text.
          * @param cssClass the tag to set. Without any quotes, just word. Default: editOldInline.
@@ -123,7 +125,7 @@ public class DiffRowGenerator {
             InlineOldCssClass = cssClass;
             return this;
         }
-        
+
         /**
          * Set the css class used for displaying changes in the revised text.
          * @param cssClass the tag to set. Without any quotes, just word. Default: editNewInline.
@@ -133,7 +135,7 @@ public class DiffRowGenerator {
             InlineNewCssClass = cssClass;
             return this;
         }
-        
+
         /**
          * Set the column with of generated lines of original and revised texts.
          * @param width the width to set. Making it < 0 doesn't have any sense. Default 80.
@@ -145,7 +147,7 @@ public class DiffRowGenerator {
             }
             return this;
         }
-        
+
         /**
          * Build the DiffRowGenerator. If some parameters is not set, the default values are used.
          * @return the customized DiffRowGenerator
@@ -154,7 +156,7 @@ public class DiffRowGenerator {
             return new DiffRowGenerator(this);
         }
     }
-    
+
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces; //
@@ -164,27 +166,47 @@ public class DiffRowGenerator {
         InlineOldCssClass = builder.InlineOldCssClass;
         InlineNewCssClass = builder.InlineNewCssClass;
         columnWidth = builder.columnWidth; //
+        equalizer = new Equalizer() {
+            public boolean equals(Object original, Object revised) {
+                if (ignoreWhiteSpaces) {
+                    original = ((String)original).trim().replaceAll("\\s+", " ");
+                    revised = ((String)revised).trim().replaceAll("\\s+", " ");
+                }
+                return original.equals(revised);
+            }
+        };
     }
-    
+
     /**
      * Get the DiffRows describing the difference between original and revised texts using the
      * given patch. Useful for displaying side-by-side diff.
-     * 
+     *
      * @param original the original text
-     * @param revised the revised text 
+     * @param revised the revised text
      * @return the DiffRows between original and revised texts
      */
     public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) {
-        return generateDiffRows(original, revised, DiffUtils.diff(original, revised));
+        return generateDiffRows(original, revised, DiffUtils.diff(original, revised, equalizer));
     }
-    
+
+    private List<String> removeBlankLines(List<String> lines) {
+        List<String> result = new ArrayList<String>();
+        for (String line: lines) {
+            if (line.trim().length() == 0) {
+                result.add("");
+            }
+            result.add(line);
+        }
+        return result;
+    }
+
     /**
      * Generates the DiffRows describing the difference between original and revised texts using the
      * given patch. Useful for displaying side-by-side diff.
-     * 
+     *
      * @param original the original text
      * @param revised the revised text
-     * @param patch the given patch 
+     * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
     @SuppressWarnings("unchecked")
@@ -192,11 +214,11 @@ public class DiffRowGenerator {
         // normalize the lines (expand tabs, escape html entities)
         original = StringUtills.normalize(original);
         revised = StringUtills.normalize(revised);
-        
+
         // wrap to the column width
         original = StringUtills.wrapText(original, this.columnWidth);
         revised = StringUtills.wrapText(revised, this.columnWidth);
-        
+
         List<DiffRow> diffRows = new ArrayList<DiffRow>();
         int endPos = 0;
         final List<Delta> deltaList = patch.getDeltas();
@@ -204,19 +226,19 @@ public class DiffRowGenerator {
             Delta delta = deltaList.get(i);
             Chunk orig = delta.getOriginal();
             Chunk rev = delta.getRevised();
-            
+
             // We should normalize and wrap lines in deltas too.
             orig.setLines(StringUtills.normalize((List<String>) orig.getLines()));
             rev.setLines(StringUtills.normalize((List<String>) rev.getLines()));
-            
+
             orig.setLines(StringUtills.wrapText((List<String>) orig.getLines(), this.columnWidth));
             rev.setLines(StringUtills.wrapText((List<String>) rev.getLines(), this.columnWidth));
-            
+
             // catch the equal prefix for each chunk
             for (String line : original.subList(endPos, orig.getPosition())) {
                 diffRows.add(new DiffRow(Tag.EQUAL, line, line));
             }
-            
+
             // Inserted DiffRow
             if (delta.getClass().equals(InsertDelta.class)) {
                 endPos = orig.last() + 1;
@@ -225,7 +247,7 @@ public class DiffRowGenerator {
                 }
                 continue;
             }
-            
+
             // Deleted DiffRow
             if (delta.getClass().equals(DeleteDelta.class)) {
                 endPos = orig.last() + 1;
@@ -234,7 +256,7 @@ public class DiffRowGenerator {
                 }
                 continue;
             }
-            
+
             if (showInlineDiffs) {
                 addInlineDiffs(delta);
             }
@@ -257,14 +279,14 @@ public class DiffRowGenerator {
             }
             endPos = orig.last() + 1;
         }
-        
+
         // Copy the final matching chunk if any.
         for (String line : original.subList(endPos, original.size())) {
             diffRows.add(new DiffRow(Tag.EQUAL, line, line));
         }
         return diffRows;
     }
-    
+
     /**
      * Add the inline diffs for given delta
      * @param delta the given delta
@@ -313,12 +335,12 @@ public class DiffRowGenerator {
             delta.getRevised().setLines(Arrays.asList(revResult.toString().split("\n")));
         }
     }
-    
+
     /**
      * Wrap the elements in the sequence with the given tag
      * @param startPosition the position from which tag should start. The counting start from a zero.
-     * @param endPosition the position before which tag should should be closed. 
-     * @param tag the tag name without angle brackets, just a word 
+     * @param endPosition the position before which tag should should be closed.
+     * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
      */
     public static LinkedList<String> wrapInTag(LinkedList<String> sequence, int startPosition,
@@ -334,23 +356,23 @@ public class DiffRowGenerator {
         }
         tagBuilder.append(">");
         String startTag = tagBuilder.toString();
-        
+
         tagBuilder.delete(0, tagBuilder.length());
-        
+
         tagBuilder.append("</");
         tagBuilder.append(tag);
         tagBuilder.append(">");
         String endTag = tagBuilder.toString();
-        
+
         result.add(startPosition, startTag);
         result.add(endPosition, endTag);
         return result;
     }
-    
+
     /**
      * Wrap the given line with the given tag
      * @param line the given line
-     * @param tag the tag name without angle brackets, just a word 
+     * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
      * @return the wrapped string
      */
@@ -365,17 +387,17 @@ public class DiffRowGenerator {
         }
         tagBuilder.append(">");
         String startTag = tagBuilder.toString();
-        
+
         tagBuilder.delete(0, tagBuilder.length());
-        
+
         tagBuilder.append("</");
         tagBuilder.append(tag);
         tagBuilder.append(">");
         String endTag = tagBuilder.toString();
-        
+
         return startTag + line + endTag;
     }
-    
+
     /**
      * The helper method for joining collections
      * @param <T>

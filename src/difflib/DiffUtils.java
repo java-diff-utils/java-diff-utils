@@ -15,6 +15,7 @@
  */
 package difflib;
 
+import difflib.myers.Equalizer;
 import difflib.myers.MyersDiff;
 
 import java.util.ArrayList;
@@ -41,6 +42,21 @@ public class DiffUtils {
      * @return the patch describing the difference between the original and revised texts
      */
     public static Patch diff(List<?> original, List<?> revised) {
+        return DiffUtils.diff(original, revised, defaultDiffAlgorithm);
+    }
+
+    /**
+     * Compute the difference between the original and revised texts with default diff algorithm
+     *
+     * @param original the original text
+     * @param revised  the revised text
+     * @param equalizer the equalizer object to replace the default compare algorithm (Object.equals)
+     * @return the patch describing the difference between the original and revised texts
+     */
+    public static Patch diff(List<?> original, List<?> revised, Equalizer equalizer) {
+        if (equalizer != null) {
+            return DiffUtils.diff(original, revised, new MyersDiff(equalizer));
+        }
         return DiffUtils.diff(original, revised, defaultDiffAlgorithm);
     }
 
