@@ -30,11 +30,12 @@ import java.util.List;
  * </p>
  * 
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
+ * @param T The type of the compared elements in the 'lines'.
  */
-public class Chunk {
+public class Chunk<T> {
 
     private final int position;
-    private List<?> lines;
+    private List<T> lines;
     
     /**
      * Creates a chunk and saves a copy of affected lines
@@ -44,7 +45,7 @@ public class Chunk {
      * @param lines
      *            the affected lines
      */
-    public Chunk(int position, List<?> lines) {
+    public Chunk(int position, List<T> lines) {
         this.position = position;
         this.lines = lines;
     }
@@ -57,7 +58,7 @@ public class Chunk {
      * @param lines
      *            the affected lines
      */
-    public Chunk(int position, Object[] lines) {
+    public Chunk(int position, T[] lines) {
         this.position = position;
         this.lines = Arrays.asList(lines);
     }
@@ -69,7 +70,7 @@ public class Chunk {
      * @param target
      *            the sequence to verify against.
      */
-    public void verify(List<?> target) throws PatchFailedException {
+    public void verify(List<T> target) throws PatchFailedException {
         if (last() > target.size()) {
             throw new PatchFailedException("Incorrect Chunk: the position of chunk > target size");
         }
@@ -88,14 +89,14 @@ public class Chunk {
         return position;
     }
 
-    public void setLines(List<?> lines) {
+    public void setLines(List<T> lines) {
         this.lines = lines;
     }
 
     /**
      * @return the affected lines
      */
-    public List<?> getLines() {
+    public List<T> getLines() {
         return lines;
     }
 

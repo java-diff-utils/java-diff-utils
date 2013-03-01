@@ -18,9 +18,9 @@ public class ComputeDifference extends Example {
         List<String> revised  = fileToLines(RIVISED);
 
         // Compute diff. Get the Patch object. Patch is the container for computed deltas.
-        Patch patch = DiffUtils.diff(original, revised);
+        Patch<String> patch = DiffUtils.diff(original, revised);
 
-        for (Delta delta: patch.getDeltas()) {
+        for (Delta<String> delta: patch.getDeltas()) {
             System.out.println(delta);
         }
     }

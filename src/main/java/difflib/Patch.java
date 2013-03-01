@@ -24,20 +24,21 @@ import java.util.ListIterator;
  * Describes the patch holding all deltas between the original and revised texts.
  * 
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @param T The type of the compared elements in the 'lines'.
  */
-public class Patch {
-    private List<Delta> deltas = new LinkedList<Delta>();
+public class Patch<T> {
+    private List<Delta<T>> deltas = new LinkedList<Delta<T>>();
 
     /**
      * Apply this patch to the given target
      * @return the patched text
      * @throws PatchFailedException if can't apply patch
      */
-    public List<?> applyTo(List<?> target) throws PatchFailedException {
-        List<Object> result = new LinkedList<Object>(target);
-        ListIterator<Delta> it = getDeltas().listIterator(deltas.size());
+    public List<T> applyTo(List<T> target) throws PatchFailedException {
+        List<T> result = new LinkedList<T>(target);
+        ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta delta = (Delta) it.previous();
+            Delta<T> delta = (Delta<T>) it.previous();
             delta.applyTo(result);
         }
         return result;
@@ -48,11 +49,11 @@ public class Patch {
      * @param target the given target
      * @return the restored text
      */
-    public List<?> restore(List<?> target) {
-        List<Object> result = new LinkedList<Object>(target);
-        ListIterator<Delta> it = getDeltas().listIterator(deltas.size());
+    public List<T> restore(List<T> target) {
+        List<T> result = new LinkedList<T>(target);
+        ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta delta = (Delta) it.previous();
+            Delta<T> delta = (Delta<T>) it.previous();
             delta.restore(result);
         }
         return result;
@@ -62,7 +63,7 @@ public class Patch {
      * Add the given delta to this patch
      * @param delta the given delta
      */
-    public void addDelta(Delta delta) {
+    public void addDelta(Delta<T> delta) {
         deltas.add(delta);
     }
 
@@ -70,7 +71,7 @@ public class Patch {
      * Get the list of computed deltas
      * @return the deltas
      */
-    public List<Delta> getDeltas() {
+    public List<Delta<T>> getDeltas() {
         Collections.sort(deltas, DeltaComparator.INSTANCE);
         return deltas;
     }

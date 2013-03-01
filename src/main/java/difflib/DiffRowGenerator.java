@@ -49,7 +49,7 @@ public class DiffRowGenerator {
     private final String InlineOldCssClass;
     private final String InlineNewCssClass;
     private final int columnWidth;
-    private final Equalizer equalizer;
+    private final Equalizer<String> equalizer;
 
     /**
      * This class used for building the DiffRowGenerator.
@@ -166,11 +166,11 @@ public class DiffRowGenerator {
         InlineOldCssClass = builder.InlineOldCssClass;
         InlineNewCssClass = builder.InlineNewCssClass;
         columnWidth = builder.columnWidth; //
-        equalizer = new Equalizer() {
-            public boolean equals(Object original, Object revised) {
+        equalizer = new Equalizer<String>() {
+            public boolean equals(String original, String revised) {
                 if (ignoreWhiteSpaces) {
-                    original = ((String)original).trim().replaceAll("\\s+", " ");
-                    revised = ((String)revised).trim().replaceAll("\\s+", " ");
+                    original = original.trim().replaceAll("\\s+", " ");
+                    revised = revised.trim().replaceAll("\\s+", " ");
                 }
                 return original.equals(revised);
             }
@@ -210,7 +210,7 @@ public class DiffRowGenerator {
      * @return the DiffRows between original and revised texts
      */
     @SuppressWarnings("unchecked")
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch patch) {
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch<String> patch) {
         // normalize the lines (expand tabs, escape html entities)
         original = StringUtills.normalize(original);
         revised = StringUtills.normalize(revised);
@@ -221,11 +221,11 @@ public class DiffRowGenerator {
 
         List<DiffRow> diffRows = new ArrayList<DiffRow>();
         int endPos = 0;
-        final List<Delta> deltaList = patch.getDeltas();
+        final List<Delta<String>> deltaList = patch.getDeltas();
         for (int i = 0; i < deltaList.size(); i++) {
-            Delta delta = deltaList.get(i);
-            Chunk orig = delta.getOriginal();
-            Chunk rev = delta.getRevised();
+            Delta<String> delta = deltaList.get(i);
+            Chunk<String> orig = delta.getOriginal();
+            Chunk<String> rev = delta.getRevised();
 
             // We should normalize and wrap lines in deltas too.
             orig.setLines(StringUtills.normalize((List<String>) orig.getLines()));
@@ -292,7 +292,7 @@ public class DiffRowGenerator {
      * @param delta the given delta
      */
     @SuppressWarnings("unchecked")
-    private void addInlineDiffs(Delta delta) {
+    private void addInlineDiffs(Delta<String> delta) {
         List<String> orig = (List<String>) delta.getOriginal().getLines();
         List<String> rev = (List<String>) delta.getRevised().getLines();
         LinkedList<String> origList = new LinkedList<String>();
@@ -303,12 +303,12 @@ public class DiffRowGenerator {
         for (Character character : join(rev, "\n").toCharArray()) {
             revList.add(character.toString());
         }
-        List<Delta> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
+        List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
         if (inlineDeltas.size() < 3) {
             Collections.reverse(inlineDeltas);
-            for (Delta inlineDelta : inlineDeltas) {
-                Chunk inlineOrig = inlineDelta.getOriginal();
-                Chunk inlineRev = inlineDelta.getRevised();
+            for (Delta<String> inlineDelta : inlineDeltas) {
+                Chunk<String> inlineOrig = inlineDelta.getOriginal();
+                Chunk<String> inlineRev = inlineDelta.getRevised();
                 if (inlineDelta.getClass().equals(DeleteDelta.class)) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()

@@ -21,22 +21,42 @@ import java.util.*;
  * Describes the delta between original and revised texts.
  * 
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @param T The type of the compared elements in the 'lines'.
  */
-public abstract class Delta {
-    private Chunk original;
-    private Chunk revised;
+public abstract class Delta<T> {
+	
+	/** The original chunk. */
+    private Chunk<T> original;
     
+    /** The revised chunk. */
+    private Chunk<T> revised;
+    
+    /**
+     * Specifies the type of the delta.
+     *
+     */
     public enum TYPE {
-        CHANGE, DELETE, INSERT
+    	/** A change in the original. */
+        CHANGE, 
+        /** A delete from the original. */
+        DELETE, 
+        /** An insert into the original. */
+        INSERT
     }
     
     /**
      * Construct the delta for original and revised chunks
      * 
-     * @param original chunk describes the original text
-     * @param revised chunk describes the revised text
+     * @param original Chunk describing the original text. Must not be {@code null}.
+     * @param revised Chunk describing the revised text. Must not be {@code null}.
      */
-    public Delta(Chunk original, Chunk revised) {
+    public Delta(Chunk<T> original, Chunk<T> revised) {
+    	if (original == null) {
+    		throw new IllegalArgumentException("original must not be null");
+    	}
+    	if (revised == null) {
+    		throw new IllegalArgumentException("revised must not be null");
+    	}
         this.original = original;
         this.revised = revised;
     }
@@ -47,7 +67,7 @@ public abstract class Delta {
      * @param target the text to patch.
      * @throws PatchFailedException if the patch cannot be applied.
      */
-    public abstract void verify(List<?> target) throws PatchFailedException;
+    public abstract void verify(List<T> target) throws PatchFailedException;
     
     /**
      * Applies this delta as the patch for a given target
@@ -55,7 +75,7 @@ public abstract class Delta {
      * @param target the given target
      * @throws PatchFailedException
      */
-    public abstract void applyTo(List<Object> target) throws PatchFailedException;
+    public abstract void applyTo(List<T> target) throws PatchFailedException;
     
     /**
      * Cancel this delta for a given revised text. The action is opposite to
@@ -63,7 +83,7 @@ public abstract class Delta {
      * 
      * @param target the given revised text
      */
-    public abstract void restore(List<Object> target);
+    public abstract void restore(List<T> target);
     
     /**
      * Returns the type of delta
@@ -72,38 +92,33 @@ public abstract class Delta {
     public abstract TYPE getType();
     
     /**
-     * @return the Chunk describing the original text
+     * @return The Chunk describing the original text.
      */
-    public Chunk getOriginal() {
+    public Chunk<T> getOriginal() {
         return original;
     }
     
     /**
-     * @param original the Chunk describing the original text to set
+     * @param original The Chunk describing the original text to set.
      */
-    public void setOriginal(Chunk original) {
+    public void setOriginal(Chunk<T> original) {
         this.original = original;
     }
     
     /**
-     * @return the Chunk describing the revised text
+     * @return The Chunk describing the revised text.
      */
-    public Chunk getRevised() {
+    public Chunk<T> getRevised() {
         return revised;
     }
     
     /**
-     * @param revised the Chunk describing the revised text to set
+     * @param revised The Chunk describing the revised text to set.
      */
-    public void setRevised(Chunk revised) {
+    public void setRevised(Chunk<T> revised) {
         this.revised = revised;
     }
     
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -113,11 +128,6 @@ public abstract class Delta {
         return result;
     }
     
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -126,7 +136,7 @@ public abstract class Delta {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Delta other = (Delta) obj;
+        Delta<T> other = (Delta) obj;
         if (original == null) {
             if (other.original != null)
                 return false;

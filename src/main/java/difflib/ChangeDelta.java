@@ -21,14 +21,17 @@ import java.util.List;
  * Describes the change-delta between original and revised texts.
  * 
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @param T The type of the compared elements in the 'lines'.
  */
-public class ChangeDelta extends Delta {
+public class ChangeDelta<T> extends Delta<T> {
     
     /**
-     * {@inheritDoc}
+     * Creates a change delta with the two given chunks.
+     * @param original The original chunk. Must not be {@code null}.
+     * @param revised The original chunk. Must not be {@code null}.
      */
-    public ChangeDelta(Chunk original, Chunk revised) {
-        super(original, revised);
+    public ChangeDelta(Chunk<T> original, Chunk<T>revised) {
+    	super(original, revised);
     }
     
     /**
@@ -37,7 +40,7 @@ public class ChangeDelta extends Delta {
      * @throws PatchFailedException
      */
     @Override
-    public void applyTo(List<Object> target) throws PatchFailedException {
+    public void applyTo(List<T> target) throws PatchFailedException {
         verify(target);
         int position = getOriginal().getPosition();
         int size = getOriginal().size();
@@ -45,7 +48,7 @@ public class ChangeDelta extends Delta {
             target.remove(position);
         }
         int i = 0;
-        for (Object line : getRevised().getLines()) {
+        for (T line : getRevised().getLines()) {
             target.add(position + i, line);
             i++;
         }
@@ -55,14 +58,14 @@ public class ChangeDelta extends Delta {
      * {@inheritDoc}
      */
     @Override
-    public void restore(List<Object> target) {
+    public void restore(List<T> target) {
         int position = getRevised().getPosition();
         int size = getRevised().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
         int i = 0;
-        for (Object line : getOriginal().getLines()) {
+        for (T line : getOriginal().getLines()) {
             target.add(position + i, line);
             i++;
         }
@@ -71,7 +74,7 @@ public class ChangeDelta extends Delta {
     /**
      * {@inheritDoc}
      */
-    public void verify(List<?> target) throws PatchFailedException {
+    public void verify(List<T> target) throws PatchFailedException {
         getOriginal().verify(target);
         if (getOriginal().getPosition() > target.size()) {
             throw new PatchFailedException("Incorrect patch for delta: "

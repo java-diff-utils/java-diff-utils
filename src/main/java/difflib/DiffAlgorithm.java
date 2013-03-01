@@ -18,29 +18,30 @@ package difflib;
 import java.util.*;
 
 /**
- * The general interface for computing diffs between two texts
+ * The general interface for computing diffs between two lists of elements of type T. 
  * 
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @param T The type of the compared elements in the 'lines'.
  */
-public interface DiffAlgorithm {
+public interface DiffAlgorithm<T> {
     
     /**
      * Computes the difference between the original sequence and the revised
-     * sequence and returns it as a {@link difflib.Patch Patch} object.
+     * sequence and returns it as a {@link Patch} object.
      * 
-     * @param original the original text
-     * @param revised the revised text
-     * @return the patch
+     * @param original The original sequence. Must not be {@code null}.
+     * @param revised The revised sequence. Must not be {@code null}.
+     * @return The patch representing the diff of the given sequences. Never {@code null}.
      */
-    public Patch diff(Object[] original, Object[] revised);
+    public Patch<T> diff(T[] original, T[] revised);
     
     /**
      * Computes the difference between the original sequence and the revised
-     * sequence and returns it as a {@link difflib.Patch Patch} object.
+     * sequence and returns it as a {@link Patch} object.
      * 
-     * @param original the original text
-     * @param revised the revised text
-     * @return the patch
+     * @param original The original sequence. Must not be {@code null}.
+     * @param revised The revised sequence. Must not be {@code null}.
+     * @return The patch representing the diff of the given sequences. Never {@code null}.
      */
-    public Patch diff(List<?> original, List<?> revised);
+    public Patch<T> diff(List<T> original, List<T> revised);
 }

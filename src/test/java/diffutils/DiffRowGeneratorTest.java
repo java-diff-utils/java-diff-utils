@@ -31,7 +31,7 @@ public class DiffRowGeneratorTest  extends TestCase {
             .showInlineDiffs(true)
             .columnWidth(Integer.MAX_VALUE) // do not wrap
             .build();
-        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+		List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
         print(rows);
 
         assertEquals(3, rows.size());

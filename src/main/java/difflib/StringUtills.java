@@ -33,10 +33,20 @@ public class StringUtills {
         return buffer.toString();
     }
     
+    /**
+     * Replaces all tabs with 4 spaces.
+     * @param str The string.
+     * @return
+     */
     public static String expandTabs(String str) {
         return str.replace("\t", "    ");
     }
     
+    /**
+     * Replaces all opening an closing tags with <code>&lt;</code> or <code>&gt;</code>.
+     * @param str
+     * @return
+     */
     public static String htmlEntites(String str) {
         return str.replace("<", "&lt;").replace(">", "&gt;");
     }
