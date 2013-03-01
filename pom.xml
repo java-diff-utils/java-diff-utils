@@ -5,7 +5,7 @@
   <packaging>jar</packaging>
   <version>1.3.0-SNAPSHOT</version>
   <name>java-diff-utils</name>
-  <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java</description>
+  <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
   <url>http://code.google.com/p/java-diff-utils/</url>
   <inceptionYear>2009</inceptionYear>
   <parent>
