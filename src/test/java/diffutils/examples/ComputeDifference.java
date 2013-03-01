@@ -1,16 +1,17 @@
-package diffutils;
+package diffutils.examples;
 
-import java.io.File;
 import java.util.List;
 
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
+import diffutils.TestConstants;
 
 public class ComputeDifference extends Example {
-    static final String FS = File.separator;
-    static final String ORIGINAL = "test" + FS + "mocks" + FS + "original.txt";
-    static final String RIVISED = "test" + FS + "mocks" + FS + "revised.txt";
+    
+     
+    static final String ORIGINAL = TestConstants.MOCK_FOLDER + "original.txt";
+    static final String RIVISED = TestConstants.MOCK_FOLDER + "revised.txt";
 
     public static void main(String[] args) {
         List<String> original = fileToLines(ORIGINAL);

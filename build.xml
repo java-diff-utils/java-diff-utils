@@ -2,7 +2,7 @@
 
 <project name="java-diff-utils" default="jar" basedir=".">
     <property name="version" value="1.3.0-SNAPSHOT"/>
-    <property name="src.dir" value="src" />
+    <property name="src.dir" value="src/main/java" />
     <property name="build.dir" location="build" />
     <property name="dist.dir" value="dist" />
     <property name="jar.file.name" value="${dist.dir}/${ant.project.name}-${version}.jar" />
