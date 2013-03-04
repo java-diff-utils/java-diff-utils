@@ -209,7 +209,6 @@ public class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    @SuppressWarnings("unchecked")
     public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch<String> patch) {
         // normalize the lines (expand tabs, escape html entities)
         original = StringUtills.normalize(original);
@@ -291,7 +290,6 @@ public class DiffRowGenerator {
      * Add the inline diffs for given delta
      * @param delta the given delta
      */
-    @SuppressWarnings("unchecked")
     private void addInlineDiffs(Delta<String> delta) {
         List<String> orig = (List<String>) delta.getOriginal().getLines();
         List<String> rev = (List<String>) delta.getRevised().getLines();

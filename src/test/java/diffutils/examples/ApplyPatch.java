@@ -17,10 +17,10 @@ public class ApplyPatch extends Example {
 		List<String> patched = fileToLines(PATCH);
 
 		// At first, parse the unified diff file and get the patch
-		Patch patch = DiffUtils.parseUnifiedDiff(patched);
+		Patch<String> patch = DiffUtils.parseUnifiedDiff(patched);
 
 		// Then apply the computed patch to the given text
-		List result = DiffUtils.patch(original, patch);
+		List<String> result = DiffUtils.patch(original, patch);
 		System.out.println(result);
 		// / Or we can call patch.applyTo(original). There is no difference.
 	}
