@@ -1,11 +1,9 @@
 package diffutils;
 
-import java.util.Arrays;
-import java.util.List;
-
 import difflib.DiffRow;
 import difflib.DiffRowGenerator;
-
+import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
 
 public class DiffRowGeneratorTest  extends TestCase {

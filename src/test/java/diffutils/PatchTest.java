@@ -3,10 +3,9 @@ package diffutils;
 import difflib.DiffUtils;
 import difflib.Patch;
 import difflib.PatchFailedException;
-import junit.framework.TestCase;
-
 import java.util.Arrays;
 import java.util.List;
+import junit.framework.TestCase;
 
 public class PatchTest extends TestCase {
 

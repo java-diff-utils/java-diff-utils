@@ -17,7 +17,6 @@ package difflib;
 
 import difflib.DiffRow.Tag;
 import difflib.myers.Equalizer;
-
 import java.util.*;
 
 /**

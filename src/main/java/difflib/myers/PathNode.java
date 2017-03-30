@@ -123,6 +123,7 @@ public abstract class PathNode {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer("[");
         PathNode node = this;

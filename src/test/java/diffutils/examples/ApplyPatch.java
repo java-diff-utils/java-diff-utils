@@ -1,11 +1,10 @@
 package diffutils.examples;
 
-import java.util.List;
-
 import difflib.DiffUtils;
 import difflib.Patch;
 import difflib.PatchFailedException;
 import diffutils.TestConstants;
+import java.util.List;
 
 public class ApplyPatch extends Example {
 

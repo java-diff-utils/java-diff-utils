@@ -17,7 +17,6 @@ package difflib;
 
 import difflib.myers.Equalizer;
 import difflib.myers.MyersDiff;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -159,7 +158,7 @@ public class DiffUtils {
 			Matcher m = unifiedDiffChunkRe.matcher(line);
 			if (m.find()) {
 				// Process the lines in the previous chunk
-				if (rawChunk.size() != 0) {
+				if (!rawChunk.isEmpty()) {
 					List<String> oldChunkLines = new ArrayList<String>();
 					List<String> newChunkLines = new ArrayList<String>();
 
@@ -202,7 +201,7 @@ public class DiffUtils {
 		}
 
 		// Process the lines in the last chunk
-		if (rawChunk.size() != 0) {
+		if (!rawChunk.isEmpty()) {
 			List<String> oldChunkLines = new ArrayList<String>();
 			List<String> newChunkLines = new ArrayList<String>();
 

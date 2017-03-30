@@ -1,5 +1,8 @@
 package diffutils;
 
+import difflib.DiffUtils;
+import difflib.Patch;
+import difflib.PatchFailedException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,11 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
 import junit.framework.TestCase;
-import difflib.DiffUtils;
-import difflib.Patch;
-import difflib.PatchFailedException;
 
 public class GenerateUnifiedDiffTest extends TestCase {
 
