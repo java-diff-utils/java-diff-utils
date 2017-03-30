@@ -17,16 +17,16 @@ package difflib;
 
 /**
  * Base class for all exceptions emanating from this package.
- * 
+ *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  */
 public class DiffException extends Exception {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     public DiffException() {
     }
-    
+
     public DiffException(String msg) {
         super(msg);
     }

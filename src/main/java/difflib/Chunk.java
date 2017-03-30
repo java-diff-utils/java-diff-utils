@@ -20,15 +20,14 @@ import java.util.List;
 
 /**
  * Holds the information about the part of text involved in the diff process
- * 
+ *
  * <p>
- * Text is represented as <code>Object[]</code> because the diff engine is
- * capable of handling more than plain ascci. In fact, arrays or lists of any
- * type that implements {@link java.lang.Object#hashCode hashCode()} and
- * {@link java.lang.Object#equals equals()} correctly can be subject to
- * differencing using this library.
+ * Text is represented as <code>Object[]</code> because the diff engine is capable of handling more
+ * than plain ascci. In fact, arrays or lists of any type that implements
+ * {@link java.lang.Object#hashCode hashCode()} and {@link java.lang.Object#equals equals()}
+ * correctly can be subject to differencing using this library.
  * </p>
- * 
+ *
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
@@ -36,39 +35,33 @@ public class Chunk<T> {
 
     private final int position;
     private List<T> lines;
-    
+
     /**
      * Creates a chunk and saves a copy of affected lines
-     * 
-     * @param position
-     *            the start position
-     * @param lines
-     *            the affected lines
+     *
+     * @param position the start position
+     * @param lines the affected lines
      */
     public Chunk(int position, List<T> lines) {
         this.position = position;
         this.lines = lines;
     }
-    
+
     /**
      * Creates a chunk and saves a copy of affected lines
-     * 
-     * @param position
-     *            the start position
-     * @param lines
-     *            the affected lines
+     *
+     * @param position the start position
+     * @param lines the affected lines
      */
     public Chunk(int position, T[] lines) {
         this.position = position;
         this.lines = Arrays.asList(lines);
     }
-    
+
     /**
-     * Verifies that this chunk's saved text matches the corresponding text in
-     * the given sequence.
-     * 
-     * @param target
-     *            the sequence to verify against.
+     * Verifies that this chunk's saved text matches the corresponding text in the given sequence.
+     *
+     * @param target the sequence to verify against.
      */
     public void verify(List<T> target) throws PatchFailedException {
         if (last() > target.size()) {
@@ -81,7 +74,7 @@ public class Chunk<T> {
             }
         }
     }
-    
+
     /**
      * @return the start position of chunk in the text
      */
@@ -103,14 +96,14 @@ public class Chunk<T> {
     public int size() {
         return lines.size();
     }
-    
+
     /**
      * Returns the index of the last line of the chunk.
      */
     public int last() {
         return getPosition() + size() - 1;
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -125,7 +118,7 @@ public class Chunk<T> {
         result = prime * result + size();
         return result;
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -133,26 +126,32 @@ public class Chunk<T> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Chunk<T> other = (Chunk) obj;
         if (lines == null) {
-            if (other.lines != null)
+            if (other.lines != null) {
                 return false;
-        } else if (!lines.equals(other.lines))
+            }
+        } else if (!lines.equals(other.lines)) {
             return false;
-        if (position != other.position)
+        }
+        if (position != other.position) {
             return false;
+        }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "[position: " + position + ", size: " + size() + ", lines: " + lines + "]";
     }
-    
+
 }

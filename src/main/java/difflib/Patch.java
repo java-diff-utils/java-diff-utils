@@ -22,15 +22,17 @@ import java.util.ListIterator;
 
 /**
  * Describes the patch holding all deltas between the original and revised texts.
- * 
+ *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public class Patch<T> {
+
     private List<Delta<T>> deltas = new LinkedList<>();
 
     /**
      * Apply this patch to the given target
+     *
      * @return the patched text
      * @throws PatchFailedException if can't apply patch
      */
@@ -43,9 +45,10 @@ public class Patch<T> {
         }
         return result;
     }
-    
+
     /**
      * Restore the text to original. Opposite to applyTo() method.
+     *
      * @param target the given target
      * @return the restored text
      */
@@ -58,9 +61,10 @@ public class Patch<T> {
         }
         return result;
     }
-    
+
     /**
      * Add the given delta to this patch
+     *
      * @param delta the given delta
      */
     public void addDelta(Delta<T> delta) {
@@ -69,6 +73,7 @@ public class Patch<T> {
 
     /**
      * Get the list of computed deltas
+     *
      * @return the deltas
      */
     public List<Delta<T>> getDeltas() {

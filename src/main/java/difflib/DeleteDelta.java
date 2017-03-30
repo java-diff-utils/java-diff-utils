@@ -19,27 +19,25 @@ import java.util.List;
 
 /**
  * Describes the delete-delta between original and revised texts.
- * 
+ *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public class DeleteDelta<T> extends Delta<T> {
-    
-	/**
-	 * Creates a change delta with the two given chunks.
-	 * 
-	 * @param original
-	 *            The original chunk. Must not be {@code null}.
-	 * @param revised
-	 *            The original chunk. Must not be {@code null}.
-	 */
+
+    /**
+     * Creates a change delta with the two given chunks.
+     *
+     * @param original The original chunk. Must not be {@code null}.
+     * @param revised The original chunk. Must not be {@code null}.
+     */
     public DeleteDelta(Chunk<T> original, Chunk<T> revised) {
         super(original, revised);
     }
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws PatchFailedException
      */
     @Override
@@ -51,7 +49,7 @@ public class DeleteDelta<T> extends Delta<T> {
             target.remove(position);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -63,17 +61,17 @@ public class DeleteDelta<T> extends Delta<T> {
             target.add(position + i, lines.get(i));
         }
     }
-    
+
     @Override
     public TYPE getType() {
         return Delta.TYPE.DELETE;
     }
-    
+
     @Override
     public void verify(List<T> target) throws PatchFailedException {
         getOriginal().verify(target);
     }
-    
+
     @Override
     public String toString() {
         return "[DeleteDelta, position: " + getOriginal().getPosition() + ", lines: "

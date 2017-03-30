@@ -13,24 +13,26 @@ public class DiffTest {
 
     @Test
     public void testDiff_Insert() {
-        final Patch<String> patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.asList("hhh", "jjj", "kkk"));
+        final Patch<String> patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.
+                asList("hhh", "jjj", "kkk"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
         assertEquals(InsertDelta.class, delta.getClass());
-        assertEquals(new Chunk<>(1, Collections.<String> emptyList()), delta.getOriginal());
+        assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getOriginal());
         assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getRevised());
     }
 
     @Test
     public void testDiff_Delete() {
-        final Patch<String> patch = DiffUtils.diff(Arrays.asList("ddd", "fff", "ggg"), Arrays.asList("ggg"));
+        final Patch<String> patch = DiffUtils.diff(Arrays.asList("ddd", "fff", "ggg"), Arrays.
+                asList("ggg"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
         assertEquals(DeleteDelta.class, delta.getClass());
         assertEquals(new Chunk<>(0, Arrays.asList("ddd", "fff")), delta.getOriginal());
-        assertEquals(new Chunk<>(0, Collections.<String> emptyList()), delta.getRevised());
+        assertEquals(new Chunk<>(0, Collections.<String>emptyList()), delta.getRevised());
     }
 
     @Test

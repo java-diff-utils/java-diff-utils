@@ -16,7 +16,6 @@ import org.junit.Test;
 
 public class GenerateUnifiedDiffTest {
 
-
     public List<String> fileToLines(String filename) {
         List<String> lines = new LinkedList<>();
         String line = "";
@@ -30,15 +29,15 @@ public class GenerateUnifiedDiffTest {
             e.printStackTrace();
             fail(e.getMessage());
         } finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					// ignore ... any errors should already have been
-					// reported via an IOException from the final flush.
-				}
-			}
-		}
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // ignore ... any errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
+        }
         return lines;
     }
 
@@ -100,7 +99,7 @@ public class GenerateUnifiedDiffTest {
     @Test
     public void testDiffWithHeaderLineInText() {
         List<String> original = new ArrayList<>();
-        List<String> revised  = new ArrayList<>();
+        List<String> revised = new ArrayList<>();
 
         original.add("test line1");
         original.add("test line2");

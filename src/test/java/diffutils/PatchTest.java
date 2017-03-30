@@ -12,7 +12,7 @@ import org.junit.Test;
 public class PatchTest {
 
     @Test
-    public void testPatch_Insert()  {
+    public void testPatch_Insert() {
         final List<String> insertTest_from = Arrays.asList("hhh");
         final List<String> insertTest_to = Arrays.asList("hhh", "jjj", "kkk", "lll");
 

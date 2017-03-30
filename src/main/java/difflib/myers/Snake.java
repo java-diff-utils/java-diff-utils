@@ -54,23 +54,22 @@
  * <http://www.apache.org/>.
  *
  */
-
 package difflib.myers;
 
 /**
- *  Represents a snake in a diffpath.
+ * Represents a snake in a diffpath.
  * <p>
  *
- * {@link DiffNode DiffNodes} and {@link Snake Snakes} allow for compression
- * of diffpaths, as each snake is represented by a single {@link Snake Snake}
- * node and each contiguous series of insertions and deletions is represented
- * by a single {@link DiffNode DiffNodes}.
+ * {@link DiffNode DiffNodes} and {@link Snake Snakes} allow for compression of diffpaths, as each
+ * snake is represented by a single {@link Snake Snake} node and each contiguous series of
+ * insertions and deletions is represented by a single {@link DiffNode DiffNodes}.
  *
  * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (Пнд, 13 Окт 2003) $
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  *
  */
 public final class Snake extends PathNode {
+
     /**
      * Constructs a snake node.
      *
@@ -81,13 +80,14 @@ public final class Snake extends PathNode {
     public Snake(int i, int j, PathNode prev) {
         super(i, j, prev);
     }
-    
+
     /**
      * {@inheritDoc}
+     *
      * @return true always
      */
     public boolean isSnake() {
         return true;
     }
-    
+
 }

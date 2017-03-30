@@ -20,26 +20,22 @@ import difflib.myers.Equalizer;
 import java.util.*;
 
 /**
- * This class for generating DiffRows for side-by-sidy view.
- * You can customize the way of generating. For example, show inline diffs on not, ignoring
- * white spaces or/and blank lines and so on. All parameters for generating are optional. If you do
- * not specify them, the class will use the default values.
+ * This class for generating DiffRows for side-by-sidy view. You can customize the way of
+ * generating. For example, show inline diffs on not, ignoring white spaces or/and blank lines and
+ * so on. All parameters for generating are optional. If you do not specify them, the class will use
+ * the default values.
  *
- * These values are:
- * showInlineDiffs = false;
- * ignoreWhiteSpaces = true;
- * ignoreBlankLines = true;
- * ...
+ * These values are: showInlineDiffs = false; ignoreWhiteSpaces = true; ignoreBlankLines = true; ...
  *
- * For instantiating the DiffRowGenerator you should use the its builder. Like in example
- * <code>
+ * For instantiating the DiffRowGenerator you should use the its builder. Like in example  <code>
  *    DiffRowGenerator generator = new DiffRowGenerator.Builder().showInlineDiffs(true).
  *    	ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
-  */
+ */
 public class DiffRowGenerator {
+
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
     private final boolean ignoreBlankLines;
@@ -52,10 +48,12 @@ public class DiffRowGenerator {
 
     /**
      * This class used for building the DiffRowGenerator.
+     *
      * @author dmitry
      *
      */
     public static class Builder {
+
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
         private boolean ignoreBlankLines = false;
@@ -67,6 +65,7 @@ public class DiffRowGenerator {
 
         /**
          * Show inline diffs in generating diff rows or not.
+         *
          * @param val the value to set. Default: false.
          * @return builder with configured showInlineDiff parameter
          */
@@ -77,6 +76,7 @@ public class DiffRowGenerator {
 
         /**
          * Ignore white spaces in generating diff rows or not.
+         *
          * @param val the value to set. Default: true.
          * @return builder with configured ignoreWhiteSpaces parameter
          */
@@ -87,6 +87,7 @@ public class DiffRowGenerator {
 
         /**
          * Ignore blank lines in generating diff rows or not.
+         *
          * @param val the value to set. Default: true.
          * @return builder with configured ignoreBlankLines parameter
          */
@@ -97,6 +98,7 @@ public class DiffRowGenerator {
 
         /**
          * Set the tag used for displaying changes in the original text.
+         *
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
@@ -107,6 +109,7 @@ public class DiffRowGenerator {
 
         /**
          * Set the tag used for displaying changes in the revised text.
+         *
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
@@ -117,6 +120,7 @@ public class DiffRowGenerator {
 
         /**
          * Set the css class used for displaying changes in the original text.
+         *
          * @param cssClass the tag to set. Without any quotes, just word. Default: editOldInline.
          * @return builder with configured ignoreBlankLines parameter
          */
@@ -127,6 +131,7 @@ public class DiffRowGenerator {
 
         /**
          * Set the css class used for displaying changes in the revised text.
+         *
          * @param cssClass the tag to set. Without any quotes, just word. Default: editNewInline.
          * @return builder with configured ignoreBlankLines parameter
          */
@@ -137,8 +142,9 @@ public class DiffRowGenerator {
 
         /**
          * Set the column with of generated lines of original and revised texts.
-         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80.
-         * @return builder with configured ignoreBlankLines parameter
+         *
+         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return
+         * builder with config ured ignoreBlankLines parameter
          */
         public Builder columnWidth(int width) {
             if (width > 0) {
@@ -149,6 +155,7 @@ public class DiffRowGenerator {
 
         /**
          * Build the DiffRowGenerator. If some parameters is not set, the default values are used.
+         *
          * @return the customized DiffRowGenerator
          */
         public DiffRowGenerator build() {
@@ -177,8 +184,8 @@ public class DiffRowGenerator {
     }
 
     /**
-     * Get the DiffRows describing the difference between original and revised texts using the
-     * given patch. Useful for displaying side-by-side diff.
+     * Get the DiffRows describing the difference between original and revised texts using the given
+     * patch. Useful for displaying side-by-side diff.
      *
      * @param original the original text
      * @param revised the revised text
@@ -190,7 +197,7 @@ public class DiffRowGenerator {
 
     private List<String> removeBlankLines(List<String> lines) {
         List<String> result = new ArrayList<>();
-        for (String line: lines) {
+        for (String line : lines) {
             if (line.trim().length() == 0) {
                 result.add("");
             }
@@ -287,6 +294,7 @@ public class DiffRowGenerator {
 
     /**
      * Add the inline diffs for given delta
+     *
      * @param delta the given delta
      */
     private void addInlineDiffs(Delta<String> delta) {
@@ -335,7 +343,9 @@ public class DiffRowGenerator {
 
     /**
      * Wrap the elements in the sequence with the given tag
-     * @param startPosition the position from which tag should start. The counting start from a zero.
+     *
+     * @param startPosition the position from which tag should start. The counting start from a
+     * zero.
      * @param endPosition the position before which tag should should be closed.
      * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
@@ -368,6 +378,7 @@ public class DiffRowGenerator {
 
     /**
      * Wrap the given line with the given tag
+     *
      * @param line the given line
      * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
@@ -397,6 +408,7 @@ public class DiffRowGenerator {
 
     /**
      * The helper method for joining collections
+     *
      * @param <T>
      * @param objs the collection to join
      * @param delimiter the delimiter to use
@@ -407,7 +419,7 @@ public class DiffRowGenerator {
         if (!iter.hasNext()) {
             return "";
         }
-        StringBuffer buffer = new StringBuffer(String.valueOf(iter.next()));
+        StringBuilder buffer = new StringBuilder(String.valueOf(iter.next()));
         while (iter.hasNext()) {
             buffer.append(delimiter).append(String.valueOf(iter.next()));
         }

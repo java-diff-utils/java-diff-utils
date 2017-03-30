@@ -54,12 +54,11 @@
  * <http://www.apache.org/>.
  *
  */
-
 package difflib.myers;
 
 /**
- * Thrown whenever the differencing engine cannot produce the differences
- * between two revisions of ta text.
+ * Thrown whenever the differencing engine cannot produce the differences between two revisions of
+ * ta text.
  *
  * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (Пнд, 13 Окт 2003) $
  *
@@ -68,11 +67,12 @@ package difflib.myers;
  * @see difflib.DiffAlgorithm
  */
 public class DifferentiationFailedException extends DiffException {
+
     private static final long serialVersionUID = 1L;
-    
+
     public DifferentiationFailedException() {
     }
-    
+
     public DifferentiationFailedException(String msg) {
         super(msg);
     }

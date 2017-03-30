@@ -54,7 +54,6 @@
  * <http://www.apache.org/>.
  *
  */
-
 package difflib.myers;
 
 import difflib.*;
@@ -67,40 +66,45 @@ import java.util.List;
  * A clean-room implementation of <a href="http://www.cs.arizona.edu/people/gene/">
  * Eugene Myers</a> differencing algorithm.
  *
- * <p> See the paper at <a href="http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps">
+ * <p>
+ * See the paper at <a href="http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps">
  * http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps</a></p>
  *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public class MyersDiff<T> implements DiffAlgorithm<T> {
-    
-	/**	Default equalizer. */
-	private final Equalizer<T> DEFAULT_EQUALIZER = new Equalizer<T>() {
+
+    /**
+     * Default equalizer.
+     */
+    private final Equalizer<T> DEFAULT_EQUALIZER = new Equalizer<T>() {
         public boolean equals(final T original, final T revised) {
             return original.equals(revised);
         }
     };
 
-    /** The equalizer. */
+    /**
+     * The equalizer.
+     */
     private final Equalizer<T> equalizer;
-
 
     /**
      * Constructs an instance of the Myers differencing algorithm.
      */
     public MyersDiff() {
-    	 equalizer = DEFAULT_EQUALIZER;
+        equalizer = DEFAULT_EQUALIZER;
     }
 
     /**
      * Constructs an instance of the Myers differencing algorithm.
+     *
      * @param equalizer Must not be {@code null}.
      */
     public MyersDiff(final Equalizer<T> equalizer) {
-    	if (equalizer == null) {
-    		throw new IllegalArgumentException("equalizer must not be null");
-    	}
+        if (equalizer == null) {
+            throw new IllegalArgumentException("equalizer must not be null");
+        }
         this.equalizer = equalizer;
     }
 
@@ -119,12 +123,12 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * Return empty diff if get the error while procession the difference.
      */
     public Patch<T> diff(final List<T> original, final List<T> revised) {
-    	if (original == null) {
-    		throw new IllegalArgumentException("original list must not be null");
-    	}
-    	if (revised == null) {
-    		throw new IllegalArgumentException("revised list must not be null");
-    	}
+        if (original == null) {
+            throw new IllegalArgumentException("original list must not be null");
+        }
+        if (revised == null) {
+            throw new IllegalArgumentException("revised list must not be null");
+        }
         PathNode path;
         try {
             path = buildPath(original, revised);
@@ -136,9 +140,8 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences
-     * between the original and revised sequences, according
-     * to Gene Myers differencing algorithm.
+     * Computes the minimum diffpath that expresses de differences between the original and revised
+     * sequences, according to Gene Myers differencing algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
@@ -147,10 +150,12 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      */
     public PathNode buildPath(final List<T> orig, final List<T> rev)
             throws DifferentiationFailedException {
-        if (orig == null)
+        if (orig == null) {
             throw new IllegalArgumentException("original sequence is null");
-        if (rev == null)
+        }
+        if (rev == null) {
             throw new IllegalArgumentException("revised sequence is null");
+        }
 
         // these are local constants
         final int N = orig.size();
@@ -191,8 +196,9 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
                     i++;
                     j++;
                 }
-                if (i > node.i)
+                if (i > node.i) {
                     node = new Snake(i, j, node);
+                }
 
                 diagonal[kmiddle] = node;
 
@@ -218,23 +224,28 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Patch} could
-     *         not be built from the given path.
+     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
+     * path.
      */
     public Patch<T> buildRevision(PathNode path, List<T> orig, List<T> rev) {
-        if (path == null)
+        if (path == null) {
             throw new IllegalArgumentException("path is null");
-        if (orig == null)
+        }
+        if (orig == null) {
             throw new IllegalArgumentException("original sequence is null");
-        if (rev == null)
+        }
+        if (rev == null) {
             throw new IllegalArgumentException("revised sequence is null");
+        }
 
         Patch<T> patch = new Patch<>();
-        if (path.isSnake())
+        if (path.isSnake()) {
             path = path.prev;
+        }
         while (path != null && path.prev != null && path.prev.j >= 0) {
-            if (path.isSnake())
+            if (path.isSnake()) {
                 throw new IllegalStateException("bad diffpath: found snake when looking for diff");
+            }
             int i = path.i;
             int j = path.j;
 
@@ -254,27 +265,29 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
             }
 
             patch.addDelta(delta);
-            if (path.isSnake())
+            if (path.isSnake()) {
                 path = path.prev;
+            }
         }
         return patch;
     }
 
     /**
      * Creates a new list containing the elements returned by {@link List#subList(int, int)}.
+     *
      * @param original The original sequence. Must not be {@code null}.
      * @param fromIndex low endpoint (inclusive) of the subList.
      * @param to high endpoint (exclusive) of the subList.
      * @return A new list of the specified range within the original list.
-
+     *
      */
-    private List<T> copyOfRange( final List<T> original, final int fromIndex, final int to ) {
-        return new ArrayList<>( original.subList( fromIndex, to ) );
+    private List<T> copyOfRange(final List<T> original, final int fromIndex, final int to) {
+        return new ArrayList<>(original.subList(fromIndex, to));
     }
-    
+
     /**
      * Copied here from JDK 1.6
-    */
+     */
     @SuppressWarnings("unchecked")
     public static <T> T[] copyOfRange2(T[] original, int from, int to) {
         return copyOfRange2(original, from, to, (Class<T[]>) original.getClass());
@@ -287,8 +300,9 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
     public static <T, U> T[] copyOfRange2(U[] original, int from, int to,
             Class<? extends T[]> newType) {
         int newLength = to - from;
-        if (newLength < 0)
+        if (newLength < 0) {
             throw new IllegalArgumentException(from + " > " + to);
+        }
         T[] copy = ((Object) newType == (Object) Object[].class) ? (T[]) new Object[newLength]
                 : (T[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));

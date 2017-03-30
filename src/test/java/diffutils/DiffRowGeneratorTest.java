@@ -13,11 +13,11 @@ public class DiffRowGeneratorTest {
     @Test
     public void testGenerator_Default() {
         String first = "anything \n \nother";
-        String second ="anything\n\nother";
+        String second = "anything\n\nother";
 
         DiffRowGenerator generator = new DiffRowGenerator.Builder()
-            .columnWidth(Integer.MAX_VALUE) // do not wrap
-            .build();
+                .columnWidth(Integer.MAX_VALUE) // do not wrap
+                .build();
         List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
         print(rows);
 
@@ -27,13 +27,13 @@ public class DiffRowGeneratorTest {
     @Test
     public void testGenerator_InlineDiff() {
         String first = "anything \n \nother";
-        String second ="anything\n\nother";
+        String second = "anything\n\nother";
 
         DiffRowGenerator generator = new DiffRowGenerator.Builder()
-            .showInlineDiffs(true)
-            .columnWidth(Integer.MAX_VALUE) // do not wrap
-            .build();
-		List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+                .showInlineDiffs(true)
+                .columnWidth(Integer.MAX_VALUE) // do not wrap
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
         print(rows);
 
         assertEquals(3, rows.size());
@@ -43,12 +43,12 @@ public class DiffRowGeneratorTest {
     @Test
     public void testGenerator_IgnoreWhitespaces() {
         String first = "anything \n \nother\nmore lines";
-        String second ="anything\n\nother\nsome more lines";
+        String second = "anything\n\nother\nsome more lines";
 
         DiffRowGenerator generator = new DiffRowGenerator.Builder()
-            .ignoreWhiteSpaces(true)
-            .columnWidth(Integer.MAX_VALUE) // do not wrap
-            .build();
+                .ignoreWhiteSpaces(true)
+                .columnWidth(Integer.MAX_VALUE) // do not wrap
+                .build();
         List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
         print(rows);
 
@@ -64,7 +64,7 @@ public class DiffRowGeneratorTest {
     }
 
     private void print(List<DiffRow> diffRows) {
-        for (DiffRow row: diffRows) {
+        for (DiffRow row : diffRows) {
             System.out.println(row);
         }
     }

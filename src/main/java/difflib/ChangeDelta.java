@@ -19,24 +19,25 @@ import java.util.List;
 
 /**
  * Describes the change-delta between original and revised texts.
- * 
+ *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public class ChangeDelta<T> extends Delta<T> {
-    
+
     /**
      * Creates a change delta with the two given chunks.
+     *
      * @param original The original chunk. Must not be {@code null}.
      * @param revised The original chunk. Must not be {@code null}.
      */
-    public ChangeDelta(Chunk<T> original, Chunk<T>revised) {
-    	super(original, revised);
+    public ChangeDelta(Chunk<T> original, Chunk<T> revised) {
+        super(original, revised);
     }
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws PatchFailedException
      */
     @Override
@@ -53,7 +54,7 @@ public class ChangeDelta<T> extends Delta<T> {
             i++;
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -70,7 +71,7 @@ public class ChangeDelta<T> extends Delta<T> {
             i++;
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -81,7 +82,7 @@ public class ChangeDelta<T> extends Delta<T> {
                     + "delta original position > target size");
         }
     }
-    
+
     @Override
     public String toString() {
         return "[ChangeDelta, position: " + getOriginal().getPosition() + ", lines: "

@@ -54,7 +54,6 @@
  * <http://www.apache.org/>.
  *
  */
-
 package difflib.myers;
 
 /**
@@ -68,15 +67,23 @@ package difflib.myers;
  *
  */
 public abstract class PathNode {
-    /** Position in the original sequence. */
+
+    /**
+     * Position in the original sequence.
+     */
     public final int i;
-    /** Position in the revised sequence. */
+    /**
+     * Position in the revised sequence.
+     */
     public final int j;
-    /** The previous node in the path. */
+    /**
+     * The previous node in the path.
+     */
     public final PathNode prev;
-    
+
     /**
      * Concatenates a new path node with an existing diffpath.
+     *
      * @param i The position in the original sequence for the new node.
      * @param j The position in the revised sequence for the new node.
      * @param prev The previous node in the path.
@@ -86,40 +93,42 @@ public abstract class PathNode {
         this.j = j;
         this.prev = prev;
     }
-    
+
     /**
      * Is this node a {@link Snake Snake node}?
+     *
      * @return true if this is a {@link Snake Snake node}
      */
     public abstract boolean isSnake();
-    
+
     /**
      * Is this a bootstrap node?
      * <p>
-     * In bottstrap nodes one of the two corrdinates is
-     * less than zero.
+     * In bottstrap nodes one of the two corrdinates is less than zero.
+     *
      * @return tru if this is a bootstrap node.
      */
     public boolean isBootstrap() {
         return i < 0 || j < 0;
     }
-    
+
     /**
-     * Skips sequences of {@link DiffNode DiffNodes} until a
-     * {@link Snake} or bootstrap node is found, or the end
-     * of the path is reached.
-     * @return The next first {@link Snake} or bootstrap node in the path, or
-     * <code>null</code>
-     * if none found.
+     * Skips sequences of {@link DiffNode DiffNodes} until a {@link Snake} or bootstrap node is
+     * found, or the end of the path is reached.
+     *
+     * @return The next first {@link Snake} or bootstrap node in the path, or <code>null</code> if
+     * none found.
      */
     public final PathNode previousSnake() {
-        if (isBootstrap())
+        if (isBootstrap()) {
             return null;
-        if (!isSnake() && prev != null)
+        }
+        if (!isSnake() && prev != null) {
             return prev.previousSnake();
+        }
         return this;
     }
-    
+
     /**
      * {@inheritDoc}
      */
