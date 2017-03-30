@@ -22,7 +22,7 @@ public abstract class Example {
 	 * @return A list of lines.
 	 */
 	public static List<String> fileToLines(String filename) {
-		List<String> lines = new LinkedList<String>();
+		List<String> lines = new LinkedList<>();
 		String line = "";
 		BufferedReader in = null;
 		try {

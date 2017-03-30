@@ -70,7 +70,7 @@ public class DiffUtils {
 			Equalizer<T> equalizer) {
 		if (equalizer != null) {
 			return DiffUtils.diff(original, revised,
-					new MyersDiff<T>(equalizer));
+					new MyersDiff<>(equalizer));
 		}
 		return DiffUtils.diff(original, revised, new MyersDiff<T>());
 	}
@@ -141,8 +141,8 @@ public class DiffUtils {
 	 */
 	public static Patch<String> parseUnifiedDiff(List<String> diff) {
 		boolean inPrelude = true;
-		List<String[]> rawChunk = new ArrayList<String[]>();
-		Patch<String> patch = new Patch<String>();
+		List<String[]> rawChunk = new ArrayList<>();
+		Patch<String> patch = new Patch<>();
 
 		int old_ln = 0, new_ln = 0;
 		String tag;
@@ -159,8 +159,8 @@ public class DiffUtils {
 			if (m.find()) {
 				// Process the lines in the previous chunk
 				if (!rawChunk.isEmpty()) {
-					List<String> oldChunkLines = new ArrayList<String>();
-					List<String> newChunkLines = new ArrayList<String>();
+					List<String> oldChunkLines = new ArrayList<>();
+					List<String> newChunkLines = new ArrayList<>();
 
 					for (String[] raw_line : rawChunk) {
 						tag = raw_line[0];
@@ -172,8 +172,8 @@ public class DiffUtils {
 							newChunkLines.add(rest);
 						}
 					}
-					patch.addDelta(new ChangeDelta<String>(new Chunk<String>(
-							old_ln - 1, oldChunkLines), new Chunk<String>(
+					patch.addDelta(new ChangeDelta<>(new Chunk<>(
+							old_ln - 1, oldChunkLines), new Chunk<>(
 							new_ln - 1, newChunkLines)));
 					rawChunk.clear();
 				}
@@ -202,8 +202,8 @@ public class DiffUtils {
 
 		// Process the lines in the last chunk
 		if (!rawChunk.isEmpty()) {
-			List<String> oldChunkLines = new ArrayList<String>();
-			List<String> newChunkLines = new ArrayList<String>();
+			List<String> oldChunkLines = new ArrayList<>();
+			List<String> newChunkLines = new ArrayList<>();
 
 			for (String[] raw_line : rawChunk) {
 				tag = raw_line[0];
@@ -216,8 +216,8 @@ public class DiffUtils {
 				}
 			}
 
-			patch.addDelta(new ChangeDelta<String>(new Chunk<String>(
-					old_ln - 1, oldChunkLines), new Chunk<String>(new_ln - 1,
+			patch.addDelta(new ChangeDelta<>(new Chunk<>(
+					old_ln - 1, oldChunkLines), new Chunk<>(new_ln - 1,
 					newChunkLines)));
 			rawChunk.clear();
 		}
@@ -248,15 +248,15 @@ public class DiffUtils {
 			String revised, List<String> originalLines, Patch<String> patch,
 			int contextSize) {
 		if (!patch.getDeltas().isEmpty()) {
-			List<String> ret = new ArrayList<String>();
+			List<String> ret = new ArrayList<>();
 			ret.add("--- " + original);
 			ret.add("+++ " + revised);
 
-			List<Delta<String>> patchDeltas = new ArrayList<Delta<String>>(
+			List<Delta<String>> patchDeltas = new ArrayList<>(
 					patch.getDeltas());
 
 			// code outside the if block also works for single-delta issues.
-			List<Delta<String>> deltas = new ArrayList<Delta<String>>(); // current
+			List<Delta<String>> deltas = new ArrayList<>(); // current
 																			// list
 																			// of
 			// Delta's to
@@ -300,7 +300,7 @@ public class DiffUtils {
 			ret.addAll(curBlock);
 			return ret;
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	/**
@@ -318,7 +318,7 @@ public class DiffUtils {
 	 */
 	private static List<String> processDeltas(List<String> origLines,
 			List<Delta<String>> deltas, int contextSize) {
-		List<String> buffer = new ArrayList<String>();
+		List<String> buffer = new ArrayList<>();
 		int origTotal = 0; // counter for total lines output from Original
 		int revTotal = 0; // counter for total lines output from Original
 		int line;
@@ -410,7 +410,7 @@ public class DiffUtils {
 	 * @author Bill James (tankerbay@gmail.com)
 	 */
 	private static List<String> getDeltaText(Delta<String> delta) {
-		List<String> buffer = new ArrayList<String>();
+		List<String> buffer = new ArrayList<>();
 		for (String line : delta.getOriginal().getLines()) {
 			buffer.add("-" + line);
 		}

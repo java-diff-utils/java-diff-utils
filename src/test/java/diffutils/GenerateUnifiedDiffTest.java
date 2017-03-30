@@ -18,7 +18,7 @@ public class GenerateUnifiedDiffTest {
 
 
     public List<String> fileToLines(String filename) {
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         String line = "";
         BufferedReader in = null;
         try {
@@ -99,8 +99,8 @@ public class GenerateUnifiedDiffTest {
      */
     @Test
     public void testDiffWithHeaderLineInText() {
-        List<String> original = new ArrayList<String>();
-        List<String> revised  = new ArrayList<String>();
+        List<String> original = new ArrayList<>();
+        List<String> revised  = new ArrayList<>();
 
         original.add("test line1");
         original.add("test line2");

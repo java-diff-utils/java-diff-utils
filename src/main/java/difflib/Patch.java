@@ -27,7 +27,7 @@ import java.util.ListIterator;
  * @param T The type of the compared elements in the 'lines'.
  */
 public class Patch<T> {
-    private List<Delta<T>> deltas = new LinkedList<Delta<T>>();
+    private List<Delta<T>> deltas = new LinkedList<>();
 
     /**
      * Apply this patch to the given target
@@ -35,7 +35,7 @@ public class Patch<T> {
      * @throws PatchFailedException if can't apply patch
      */
     public List<T> applyTo(List<T> target) throws PatchFailedException {
-        List<T> result = new LinkedList<T>(target);
+        List<T> result = new LinkedList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             Delta<T> delta = (Delta<T>) it.previous();
@@ -50,7 +50,7 @@ public class Patch<T> {
      * @return the restored text
      */
     public List<T> restore(List<T> target) {
-        List<T> result = new LinkedList<T>(target);
+        List<T> result = new LinkedList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             Delta<T> delta = (Delta<T>) it.previous();

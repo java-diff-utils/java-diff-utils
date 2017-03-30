@@ -56,7 +56,7 @@ public class StringUtills {
     }
     
     public static List<String> normalize(List<String> list) {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         for (String line : list) {
             result.add(normalize(line));
         }
@@ -64,7 +64,7 @@ public class StringUtills {
     }
     
     public static List<String> wrapText(List<String> list, int columnWidth) {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         for (String line : list) {
             result.add(wrapText(line, columnWidth));
         }

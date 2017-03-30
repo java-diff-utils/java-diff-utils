@@ -132,7 +132,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
         } catch (DifferentiationFailedException e) {
             e.printStackTrace();
         }
-        return new Patch<T>();
+        return new Patch<>();
     }
 
     /**
@@ -229,7 +229,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
         if (rev == null)
             throw new IllegalArgumentException("revised sequence is null");
 
-        Patch<T> patch = new Patch<T>();
+        Patch<T> patch = new Patch<>();
         if (path.isSnake())
             path = path.prev;
         while (path != null && path.prev != null && path.prev.j >= 0) {
@@ -242,15 +242,15 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
             int ianchor = path.i;
             int janchor = path.j;
 
-            Chunk<T> original = new Chunk<T>(ianchor, copyOfRange(orig, ianchor, i));
-            Chunk<T> revised = new Chunk<T>(janchor, copyOfRange(rev, janchor, j));
+            Chunk<T> original = new Chunk<>(ianchor, copyOfRange(orig, ianchor, i));
+            Chunk<T> revised = new Chunk<>(janchor, copyOfRange(rev, janchor, j));
             Delta<T> delta = null;
             if (original.size() == 0 && revised.size() != 0) {
-                delta = new InsertDelta<T>(original, revised);
+                delta = new InsertDelta<>(original, revised);
             } else if (original.size() > 0 && revised.size() == 0) {
-                delta = new DeleteDelta<T>(original, revised);
+                delta = new DeleteDelta<>(original, revised);
             } else {
-                delta = new ChangeDelta<T>(original, revised);
+                delta = new ChangeDelta<>(original, revised);
             }
 
             patch.addDelta(delta);
@@ -269,7 +269,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
 
      */
     private List<T> copyOfRange( final List<T> original, final int fromIndex, final int to ) {
-        return new ArrayList<T>( original.subList( fromIndex, to ) );
+        return new ArrayList<>( original.subList( fromIndex, to ) );
     }
     
     /**
