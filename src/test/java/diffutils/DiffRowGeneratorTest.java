@@ -4,10 +4,13 @@ import difflib.DiffRow;
 import difflib.DiffRowGenerator;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
-public class DiffRowGeneratorTest  extends TestCase {
+public class DiffRowGeneratorTest {
 
+    @Test
     public void testGenerator_Default() {
         String first = "anything \n \nother";
         String second ="anything\n\nother";
@@ -21,6 +24,7 @@ public class DiffRowGeneratorTest  extends TestCase {
         assertEquals(3, rows.size());
     }
 
+    @Test
     public void testGenerator_InlineDiff() {
         String first = "anything \n \nother";
         String second ="anything\n\nother";
@@ -36,6 +40,7 @@ public class DiffRowGeneratorTest  extends TestCase {
         assertTrue(rows.get(0).getOldLine().indexOf("<span") > 0);
     }
 
+    @Test
     public void testGenerator_IgnoreWhitespaces() {
         String first = "anything \n \nother\nmore lines";
         String second ="anything\n\nother\nsome more lines";
