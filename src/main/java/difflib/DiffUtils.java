@@ -19,8 +19,10 @@ import difflib.myers.Equalizer;
 import difflib.myers.MyersDiff;
 import java.util.ArrayList;
 import java.util.Collections;
+import static java.util.Collections.reverseOrder;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

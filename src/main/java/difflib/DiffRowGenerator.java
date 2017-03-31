@@ -38,11 +38,10 @@ public class DiffRowGenerator {
 
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
-    private final boolean ignoreBlankLines;
-    private final String InlineOldTag;
-    private final String InlineNewTag;
-    private final String InlineOldCssClass;
-    private final String InlineNewCssClass;
+    private final String inlineOldTag;
+    private final String inlineNewTag;
+    private final String inlineOldCssClass;
+    private final String inlineNewCssClass;
     private final int columnWidth;
     private final Equalizer<String> equalizer;
 
@@ -56,11 +55,10 @@ public class DiffRowGenerator {
 
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
-        private boolean ignoreBlankLines = false;
-        private String InlineOldTag = "span";
-        private String InlineNewTag = "span";
-        private String InlineOldCssClass = "editOldInline";
-        private String InlineNewCssClass = "editNewInline";
+        private String inlineOldTag = "span";
+        private String inlineNewTag = "span";
+        private String inlineOldCssClass = "editOldInline";
+        private String inlineNewCssClass = "editNewInline";
         private int columnWidth = 80;
 
         /**
@@ -86,24 +84,13 @@ public class DiffRowGenerator {
         }
 
         /**
-         * Ignore blank lines in generating diff rows or not.
-         *
-         * @param val the value to set. Default: true.
-         * @return builder with configured ignoreBlankLines parameter
-         */
-        public Builder ignoreBlankLines(boolean val) {
-            ignoreBlankLines = val;
-            return this;
-        }
-
-        /**
          * Set the tag used for displaying changes in the original text.
          *
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder InlineOldTag(String tag) {
-            InlineOldTag = tag;
+        public Builder inlineOldTag(String tag) {
+            inlineOldTag = tag;
             return this;
         }
 
@@ -113,8 +100,8 @@ public class DiffRowGenerator {
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder InlineNewTag(String tag) {
-            InlineNewTag = tag;
+        public Builder inlineNewTag(String tag) {
+            inlineNewTag = tag;
             return this;
         }
 
@@ -124,8 +111,8 @@ public class DiffRowGenerator {
          * @param cssClass the tag to set. Without any quotes, just word. Default: editOldInline.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder InlineOldCssClass(String cssClass) {
-            InlineOldCssClass = cssClass;
+        public Builder inlineOldCssClass(String cssClass) {
+            inlineOldCssClass = cssClass;
             return this;
         }
 
@@ -135,8 +122,8 @@ public class DiffRowGenerator {
          * @param cssClass the tag to set. Without any quotes, just word. Default: editNewInline.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder InlineNewCssClass(String cssClass) {
-            InlineNewCssClass = cssClass;
+        public Builder inlineNewCssClass(String cssClass) {
+            inlineNewCssClass = cssClass;
             return this;
         }
 
@@ -162,15 +149,18 @@ public class DiffRowGenerator {
             return new DiffRowGenerator(this);
         }
     }
+    
+    public static Builder create() {
+        return new Builder();
+    }
 
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces; //
-        ignoreBlankLines = builder.ignoreBlankLines; //
-        InlineOldTag = builder.InlineOldTag;
-        InlineNewTag = builder.InlineNewTag;
-        InlineOldCssClass = builder.InlineOldCssClass;
-        InlineNewCssClass = builder.InlineNewCssClass;
+        inlineOldTag = builder.inlineOldTag;
+        inlineNewTag = builder.inlineNewTag;
+        inlineOldCssClass = builder.inlineOldCssClass;
+        inlineNewCssClass = builder.inlineNewCssClass;
         columnWidth = builder.columnWidth; //
         equalizer = new Equalizer<String>() {
             public boolean equals(String original, String revised) {
@@ -193,17 +183,6 @@ public class DiffRowGenerator {
      */
     public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) {
         return generateDiffRows(original, revised, DiffUtils.diff(original, revised, equalizer));
-    }
-
-    private List<String> removeBlankLines(List<String> lines) {
-        List<String> result = new ArrayList<>();
-        for (String line : lines) {
-            if (line.trim().length() == 0) {
-                result.add("");
-            }
-            result.add(line);
-        }
-        return result;
     }
 
     /**
@@ -317,16 +296,16 @@ public class DiffRowGenerator {
                 if (inlineDelta instanceof DeleteDelta) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
-                            + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
+                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
                 } else if (inlineDelta instanceof InsertDelta) {
                     revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.InlineNewTag, this.InlineNewCssClass);
+                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
                 } else if (inlineDelta instanceof ChangeDelta) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
-                            + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
+                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
                     revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.InlineNewTag, this.InlineNewCssClass);
+                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
                 }
             }
             StringBuilder origResult = new StringBuilder(), revResult = new StringBuilder();
