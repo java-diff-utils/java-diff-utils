@@ -18,6 +18,8 @@ package difflib;
 import difflib.myers.Equalizer;
 import difflib.myers.MyersDiff;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,6 +92,46 @@ public final class DiffUtils {
             throw new IllegalArgumentException("algorithm must not be null");
         }
         return algorithm.diff(original, revised);
+    }
+
+    /**
+     * Computes the difference between the given texts inline. This one uses the "trick" to make out
+     * of texts lists of characters, like DiffRowGenerator does and merges those changes at the end
+     * together again.
+     *
+     * @param original
+     * @param revised
+     * @return
+     */
+    public static Patch<String> diffInline(String original, String revised) {
+        LinkedList<String> origList = new LinkedList<>();
+        LinkedList<String> revList = new LinkedList<>();
+        for (Character character : original.toCharArray()) {
+            origList.add(character.toString());
+        }
+        for (Character character : revised.toCharArray()) {
+            revList.add(character.toString());
+        }
+        Patch<String> patch = DiffUtils.diff(origList, revList);
+        for (Delta<String> delta : patch.getDeltas()) {
+            delta.getOriginal().setLines(compressLines(delta.getOriginal().getLines(), ""));
+            delta.getRevised().setLines(compressLines(delta.getRevised().getLines(), ""));
+        }
+        return patch;
+    }
+
+    private static List<String> compressLines(List<String> lines, String delimiter) {
+        StringBuilder b = new StringBuilder();
+        for (String line : lines) {
+            b.append(line);
+            b.append(delimiter);
+        }
+        if (b.length() > 0) {
+            b.setLength(b.length() - delimiter.length());
+            return Collections.singletonList(b.toString());
+        } else {
+            return Collections.EMPTY_LIST;
+        }
     }
 
     /**

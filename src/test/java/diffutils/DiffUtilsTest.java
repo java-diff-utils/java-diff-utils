@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-public class DiffTest {
+public class DiffUtilsTest {
 
     @Test
     public void testDiff_Insert() {
@@ -64,5 +64,28 @@ public class DiffTest {
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof InsertDelta);
+    }
+    
+    @Test
+    public void testDiffInline() {
+        final Patch<String> patch = DiffUtils.diffInline("", "test");
+        assertEquals(1, patch.getDeltas().size());
+        assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
+        assertEquals(0, patch.getDeltas().get(0).getOriginal().getPosition());
+        assertEquals(0, patch.getDeltas().get(0).getOriginal().getLines().size());
+        assertEquals("test", patch.getDeltas().get(0).getRevised().getLines().get(0));
+    }
+    
+    @Test
+    public void testDiffInline2() {
+        final Patch<String> patch = DiffUtils.diffInline("es", "fest");
+        assertEquals(2, patch.getDeltas().size());
+        assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
+        assertEquals(0, patch.getDeltas().get(0).getOriginal().getPosition());
+        assertEquals(2, patch.getDeltas().get(1).getOriginal().getPosition());
+        assertEquals(0, patch.getDeltas().get(0).getOriginal().getLines().size());
+        assertEquals(0, patch.getDeltas().get(1).getOriginal().getLines().size());
+        assertEquals("f", patch.getDeltas().get(0).getRevised().getLines().get(0));
+        assertEquals("t", patch.getDeltas().get(1).getRevised().getLines().get(0));
     }
 }

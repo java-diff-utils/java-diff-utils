@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class StringUtills {
+public final class StringUtils {
 
     public static <T> String join(final Iterable<T> objs, final String delimiter) {
         Iterator<T> iter = objs.iterator();
@@ -94,6 +94,6 @@ public final class StringUtills {
         return line;
     }
     
-    private StringUtills() {
+    private StringUtils() {
     }
 }

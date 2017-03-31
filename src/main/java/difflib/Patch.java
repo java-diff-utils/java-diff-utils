@@ -28,7 +28,7 @@ import java.util.ListIterator;
  */
 public class Patch<T> {
 
-    private List<Delta<T>> deltas = new LinkedList<>();
+    private final List<Delta<T>> deltas = new LinkedList<>();
 
     /**
      * Apply this patch to the given target
