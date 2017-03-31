@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class DiffTest {
@@ -18,7 +19,7 @@ public class DiffTest {
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
-        assertEquals(InsertDelta.class, delta.getClass());
+        assertTrue(delta instanceof InsertDelta);
         assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getOriginal());
         assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getRevised());
     }
@@ -30,7 +31,7 @@ public class DiffTest {
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
-        assertEquals(DeleteDelta.class, delta.getClass());
+        assertTrue(delta instanceof DeleteDelta);
         assertEquals(new Chunk<>(0, Arrays.asList("ddd", "fff")), delta.getOriginal());
         assertEquals(new Chunk<>(0, Collections.<String>emptyList()), delta.getRevised());
     }
@@ -44,7 +45,7 @@ public class DiffTest {
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
-        assertEquals(ChangeDelta.class, delta.getClass());
+        assertTrue(delta instanceof ChangeDelta);
         assertEquals(new Chunk<>(1, Arrays.asList("bbb")), delta.getOriginal());
         assertEquals(new Chunk<>(1, Arrays.asList("zzz")), delta.getRevised());
     }
@@ -62,6 +63,6 @@ public class DiffTest {
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);
-        assertEquals(InsertDelta.class, delta.getClass());
+        assertTrue(delta instanceof InsertDelta);
     }
 }

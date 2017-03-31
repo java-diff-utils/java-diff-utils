@@ -245,7 +245,7 @@ public class DiffRowGenerator {
             }
 
             // Inserted DiffRow
-            if (delta.getClass().equals(InsertDelta.class)) {
+            if (delta instanceof InsertDelta) {
                 endPos = orig.last() + 1;
                 for (String line : (List<String>) rev.getLines()) {
                     diffRows.add(new DiffRow(Tag.INSERT, "", line));
@@ -254,7 +254,7 @@ public class DiffRowGenerator {
             }
 
             // Deleted DiffRow
-            if (delta.getClass().equals(DeleteDelta.class)) {
+            if (delta instanceof DeleteDelta) {
                 endPos = orig.last() + 1;
                 for (String line : (List<String>) orig.getLines()) {
                     diffRows.add(new DiffRow(Tag.DELETE, line, ""));
@@ -314,14 +314,14 @@ public class DiffRowGenerator {
             for (Delta<String> inlineDelta : inlineDeltas) {
                 Chunk<String> inlineOrig = inlineDelta.getOriginal();
                 Chunk<String> inlineRev = inlineDelta.getRevised();
-                if (inlineDelta.getClass().equals(DeleteDelta.class)) {
+                if (inlineDelta instanceof DeleteDelta) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
                             + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
-                } else if (inlineDelta.getClass().equals(InsertDelta.class)) {
+                } else if (inlineDelta instanceof InsertDelta) {
                     revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
                             + inlineRev.size() + 1, this.InlineNewTag, this.InlineNewCssClass);
-                } else if (inlineDelta.getClass().equals(ChangeDelta.class)) {
+                } else if (inlineDelta instanceof ChangeDelta) {
                     origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                             .getPosition()
                             + inlineOrig.size() + 1, this.InlineOldTag, this.InlineOldCssClass);
