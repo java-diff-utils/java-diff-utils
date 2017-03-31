@@ -71,7 +71,7 @@ public class Patch<T> {
         deltas.add(delta);
     }
 
-    /**
+    /** 
      * Get the list of computed deltas
      *
      * @return the deltas
