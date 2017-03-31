@@ -75,6 +75,7 @@ public class ChangeDelta<T> extends Delta<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void verify(List<T> target) throws PatchFailedException {
         getOriginal().verify(target);
         if (getOriginal().getPosition() > target.size()) {

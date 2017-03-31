@@ -71,6 +71,7 @@ public class InsertDelta<T> extends Delta<T> {
 
     }
 
+    @Override
     public TYPE getType() {
         return Delta.TYPE.INSERT;
     }

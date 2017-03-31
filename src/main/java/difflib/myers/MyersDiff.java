@@ -79,6 +79,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * Default equalizer.
      */
     private final Equalizer<T> DEFAULT_EQUALIZER = new Equalizer<T>() {
+        @Override
         public boolean equals(final T original, final T revised) {
             return original.equals(revised);
         }
@@ -113,6 +114,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      *
      * @return Returns an empty diff if get the error while procession the difference.
      */
+    @Override
     public Patch<T> diff(final T[] original, final T[] revised) {
         return diff(Arrays.asList(original), Arrays.asList(revised));
     }
@@ -122,6 +124,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      *
      * Return empty diff if get the error while procession the difference.
      */
+    @Override
     public Patch<T> diff(final List<T> original, final List<T> revised) {
         if (original == null) {
             throw new IllegalArgumentException("original list must not be null");

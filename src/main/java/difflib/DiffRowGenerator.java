@@ -163,6 +163,7 @@ public class DiffRowGenerator {
         inlineNewCssClass = builder.inlineNewCssClass;
         columnWidth = builder.columnWidth; //
         equalizer = new Equalizer<String>() {
+            @Override
             public boolean equals(String original, String revised) {
                 if (ignoreWhiteSpaces) {
                     original = original.trim().replaceAll("\\s+", " ");

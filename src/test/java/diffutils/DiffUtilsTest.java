@@ -52,14 +52,14 @@ public class DiffUtilsTest {
 
     @Test
     public void testDiff_EmptyList() {
-        final Patch<String> patch = DiffUtils.diff(new ArrayList<String>(), new ArrayList<String>());
+        final Patch<String> patch = DiffUtils.diff(new ArrayList<>(), new ArrayList<>());
         assertNotNull(patch);
         assertEquals(0, patch.getDeltas().size());
     }
 
     @Test
     public void testDiff_EmptyListWithNonEmpty() {
-        final Patch<String> patch = DiffUtils.diff(new ArrayList<String>(), Arrays.asList("aaa"));
+        final Patch<String> patch = DiffUtils.diff(new ArrayList<>(), Arrays.asList("aaa"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
         final Delta<String> delta = patch.getDeltas().get(0);

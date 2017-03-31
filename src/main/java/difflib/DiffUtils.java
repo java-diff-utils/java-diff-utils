@@ -46,7 +46,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised) {
-        return DiffUtils.diff(original, revised, new MyersDiff<T>());
+        return DiffUtils.diff(original, revised, new MyersDiff<>());
     }
 
     /**
@@ -67,7 +67,7 @@ public final class DiffUtils {
             return DiffUtils.diff(original, revised,
                     new MyersDiff<>(equalizer));
         }
-        return DiffUtils.diff(original, revised, new MyersDiff<T>());
+        return DiffUtils.diff(original, revised, new MyersDiff<>());
     }
 
     /**
