@@ -22,7 +22,7 @@ public final class TestConstants {
     /**
      * The base resource path.
      */
-    public static String BASE_FOLDER_RESOURCES = "src" + FS + "test" + FS + "resources";
+    public static final String BASE_FOLDER_RESOURCES = "src" + FS + "test" + FS + "resources";
 
     /**
      * The base folder containing the test files. Ends with {@link #FS}.
