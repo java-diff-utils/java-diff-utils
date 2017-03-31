@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @version 0.4.1
  * @param T The type of the compared elements in the 'lines'.
  */
-public class DiffUtils {
+public final class DiffUtils {
 
     private static Pattern unifiedDiffChunkRe = Pattern
             .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
@@ -391,4 +391,6 @@ public class DiffUtils {
         return buffer;
     }
 
+    private DiffUtils() {
+    }
 }
