@@ -20,6 +20,27 @@
 		<developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
 		<url>https://github.com/wumpz/java-diff-utils.git</url>
 	</scm>
+	
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/wumpz/java-diff-utils/issues</url>
+	</issueManagement>
+	
+	<organization>
+		<name>java-diff-utils</name>
+	</organization>
+	
+	<developers>
+		<developer>
+			<name>Tobias Warneke</name>
+			<email>t.warneke@gmx.net</email>
+		</developer>
+		<developer>
+			<name>Dmitry Naumenko</name>
+			<email>dm.naumenko@gmail.com</email>
+		</developer>
+	</developers>
+	
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -81,6 +102,31 @@
 						<goals>
 							<goal>manifest</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.12</version>
+				<configuration>
+					<verbose>false</verbose>
+					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+					<canUpdateDescription>false</canUpdateDescription>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<licenseName>apache_v2</licenseName>
+							<roots>
+								<root>src/main/java</root>
+							</roots>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
