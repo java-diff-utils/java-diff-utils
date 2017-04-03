@@ -2,6 +2,7 @@ package diffutils.examples;
 
 import difflib.patch.Delta;
 import difflib.DiffUtils;
+import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import diffutils.TestConstants;
 import java.util.List;
@@ -11,7 +12,7 @@ public class ComputeDifference extends Example {
     static final String ORIGINAL = TestConstants.MOCK_FOLDER + "original.txt";
     static final String RIVISED = TestConstants.MOCK_FOLDER + "revised.txt";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DiffException {
         List<String> original = fileToLines(ORIGINAL);
         List<String> revised = fileToLines(RIVISED);
 
