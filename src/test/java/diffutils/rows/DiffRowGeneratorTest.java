@@ -1,7 +1,7 @@
-package diffutils;
+package diffutils.rows;
 
-import difflib.DiffRow;
-import difflib.DiffRowGenerator;
+import difflib.rows.DiffRow;
+import difflib.rows.DiffRowGenerator;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertEquals;

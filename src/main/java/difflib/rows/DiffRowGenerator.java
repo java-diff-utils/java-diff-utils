@@ -13,9 +13,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.rows;
 
-import difflib.DiffRow.Tag;
+import difflib.ChangeDelta;
+import difflib.Chunk;
+import difflib.DeleteDelta;
+import difflib.Delta;
+import difflib.rows.DiffRow.Tag;
+import difflib.DiffUtils;
+import difflib.InsertDelta;
+import difflib.Patch;
+import difflib.StringUtils;
 import difflib.myers.Equalizer;
 import java.util.*;
 

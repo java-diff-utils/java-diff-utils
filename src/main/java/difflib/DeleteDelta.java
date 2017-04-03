@@ -23,7 +23,7 @@ import java.util.List;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public class DeleteDelta<T> extends Delta<T> {
+public final class DeleteDelta<T> extends Delta<T> {
 
     /**
      * Creates a change delta with the two given chunks.
@@ -32,7 +32,7 @@ public class DeleteDelta<T> extends Delta<T> {
      * @param revised The original chunk. Must not be {@code null}.
      */
     public DeleteDelta(Chunk<T> original, Chunk<T> revised) {
-        super(original, revised);
+        super(TYPE.DELETE, original, revised);
     }
 
     /**
@@ -60,11 +60,6 @@ public class DeleteDelta<T> extends Delta<T> {
         for (int i = 0; i < lines.size(); i++) {
             target.add(position + i, lines.get(i));
         }
-    }
-
-    @Override
-    public TYPE getType() {
-        return Delta.TYPE.DELETE;
     }
 
     @Override

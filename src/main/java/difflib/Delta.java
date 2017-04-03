@@ -25,21 +25,15 @@ import java.util.*;
  */
 public abstract class Delta<T> {
 
-    /**
-     * The original chunk.
-     */
-    private Chunk<T> original;
-
-    /**
-     * The revised chunk.
-     */
-    private Chunk<T> revised;
+    private final TYPE deltaType;
+    private final Chunk<T> original;
+    private final Chunk<T> revised;
 
     /**
      * Specifies the type of the delta.
      *
      */
-    public enum TYPE {
+    public static enum TYPE {
         /**
          * A change in the original.
          */
@@ -60,13 +54,17 @@ public abstract class Delta<T> {
      * @param original Chunk describing the original text. Must not be {@code null}.
      * @param revised Chunk describing the revised text. Must not be {@code null}.
      */
-    public Delta(Chunk<T> original, Chunk<T> revised) {
+    public Delta(TYPE deltaType, Chunk<T> original, Chunk<T> revised) {
+        if (deltaType == null) {
+            throw new IllegalArgumentException("deltaType must not be null");
+        }
         if (original == null) {
             throw new IllegalArgumentException("original must not be null");
         }
         if (revised == null) {
             throw new IllegalArgumentException("revised must not be null");
         }
+        this.deltaType = deltaType;
         this.original = original;
         this.revised = revised;
     }
@@ -94,12 +92,9 @@ public abstract class Delta<T> {
      */
     public abstract void restore(List<T> target);
 
-    /**
-     * Returns the type of delta
-     *
-     * @return the type enum
-     */
-    public abstract TYPE getType();
+    public final TYPE getType() {
+        return deltaType;
+    }
 
     /**
      * @return The Chunk describing the original text.
@@ -109,24 +104,10 @@ public abstract class Delta<T> {
     }
 
     /**
-     * @param original The Chunk describing the original text to set.
-     */
-    public void setOriginal(Chunk<T> original) {
-        this.original = original;
-    }
-
-    /**
      * @return The Chunk describing the revised text.
      */
     public Chunk<T> getRevised() {
         return revised;
-    }
-
-    /**
-     * @param revised The Chunk describing the revised text to set.
-     */
-    public void setRevised(Chunk<T> revised) {
-        this.revised = revised;
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.util.List;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public class InsertDelta<T> extends Delta<T> {
+public final class InsertDelta<T> extends Delta<T> {
 
     /**
      * Creates an insert delta with the two given chunks.
@@ -32,7 +32,7 @@ public class InsertDelta<T> extends Delta<T> {
      * @param revised The original chunk. Must not be {@code null}.
      */
     public InsertDelta(Chunk<T> original, Chunk<T> revised) {
-        super(original, revised);
+        super(TYPE.INSERT, original, revised);
     }
 
     /**
@@ -69,11 +69,6 @@ public class InsertDelta<T> extends Delta<T> {
                     + "delta original position > target size");
         }
 
-    }
-
-    @Override
-    public TYPE getType() {
-        return Delta.TYPE.INSERT;
     }
 
     @Override
