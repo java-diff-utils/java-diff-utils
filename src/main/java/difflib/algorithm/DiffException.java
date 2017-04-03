@@ -17,13 +17,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
  * #L%
  */
-package difflib.algorithm.myers;
+package difflib.algorithm;
 
-/**
- * Base class for all exceptions emanating from this package.
- *
- * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
- */
 public class DiffException extends Exception {
 
     private static final long serialVersionUID = 1L;

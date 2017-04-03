@@ -19,6 +19,8 @@ limitations under the License.
  */
 package difflib.algorithm.myers;
 
+import difflib.algorithm.DiffException;
+
 /**
  * Thrown whenever the differencing engine cannot produce the differences between two revisions of
  * ta text.
