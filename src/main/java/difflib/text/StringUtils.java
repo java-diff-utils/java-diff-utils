@@ -18,7 +18,7 @@ package difflib.text;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class StringUtils {
+final class StringUtils {
 
     /**
      * Replaces all opening an closing tags with <code>&lt;</code> or <code>&gt;</code>.

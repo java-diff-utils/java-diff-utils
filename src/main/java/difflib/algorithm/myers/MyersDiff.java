@@ -56,6 +56,7 @@
  */
 package difflib.algorithm.myers;
 
+import difflib.patch.Equalizer;
 import difflib.patch.InsertDelta;
 import difflib.patch.Delta;
 import difflib.patch.Chunk;

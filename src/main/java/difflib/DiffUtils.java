@@ -21,7 +21,7 @@ import difflib.patch.Chunk;
 import difflib.patch.Patch;
 import difflib.patch.ChangeDelta;
 import difflib.algorithm.DiffAlgorithm;
-import difflib.algorithm.myers.Equalizer;
+import difflib.patch.Equalizer;
 import difflib.algorithm.myers.MyersDiff;
 import java.util.ArrayList;
 import java.util.Collections;

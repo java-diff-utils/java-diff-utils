@@ -23,7 +23,7 @@ import difflib.text.DiffRow.Tag;
 import difflib.DiffUtils;
 import difflib.patch.InsertDelta;
 import difflib.patch.Patch;
-import difflib.algorithm.myers.Equalizer;
+import difflib.patch.Equalizer;
 import java.util.*;
 
 /**
@@ -288,11 +288,11 @@ public class DiffRowGenerator {
         List<String> orig = (List<String>) delta.getOriginal().getLines();
         List<String> rev = (List<String>) delta.getRevised().getLines();
         LinkedList<String> origList = new LinkedList<>();
-        for (Character character : join(orig, "\n").toCharArray()) {
+        for (Character character : String.join("\n", orig).toCharArray()) {
             origList.add(character.toString());
         }
         LinkedList<String> revList = new LinkedList<>();
-        for (Character character : join(rev, "\n").toCharArray()) {
+        for (Character character : String.join("\n", rev).toCharArray()) {
             revList.add(character.toString());
         }
         List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
@@ -391,25 +391,5 @@ public class DiffRowGenerator {
         String endTag = tagBuilder.toString();
 
         return startTag + line + endTag;
-    }
-
-    /**
-     * The helper method for joining collections
-     *
-     * @param <T>
-     * @param objs the collection to join
-     * @param delimiter the delimiter to use
-     * @return the joined string
-     */
-    private static <T> String join(final Iterable<T> objs, final String delimiter) {
-        Iterator<T> iter = objs.iterator();
-        if (!iter.hasNext()) {
-            return "";
-        }
-        StringBuilder buffer = new StringBuilder(String.valueOf(iter.next()));
-        while (iter.hasNext()) {
-            buffer.append(delimiter).append(String.valueOf(iter.next()));
-        }
-        return buffer.toString();
     }
 }

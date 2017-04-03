@@ -1,7 +1,7 @@
-package difflib.algorithm.myers;
+package difflib.patch;
 
 /**
- * Specifies when two compared elements in the Myers algorithm are equal.
+ * Specifies when two compared elements are equal.
  *
  * @param T The type of the compared elements in the 'lines'.
  */
