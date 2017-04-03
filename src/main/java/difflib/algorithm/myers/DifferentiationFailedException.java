@@ -54,23 +54,26 @@
  * <http://www.apache.org/>.
  *
  */
-package difflib.myers;
+package difflib.algorithm.myers;
 
 /**
- * Base class for all exceptions emanating from this package.
+ * Thrown whenever the differencing engine cannot produce the differences between two revisions of
+ * ta text.
  *
  * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (Пнд, 13 Окт 2003) $
  *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
+ * @see MyersDiff
+ * @see difflib.DiffAlgorithm
  */
-public class DiffException extends Exception {
+public class DifferentiationFailedException extends DiffException {
 
     private static final long serialVersionUID = 1L;
 
-    public DiffException() {
+    public DifferentiationFailedException() {
     }
 
-    public DiffException(String msg) {
+    public DifferentiationFailedException(String msg) {
         super(msg);
     }
 }

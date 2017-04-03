@@ -13,17 +13,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.patch;
 
 import java.util.List;
 
 /**
- * Describes the delete-delta between original and revised texts.
+ * Describes the change-delta between original and revised texts.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public final class DeleteDelta<T> extends Delta<T> {
+public final class ChangeDelta<T> extends Delta<T> {
 
     /**
      * Creates a change delta with the two given chunks.
@@ -31,8 +31,8 @@ public final class DeleteDelta<T> extends Delta<T> {
      * @param original The original chunk. Must not be {@code null}.
      * @param revised The original chunk. Must not be {@code null}.
      */
-    public DeleteDelta(Chunk<T> original, Chunk<T> revised) {
-        super(TYPE.DELETE, original, revised);
+    public ChangeDelta(Chunk<T> original, Chunk<T> revised) {
+        super(DeltaType.CHANGE, original, revised);
     }
 
     /**
@@ -48,6 +48,11 @@ public final class DeleteDelta<T> extends Delta<T> {
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
+        int i = 0;
+        for (T line : getRevised().getLines()) {
+            target.add(position + i, line);
+            i++;
+        }
     }
 
     /**
@@ -55,21 +60,33 @@ public final class DeleteDelta<T> extends Delta<T> {
      */
     @Override
     public void restore(List<T> target) {
-        int position = this.getRevised().getPosition();
-        List<T> lines = this.getOriginal().getLines();
-        for (int i = 0; i < lines.size(); i++) {
-            target.add(position + i, lines.get(i));
+        int position = getRevised().getPosition();
+        int size = getRevised().size();
+        for (int i = 0; i < size; i++) {
+            target.remove(position);
+        }
+        int i = 0;
+        for (T line : getOriginal().getLines()) {
+            target.add(position + i, line);
+            i++;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void verify(List<T> target) throws PatchFailedException {
+        getOriginal().verify(target);
+        if (getOriginal().getPosition() > target.size()) {
+            throw new PatchFailedException("Incorrect patch for delta: "
+                    + "delta original position > target size");
         }
     }
 
     @Override
-    public void verify(List<T> target) throws PatchFailedException {
-        getOriginal().verify(target);
-    }
-
-    @Override
     public String toString() {
-        return "[DeleteDelta, position: " + getOriginal().getPosition() + ", lines: "
-                + getOriginal().getLines() + "]";
+        return "[ChangeDelta, position: " + getOriginal().getPosition() + ", lines: "
+                + getOriginal().getLines() + " to " + getRevised().getLines() + "]";
     }
 }

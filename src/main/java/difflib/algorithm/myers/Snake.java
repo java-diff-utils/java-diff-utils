@@ -54,7 +54,7 @@
  * <http://www.apache.org/>.
  *
  */
-package difflib.myers;
+package difflib.algorithm.myers;
 
 /**
  * Represents a snake in a diffpath.

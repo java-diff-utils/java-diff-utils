@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.patch;
 
 /**
  * Base class for all exceptions emanating from this package.

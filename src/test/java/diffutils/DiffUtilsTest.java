@@ -1,5 +1,11 @@
 package diffutils;
 
+import difflib.patch.InsertDelta;
+import difflib.patch.Delta;
+import difflib.patch.Chunk;
+import difflib.patch.ChangeDelta;
+import difflib.patch.Patch;
+import difflib.patch.DeleteDelta;
 import difflib.*;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -13,35 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.text;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public final class StringUtils {
-
-    public static <T> String join(final Iterable<T> objs, final String delimiter) {
-        Iterator<T> iter = objs.iterator();
-        if (!iter.hasNext()) {
-            return "";
-        }
-        StringBuffer buffer = new StringBuffer(String.valueOf(iter.next()));
-        while (iter.hasNext()) {
-            buffer.append(delimiter).append(String.valueOf(iter.next()));
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Replaces all tabs with 4 spaces.
-     *
-     * @param str The string.
-     * @return
-     */
-    public static String expandTabs(String str) {
-        return str.replace("\t", "    ");
-    }
 
     /**
      * Replaces all opening an closing tags with <code>&lt;</code> or <code>&gt;</code>.
@@ -54,7 +31,7 @@ public final class StringUtils {
     }
 
     public static String normalize(String str) {
-        return expandTabs(htmlEntites(str));
+        return htmlEntites(str).replace("\t", "    ");
     }
 
     public static List<String> normalize(List<String> list) {

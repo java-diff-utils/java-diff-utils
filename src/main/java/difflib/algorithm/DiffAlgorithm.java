@@ -13,8 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.algorithm;
 
+import difflib.patch.Patch;
 import java.util.*;
 
 /**

@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib.rows;
+package difflib.text;
 
 /**
  * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two

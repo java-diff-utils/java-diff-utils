@@ -1,4 +1,4 @@
-package difflib;
+package difflib.patch;
 
 import java.io.Serializable;
 import java.util.Comparator;

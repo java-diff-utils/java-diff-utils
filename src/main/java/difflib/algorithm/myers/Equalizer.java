@@ -1,4 +1,4 @@
-package difflib.myers;
+package difflib.algorithm.myers;
 
 /**
  * Specifies when two compared elements in the Myers algorithm are equal.

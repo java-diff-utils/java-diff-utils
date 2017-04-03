@@ -1,8 +1,8 @@
-package diffutils;
+package diffutils.patch;
 
 import difflib.DiffUtils;
-import difflib.Patch;
-import difflib.PatchFailedException;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertEquals;

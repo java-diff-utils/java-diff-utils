@@ -54,8 +54,15 @@
  * <http://www.apache.org/>.
  *
  */
-package difflib.myers;
+package difflib.algorithm.myers;
 
+import difflib.patch.InsertDelta;
+import difflib.patch.Delta;
+import difflib.patch.Chunk;
+import difflib.patch.Patch;
+import difflib.patch.DeleteDelta;
+import difflib.patch.ChangeDelta;
+import difflib.algorithm.DiffAlgorithm;
 import difflib.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;

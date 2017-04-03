@@ -1,8 +1,8 @@
 package diffutils.examples;
 
 import difflib.DiffUtils;
-import difflib.Patch;
-import difflib.PatchFailedException;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import diffutils.TestConstants;
 import java.util.List;
 

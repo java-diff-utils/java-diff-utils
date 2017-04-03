@@ -1,8 +1,8 @@
 package diffutils;
 
 import difflib.DiffUtils;
-import difflib.Patch;
-import difflib.PatchFailedException;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

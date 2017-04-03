@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package difflib;
+package difflib.patch;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ import java.util.*;
  */
 public abstract class Delta<T> {
 
-    private final TYPE deltaType;
+    private final DeltaType deltaType;
     private final Chunk<T> original;
     private final Chunk<T> revised;
 
@@ -33,7 +33,7 @@ public abstract class Delta<T> {
      * Specifies the type of the delta.
      *
      */
-    public static enum TYPE {
+    public static enum DeltaType {
         /**
          * A change in the original.
          */
@@ -54,7 +54,7 @@ public abstract class Delta<T> {
      * @param original Chunk describing the original text. Must not be {@code null}.
      * @param revised Chunk describing the revised text. Must not be {@code null}.
      */
-    public Delta(TYPE deltaType, Chunk<T> original, Chunk<T> revised) {
+    public Delta(DeltaType deltaType, Chunk<T> original, Chunk<T> revised) {
         if (deltaType == null) {
             throw new IllegalArgumentException("deltaType must not be null");
         }
@@ -92,7 +92,7 @@ public abstract class Delta<T> {
      */
     public abstract void restore(List<T> target);
 
-    public final TYPE getType() {
+    public final DeltaType getType() {
         return deltaType;
     }
 

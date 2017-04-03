@@ -1,8 +1,8 @@
 package diffutils.examples;
 
-import difflib.Delta;
+import difflib.patch.Delta;
 import difflib.DiffUtils;
-import difflib.Patch;
+import difflib.patch.Patch;
 import diffutils.TestConstants;
 import java.util.List;
 

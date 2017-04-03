@@ -1,4 +1,4 @@
-package difflib.myers;
+package difflib.algorithm.myers;
 
 /**
  * <p>

@@ -15,8 +15,14 @@
  */
 package difflib;
 
-import difflib.myers.Equalizer;
-import difflib.myers.MyersDiff;
+import difflib.patch.PatchFailedException;
+import difflib.patch.Delta;
+import difflib.patch.Chunk;
+import difflib.patch.Patch;
+import difflib.patch.ChangeDelta;
+import difflib.algorithm.DiffAlgorithm;
+import difflib.algorithm.myers.Equalizer;
+import difflib.algorithm.myers.MyersDiff;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
