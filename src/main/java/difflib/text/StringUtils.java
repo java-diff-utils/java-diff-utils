@@ -21,6 +21,7 @@ package difflib.text;
 
 import java.util.LinkedList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 
 final class StringUtils {
 
@@ -39,19 +40,15 @@ final class StringUtils {
     }
 
     public static List<String> normalize(List<String> list) {
-        List<String> result = new LinkedList<>();
-        for (String line : list) {
-            result.add(normalize(line));
-        }
-        return result;
+        return list.stream()
+                .map(StringUtils::normalize)
+                .collect(toList());
     }
 
     public static List<String> wrapText(List<String> list, int columnWidth) {
-        List<String> result = new LinkedList<>();
-        for (String line : list) {
-            result.add(wrapText(line, columnWidth));
-        }
-        return result;
+        return list.stream()
+                .map(line -> wrapText(line, columnWidth))
+                .collect(toList());
     }
 
     /**
@@ -62,19 +59,23 @@ final class StringUtils {
      * @return the wrapped text
      */
     public static String wrapText(String line, int columnWidth) {
-        int lenght = line.length();
-        int delimiter = "<br>".length();
+        if (columnWidth <= 0) {
+            throw new IllegalArgumentException("columnWidth may not be less or equal 0");
+        }
+        int length = line.length();
+        int delimiter = "<br/>".length();
         int widthIndex = columnWidth;
 
-        for (int count = 0; lenght > widthIndex; count++) {
-            line = line.subSequence(0, widthIndex + delimiter * count) + "<br>"
-                    + line.substring(widthIndex + delimiter * count);
+        StringBuilder b = new StringBuilder(line);
+
+        for (int count = 0; length > widthIndex; count++) {
+            b.insert(widthIndex + delimiter * count, "<br/>");
             widthIndex += columnWidth;
         }
 
-        return line;
+        return b.toString();
     }
-    
+
     private StringUtils() {
     }
 }
