@@ -39,6 +39,10 @@
 			<name>Dmitry Naumenko</name>
 			<email>dm.naumenko@gmail.com</email>
 		</developer>
+		<developer>
+			<name>Juanco Anez</name>
+			<email>juanco@suigeneris.org</email>
+		</developer>
 	</developers>
 	
 	<licenses>
