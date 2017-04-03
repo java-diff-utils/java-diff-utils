@@ -1,6 +1,7 @@
 package diffutils.patch;
 
 import difflib.DiffUtils;
+import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import org.junit.Test;
 public class PatchTest {
 
     @Test
-    public void testPatch_Insert() {
+    public void testPatch_Insert() throws DiffException {
         final List<String> insertTest_from = Arrays.asList("hhh");
         final List<String> insertTest_to = Arrays.asList("hhh", "jjj", "kkk", "lll");
 
@@ -25,7 +26,7 @@ public class PatchTest {
     }
 
     @Test
-    public void testPatch_Delete() {
+    public void testPatch_Delete() throws DiffException {
         final List<String> deleteTest_from = Arrays.asList("ddd", "fff", "ggg", "hhh");
         final List<String> deleteTest_to = Arrays.asList("ggg");
 
@@ -38,7 +39,7 @@ public class PatchTest {
     }
 
     @Test
-    public void testPatch_Change() {
+    public void testPatch_Change() throws DiffException {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 

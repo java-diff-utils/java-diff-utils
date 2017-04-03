@@ -1,5 +1,6 @@
 package diffutils.rows;
 
+import difflib.algorithm.DiffException;
 import difflib.text.DiffRow;
 import difflib.text.DiffRowGenerator;
 import java.util.Arrays;
@@ -11,7 +12,7 @@ import org.junit.Test;
 public class DiffRowGeneratorTest {
 
     @Test
-    public void testGenerator_Default() {
+    public void testGenerator_Default() throws DiffException {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -25,7 +26,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerator_InlineDiff() {
+    public void testGenerator_InlineDiff() throws DiffException {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -41,7 +42,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerator_IgnoreWhitespaces() {
+    public void testGenerator_IgnoreWhitespaces() throws DiffException {
         String first = "anything \n \nother\nmore lines";
         String second = "anything\n\nother\nsome more lines";
 
