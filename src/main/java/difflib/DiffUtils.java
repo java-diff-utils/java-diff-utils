@@ -133,6 +133,9 @@ public final class DiffUtils {
     }
 
     private static List<String> compressLines(List<String> lines, String delimiter) {
+        if (lines.isEmpty()) {
+            return Collections.emptyList();
+        }
         return Collections.singletonList(lines.stream().collect(joining(delimiter)));
     }
 
