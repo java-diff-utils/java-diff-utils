@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Implements the difference and patching engine
@@ -132,17 +133,7 @@ public final class DiffUtils {
     }
 
     private static List<String> compressLines(List<String> lines, String delimiter) {
-        StringBuilder b = new StringBuilder();
-        for (String line : lines) {
-            b.append(line);
-            b.append(delimiter);
-        }
-        if (b.length() > 0) {
-            b.setLength(b.length() - delimiter.length());
-            return Collections.singletonList(b.toString());
-        } else {
-            return Collections.EMPTY_LIST;
-        }
+        return Collections.singletonList(lines.stream().collect(joining(delimiter)));
     }
 
     /**
