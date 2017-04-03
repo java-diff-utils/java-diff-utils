@@ -25,6 +25,7 @@ import difflib.patch.DeleteDelta;
 import difflib.patch.Delta;
 import difflib.text.DiffRow.Tag;
 import difflib.DiffUtils;
+import difflib.algorithm.DiffException;
 import difflib.patch.InsertDelta;
 import difflib.patch.Patch;
 import difflib.patch.Equalizer;
@@ -193,7 +194,7 @@ public class DiffRowGenerator {
      * @param revised the revised text
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) {
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) throws DiffException {
         return generateDiffRows(original, revised, DiffUtils.diff(original, revised, equalizer));
     }
 
@@ -206,7 +207,7 @@ public class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch<String> patch) {
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch<String> patch) throws DiffException {
         // normalize the lines (expand tabs, escape html entities)
         original = StringUtils.normalize(original);
         revised = StringUtils.normalize(revised);
@@ -288,7 +289,7 @@ public class DiffRowGenerator {
      *
      * @param delta the given delta
      */
-    private void addInlineDiffs(Delta<String> delta) {
+    private void addInlineDiffs(Delta<String> delta) throws DiffException {
         List<String> orig = (List<String>) delta.getOriginal().getLines();
         List<String> rev = (List<String>) delta.getRevised().getLines();
         LinkedList<String> origList = new LinkedList<>();

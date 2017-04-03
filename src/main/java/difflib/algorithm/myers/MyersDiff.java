@@ -28,6 +28,7 @@ import difflib.patch.DeleteDelta;
 import difflib.patch.ChangeDelta;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.*;
+import difflib.algorithm.DiffException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * @return Returns an empty diff if get the error while procession the difference.
      */
     @Override
-    public Patch<T> diff(final T[] original, final T[] revised) {
+    public Patch<T> diff(final T[] original, final T[] revised) throws DiffException {
         return diff(Arrays.asList(original), Arrays.asList(revised));
     }
 
@@ -96,21 +97,15 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * Return empty diff if get the error while procession the difference.
      */
     @Override
-    public Patch<T> diff(final List<T> original, final List<T> revised) {
+    public Patch<T> diff(final List<T> original, final List<T> revised) throws DiffException {
         if (original == null) {
             throw new IllegalArgumentException("original list must not be null");
         }
         if (revised == null) {
             throw new IllegalArgumentException("revised list must not be null");
         }
-        PathNode path;
-        try {
-            path = buildPath(original, revised);
-            return buildRevision(path, original, revised);
-        } catch (DifferentiationFailedException e) {
-            e.printStackTrace();
-        }
-        return new Patch<>();
+        PathNode path = buildPath(original, revised);
+        return buildRevision(path, original, revised);
     }
 
     /**

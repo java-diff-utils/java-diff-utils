@@ -25,6 +25,7 @@ import difflib.patch.Chunk;
 import difflib.patch.Patch;
 import difflib.patch.ChangeDelta;
 import difflib.algorithm.DiffAlgorithm;
+import difflib.algorithm.DiffException;
 import difflib.patch.Equalizer;
 import difflib.algorithm.myers.MyersDiff;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.regex.Pattern;
  */
 public final class DiffUtils {
 
-    private static Pattern unifiedDiffChunkRe = Pattern
+    private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
             .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
 
     /**
@@ -55,7 +56,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never
      * {@code null}.
      */
-    public static <T> Patch<T> diff(List<T> original, List<T> revised) {
+    public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
         return DiffUtils.diff(original, revised, new MyersDiff<>());
     }
 
@@ -72,7 +73,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            Equalizer<T> equalizer) {
+            Equalizer<T> equalizer) throws DiffException {
         if (equalizer != null) {
             return DiffUtils.diff(original, revised,
                     new MyersDiff<>(equalizer));
@@ -91,7 +92,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithm<T> algorithm) {
+            DiffAlgorithm<T> algorithm) throws DiffException {
         if (original == null) {
             throw new IllegalArgumentException("original must not be null");
         }
@@ -113,7 +114,7 @@ public final class DiffUtils {
      * @param revised
      * @return
      */
-    public static Patch<String> diffInline(String original, String revised) {
+    public static Patch<String> diffInline(String original, String revised) throws DiffException {
         LinkedList<String> origList = new LinkedList<>();
         LinkedList<String> revList = new LinkedList<>();
         for (Character character : original.toCharArray()) {
@@ -190,7 +191,7 @@ public final class DiffUtils {
                 }
                 continue;
             }
-            Matcher m = unifiedDiffChunkRe.matcher(line);
+            Matcher m = UNIFIED_DIFF_CHUNK_REGEXP.matcher(line);
             if (m.find()) {
                 // Process the lines in the previous chunk
                 if (!rawChunk.isEmpty()) {
