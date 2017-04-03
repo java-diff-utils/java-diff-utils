@@ -161,7 +161,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
                 // orig and rev are zero-based
                 // but the algorithm is one-based
                 // that's why there's no +1 when indexing the sequences
-                while (i < N && j < M && equals(orig.get(i), rev.get(j))) {
+                while (i < N && j < M && equalizer.equals(orig.get(i), rev.get(j))) {
                     i++;
                     j++;
                 }
@@ -180,10 +180,6 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
         }
         // According to Myers, this cannot happen
         throw new DifferentiationFailedException("could not find a diff path");
-    }
-
-    private boolean equals(T orig, T rev) {
-        return equalizer.equals(orig, rev);
     }
 
     /**
