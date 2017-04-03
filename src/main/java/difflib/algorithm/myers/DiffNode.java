@@ -20,19 +20,6 @@ limitations under the License.
 package difflib.algorithm.myers;
 
 /**
- * <p>
- * Title: </p>
- * <p>
- * Description: </p>
- * <p>
- * Copyright: Copyright (c) 2002</p>
- * <p>
- * Company: </p>
- *
- * @author not attributable
- * @version 1.0
- */
-/**
  * A diffnode in a diffpath.
  * <p>
  * A DiffNode and its previous node mark a delta between two input sequences, that is, two differing

@@ -45,7 +45,7 @@ import java.util.List;
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public class MyersDiff<T> implements DiffAlgorithm<T> {
+public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
     /**
      * Default equalizer.
@@ -117,7 +117,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * @return A minimum {@link PathNode Path} accross the differences graph.
      * @throws DifferentiationFailedException if a diff path could not be found.
      */
-    public PathNode buildPath(final List<T> orig, final List<T> rev)
+    private PathNode buildPath(final List<T> orig, final List<T> rev)
             throws DifferentiationFailedException {
         if (orig == null) {
             throw new IllegalArgumentException("original sequence is null");
@@ -192,7 +192,7 @@ public class MyersDiff<T> implements DiffAlgorithm<T> {
      * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
      * path.
      */
-    public Patch<T> buildRevision(PathNode path, List<T> orig, List<T> rev) {
+    private Patch<T> buildRevision(PathNode path, List<T> orig, List<T> rev) {
         if (path == null) {
             throw new IllegalArgumentException("path is null");
         }
