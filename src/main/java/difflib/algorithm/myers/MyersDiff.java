@@ -19,16 +19,15 @@ limitations under the License.
  */
 package difflib.algorithm.myers;
 
+import difflib.algorithm.DiffAlgorithm;
+import difflib.algorithm.DiffException;
+import difflib.patch.ChangeDelta;
+import difflib.patch.Chunk;
+import difflib.patch.DeleteDelta;
+import difflib.patch.Delta;
 import difflib.patch.Equalizer;
 import difflib.patch.InsertDelta;
-import difflib.patch.Delta;
-import difflib.patch.Chunk;
 import difflib.patch.Patch;
-import difflib.patch.DeleteDelta;
-import difflib.patch.ChangeDelta;
-import difflib.algorithm.DiffAlgorithm;
-import difflib.*;
-import difflib.algorithm.DiffException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;

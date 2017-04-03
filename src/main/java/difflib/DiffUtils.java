@@ -19,15 +19,15 @@ limitations under the License.
  */
 package difflib;
 
-import difflib.patch.PatchFailedException;
-import difflib.patch.Delta;
-import difflib.patch.Chunk;
-import difflib.patch.Patch;
-import difflib.patch.ChangeDelta;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
-import difflib.patch.Equalizer;
 import difflib.algorithm.myers.MyersDiff;
+import difflib.patch.ChangeDelta;
+import difflib.patch.Chunk;
+import difflib.patch.Delta;
+import difflib.patch.Equalizer;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;

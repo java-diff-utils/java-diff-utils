@@ -1,13 +1,13 @@
 package diffutils;
 
-import difflib.patch.InsertDelta;
-import difflib.patch.Delta;
-import difflib.patch.Chunk;
-import difflib.patch.ChangeDelta;
-import difflib.patch.Patch;
-import difflib.patch.DeleteDelta;
 import difflib.*;
 import difflib.algorithm.DiffException;
+import difflib.patch.ChangeDelta;
+import difflib.patch.Chunk;
+import difflib.patch.DeleteDelta;
+import difflib.patch.Delta;
+import difflib.patch.InsertDelta;
+import difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
