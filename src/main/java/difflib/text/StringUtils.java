@@ -19,7 +19,6 @@ limitations under the License.
  */
 package difflib.text;
 
-import java.util.LinkedList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 

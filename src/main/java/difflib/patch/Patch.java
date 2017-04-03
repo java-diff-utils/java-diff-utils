@@ -30,7 +30,7 @@ import java.util.ListIterator;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public class Patch<T> {
+public final class Patch<T> {
 
     private final List<Delta<T>> deltas = new LinkedList<>();
 

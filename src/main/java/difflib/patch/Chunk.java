@@ -35,7 +35,7 @@ import java.util.List;
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public class Chunk<T> {
+public final class Chunk<T> {
 
     private final int position;
     private List<T> lines;

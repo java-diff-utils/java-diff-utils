@@ -25,7 +25,7 @@ package difflib.text;
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */
-public class DiffRow {
+public final class DiffRow {
 
     private Tag tag;
     private String oldLine;
