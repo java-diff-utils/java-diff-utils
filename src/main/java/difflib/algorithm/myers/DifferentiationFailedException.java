@@ -23,7 +23,6 @@ package difflib.algorithm.myers;
  * Thrown whenever the differencing engine cannot produce the differences between two revisions of
  * ta text.
  *
- * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (Пнд, 13 Окт 2003) $
  *
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  * @see MyersDiff

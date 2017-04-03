@@ -22,7 +22,7 @@ package difflib.algorithm.myers;
 /**
  * A node in a diffpath.
  *
- * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (Пнд, 13 Окт 2003) $
+ * @version $Revision: 69 $ $Date: 2003-10-13 11:00:44 +0300 (???, 13 ??? 2003) $
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  *
  * @see DiffNode

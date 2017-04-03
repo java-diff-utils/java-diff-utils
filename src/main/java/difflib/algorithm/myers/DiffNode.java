@@ -42,7 +42,6 @@ package difflib.algorithm.myers;
  * snake is represented by a single {@link Snake Snake} node and each contiguous series of
  * insertions and deletions is represented by a single {@link DiffNode DiffNodes}.
  *
- * @version $Revision: 60 $ $Date: 2003-05-10 21:56:10 +0300 (Суб, 10 Май 2003) $
  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  *
  */
