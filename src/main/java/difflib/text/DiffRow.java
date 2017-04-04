@@ -28,8 +28,8 @@ package difflib.text;
 public final class DiffRow {
 
     private Tag tag;
-    private String oldLine;
-    private String newLine;
+    private final String oldLine;
+    private final String newLine;
 
     public DiffRow(Tag tag, String oldLine, String newLine) {
         this.tag = tag;
