@@ -44,7 +44,7 @@ public final class Patch<T> {
         List<T> result = new LinkedList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta<T> delta = (Delta<T>) it.previous();
+            Delta<T> delta = it.previous();
             delta.applyTo(result);
         }
         return result;
@@ -60,7 +60,7 @@ public final class Patch<T> {
         List<T> result = new LinkedList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta<T> delta = (Delta<T>) it.previous();
+            Delta<T> delta = it.previous();
             delta.restore(result);
         }
         return result;
