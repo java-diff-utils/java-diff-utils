@@ -207,10 +207,10 @@ public class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised, Patch<String> patch) throws DiffException {
+    public List<DiffRow> generateDiffRows(final List<String> originalText, final List<String> revisedText, Patch<String> patch) throws DiffException {
         // normalize the lines (expand tabs, escape html entities)
-        original = StringUtils.normalize(original);
-        revised = StringUtils.normalize(revised);
+        List<String> original = StringUtils.normalize(originalText);
+        List<String> revised = StringUtils.normalize(revisedText);
 
         // wrap to the column width
         original = StringUtils.wrapText(original, this.columnWidth);

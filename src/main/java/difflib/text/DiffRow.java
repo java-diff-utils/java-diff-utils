@@ -63,24 +63,10 @@ public final class DiffRow {
     }
 
     /**
-     * @param oldLine the oldLine to set
-     */
-    public void setOldLine(String oldLine) {
-        this.oldLine = oldLine;
-    }
-
-    /**
      * @return the newLine
      */
     public String getNewLine() {
         return newLine;
-    }
-
-    /**
-     * @param newLine the newLine to set
-     */
-    public void setNewLine(String newLine) {
-        this.newLine = newLine;
     }
 
     /*
