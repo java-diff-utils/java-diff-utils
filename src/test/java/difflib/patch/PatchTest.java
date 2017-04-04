@@ -1,4 +1,4 @@
-package diffutils.patch;
+package difflib.patch;
 
 import difflib.DiffUtils;
 import difflib.algorithm.DiffException;

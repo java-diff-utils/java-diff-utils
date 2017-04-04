@@ -1,4 +1,4 @@
-package diffutils.rows;
+package difflib.text;
 
 import difflib.algorithm.DiffException;
 import difflib.text.DiffRow;
@@ -16,7 +16,7 @@ public class DiffRowGeneratorTest {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
-        DiffRowGenerator generator = new DiffRowGenerator.Builder()
+        DiffRowGenerator generator = DiffRowGenerator.create()
                 .columnWidth(Integer.MAX_VALUE) // do not wrap
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
@@ -30,7 +30,7 @@ public class DiffRowGeneratorTest {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
-        DiffRowGenerator generator = new DiffRowGenerator.Builder()
+        DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .columnWidth(Integer.MAX_VALUE) // do not wrap
                 .build();
@@ -46,7 +46,7 @@ public class DiffRowGeneratorTest {
         String first = "anything \n \nother\nmore lines";
         String second = "anything\n\nother\nsome more lines";
 
-        DiffRowGenerator generator = new DiffRowGenerator.Builder()
+        DiffRowGenerator generator = DiffRowGenerator.create()
                 .ignoreWhiteSpaces(true)
                 .columnWidth(Integer.MAX_VALUE) // do not wrap
                 .build();
@@ -68,5 +68,22 @@ public class DiffRowGeneratorTest {
         for (DiffRow row : diffRows) {
             System.out.println(row);
         }
+    }
+    
+    @Test
+    public void testGeneratorWithWordWrap() throws DiffException {
+        String first = "anything \n \nother";
+        String second = "anything\n\nother";
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .columnWidth(5) 
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+        print(rows);
+
+        assertEquals(3, rows.size());
+        assertEquals("[CHANGE,anyth<br/>ing ,anyth<br/>ing]", rows.get(0).toString());
+        assertEquals("[CHANGE, ,]", rows.get(1).toString());
+        assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
 }

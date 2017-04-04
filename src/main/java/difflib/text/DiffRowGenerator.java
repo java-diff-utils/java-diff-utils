@@ -73,6 +73,9 @@ public class DiffRowGenerator {
         private String inlineNewCssClass = "editNewInline";
         private int columnWidth = 80;
 
+        private Builder() {
+        }
+
         /**
          * Show inline diffs in generating diff rows or not.
          *
@@ -161,7 +164,7 @@ public class DiffRowGenerator {
             return new DiffRowGenerator(this);
         }
     }
-    
+
     public static Builder create() {
         return new Builder();
     }
@@ -195,7 +198,13 @@ public class DiffRowGenerator {
      * @return the DiffRows between original and revised texts
      */
     public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) throws DiffException {
-        return generateDiffRows(original, revised, DiffUtils.diff(original, revised, equalizer));
+        return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
+    }
+
+    private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
+        return new DiffRow(type, 
+                StringUtils.wrapText(StringUtils.normalize(orgline), columnWidth), 
+                StringUtils.wrapText(StringUtils.normalize(newline), columnWidth));
     }
 
     /**
@@ -207,15 +216,15 @@ public class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(final List<String> originalText, final List<String> revisedText, Patch<String> patch) throws DiffException {
+    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) throws DiffException {
         // normalize the lines (expand tabs, escape html entities)
-        List<String> original = StringUtils.normalize(originalText);
-        List<String> revised = StringUtils.normalize(revisedText);
+        //List<String> original = originalText;
+        //List<String> revised = StringUtils.normalize(revisedText);
 
         // wrap to the column width
-        original = StringUtils.wrapText(original, this.columnWidth);
-        revised = StringUtils.wrapText(revised, this.columnWidth);
-
+        // TODO: we want to process original text und not wrapped text
+        //original = StringUtils.wrapText(original, this.columnWidth);
+        //revised = StringUtils.wrapText(revised, this.columnWidth);
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
         final List<Delta<String>> deltaList = patch.getDeltas();
@@ -225,22 +234,23 @@ public class DiffRowGenerator {
             Chunk<String> rev = delta.getRevised();
 
             // We should normalize and wrap lines in deltas too.
-            orig.setLines(StringUtils.normalize((List<String>) orig.getLines()));
-            rev.setLines(StringUtils.normalize((List<String>) rev.getLines()));
+            // TODO: not in Deltas
+            //orig.setLines(StringUtils.normalize((List<String>) orig.getLines()));
+            //rev.setLines(StringUtils.normalize((List<String>) rev.getLines()));
 
-            orig.setLines(StringUtils.wrapText((List<String>) orig.getLines(), this.columnWidth));
-            rev.setLines(StringUtils.wrapText((List<String>) rev.getLines(), this.columnWidth));
-
+            //TODO: no we shouldnt: Deltas should not be used for display purposes
+            //orig.setLines(StringUtils.wrapText((List<String>) orig.getLines(), this.columnWidth));
+            //rev.setLines(StringUtils.wrapText((List<String>) rev.getLines(), this.columnWidth));
             // catch the equal prefix for each chunk
             for (String line : original.subList(endPos, orig.getPosition())) {
-                diffRows.add(new DiffRow(Tag.EQUAL, line, line));
+                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
             }
 
             // Inserted DiffRow
             if (delta instanceof InsertDelta) {
                 endPos = orig.last() + 1;
                 for (String line : (List<String>) rev.getLines()) {
-                    diffRows.add(new DiffRow(Tag.INSERT, "", line));
+                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
                 }
                 continue;
             }
@@ -249,29 +259,29 @@ public class DiffRowGenerator {
             if (delta instanceof DeleteDelta) {
                 endPos = orig.last() + 1;
                 for (String line : (List<String>) orig.getLines()) {
-                    diffRows.add(new DiffRow(Tag.DELETE, line, ""));
+                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
                 }
                 continue;
             }
 
             if (showInlineDiffs) {
-                addInlineDiffs(delta);
-            }
-            // the changed size is match
-            if (orig.size() == rev.size()) {
-                for (int j = 0; j < orig.size(); j++) {
-                    diffRows.add(new DiffRow(Tag.CHANGE, (String) orig.getLines().get(j),
-                            (String) rev.getLines().get(j)));
-                }
-            } else if (orig.size() > rev.size()) {
-                for (int j = 0; j < orig.size(); j++) {
-                    diffRows.add(new DiffRow(Tag.CHANGE, (String) orig.getLines().get(j), rev
-                            .getLines().size() > j ? (String) rev.getLines().get(j) : ""));
-                }
+                diffRows.addAll(generateInlineDiffs(delta, false));
             } else {
-                for (int j = 0; j < rev.size(); j++) {
-                    diffRows.add(new DiffRow(Tag.CHANGE, orig.getLines().size() > j ? (String) orig
-                            .getLines().get(j) : "", (String) rev.getLines().get(j)));
+                if (orig.size() == rev.size()) {
+                    for (int j = 0; j < orig.size(); j++) {
+                        diffRows.add(buildDiffRow(Tag.CHANGE, (String) orig.getLines().get(j),
+                                (String) rev.getLines().get(j)));
+                    }
+                } else if (orig.size() > rev.size()) {
+                    for (int j = 0; j < orig.size(); j++) {
+                        diffRows.add(buildDiffRow(Tag.CHANGE, (String) orig.getLines().get(j), rev
+                                .getLines().size() > j ? (String) rev.getLines().get(j) : ""));
+                    }
+                } else {
+                    for (int j = 0; j < rev.size(); j++) {
+                        diffRows.add(buildDiffRow(Tag.CHANGE, orig.getLines().size() > j ? (String) orig
+                                .getLines().get(j) : "", (String) rev.getLines().get(j)));
+                    }
                 }
             }
             endPos = orig.last() + 1;
@@ -279,58 +289,70 @@ public class DiffRowGenerator {
 
         // Copy the final matching chunk if any.
         for (String line : original.subList(endPos, original.size())) {
-            diffRows.add(new DiffRow(Tag.EQUAL, line, line));
+            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
         }
         return diffRows;
     }
-    
+
     /**
      * Add the inline diffs for given delta
      *
      * @param delta the given delta
      */
-    private void addInlineDiffs(Delta<String> delta) throws DiffException {
-        List<String> orig = (List<String>) delta.getOriginal().getLines();
-        List<String> rev = (List<String>) delta.getRevised().getLines();
-        LinkedList<String> origList = new LinkedList<>();
-        for (Character character : String.join("\n", orig).toCharArray()) {
-            origList.add(character.toString());
-        }
-        LinkedList<String> revList = new LinkedList<>();
-        for (Character character : String.join("\n", rev).toCharArray()) {
-            revList.add(character.toString());
-        }
-        List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
-        if (inlineDeltas.size() < 3) {
-            Collections.reverse(inlineDeltas);
-            for (Delta<String> inlineDelta : inlineDeltas) {
-                Chunk<String> inlineOrig = inlineDelta.getOriginal();
-                Chunk<String> inlineRev = inlineDelta.getRevised();
-                if (inlineDelta instanceof DeleteDelta) {
-                    origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
-                            .getPosition()
-                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
-                } else if (inlineDelta instanceof InsertDelta) {
-                    revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
-                } else if (inlineDelta instanceof ChangeDelta) {
-                    origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
-                            .getPosition()
-                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
-                    revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
-                }
+    private List<DiffRow> generateInlineDiffs(Delta<String> delta, boolean mergeToTarget) throws DiffException {
+        if (delta.getType()!=Delta.DeltaType.CHANGE)
+            throw new IllegalArgumentException("only for change deltas allowed");
+//        List<String> orig = delta.getOriginal().getLines();
+//        List<String> rev = delta.getRevised().getLines();
+//        LinkedList<String> origList = new LinkedList<>();
+//        for (Character character : String.join("\n", orig).toCharArray()) {
+//            origList.add(character.toString());
+//        }
+//        LinkedList<String> revList = new LinkedList<>();
+//        for (Character character : String.join("\n", rev).toCharArray()) {
+//            revList.add(character.toString());
+//        }
+//        List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
+        Patch<String> patch = DiffUtils.diffInline(String.join("\n", delta.getOriginal().getLines()), String.join("\n", delta.getRevised().getLines()));
+        if (patch.getDeltas().size() < 3) {
+            List<Delta<String>> deltas = new ArrayList<>(patch.getDeltas());
+            Collections.reverse(deltas);
+            
+            for (Delta<String> inlineDelta : deltas) {
+                System.out.println(inlineDelta);
             }
-            StringBuilder origResult = new StringBuilder(), revResult = new StringBuilder();
-            for (String character : origList) {
-                origResult.append(character);
-            }
-            for (String character : revList) {
-                revResult.append(character);
-            }
-            delta.getOriginal().setLines(Arrays.asList(origResult.toString().split("\n")));
-            delta.getRevised().setLines(Arrays.asList(revResult.toString().split("\n")));
-        }
+            
+            
+            return Collections.EMPTY_LIST;
+//            Collections.reverse(inlineDeltas);
+//            for (Delta<String> inlineDelta : inlineDeltas) {
+//                Chunk<String> inlineOrig = inlineDelta.getOriginal();
+//                Chunk<String> inlineRev = inlineDelta.getRevised();
+//                if (inlineDelta instanceof DeleteDelta) {
+//                    origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
+//                            .getPosition()
+//                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
+//                } else if (inlineDelta instanceof InsertDelta) {
+//                    revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
+//                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+//                } else if (inlineDelta instanceof ChangeDelta) {
+//                    origList = wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
+//                            .getPosition()
+//                            + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
+//                    revList = wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
+//                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+//                }
+//            }
+//            StringBuilder origResult = new StringBuilder(), revResult = new StringBuilder();
+//            for (String character : origList) {
+//                origResult.append(character);
+//            }
+//            for (String character : revList) {
+//                revResult.append(character);
+//            }
+//            delta.getOriginal().setLines(Arrays.asList(origResult.toString().split("\n")));
+//            delta.getRevised().setLines(Arrays.asList(revResult.toString().split("\n")));
+        } else return Collections.emptyList();
     }
 
     /**

@@ -1,4 +1,4 @@
-package diffutils;
+package difflib;
 
 import java.io.File;
 
