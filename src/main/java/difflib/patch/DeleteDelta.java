@@ -39,11 +39,6 @@ public final class DeleteDelta<T> extends Delta<T> {
         super(DeltaType.DELETE, original, revised);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws PatchFailedException
-     */
     @Override
     public void applyTo(List<T> target) throws PatchFailedException {
         verify(target);
@@ -53,10 +48,7 @@ public final class DeleteDelta<T> extends Delta<T> {
             target.remove(position);
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public void restore(List<T> target) {
         int position = this.getRevised().getPosition();
@@ -64,11 +56,6 @@ public final class DeleteDelta<T> extends Delta<T> {
         for (int i = 0; i < lines.size(); i++) {
             target.add(position + i, lines.get(i));
         }
-    }
-
-    @Override
-    public void verify(List<T> target) throws PatchFailedException {
-        getOriginal().verify(target);
     }
 
     @Override

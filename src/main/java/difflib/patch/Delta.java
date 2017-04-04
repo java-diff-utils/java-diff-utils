@@ -79,7 +79,9 @@ public abstract class Delta<T> {
      * @param target the text to patch.
      * @throws PatchFailedException if the patch cannot be applied.
      */
-    public abstract void verify(List<T> target) throws PatchFailedException;
+    public void verify(List<T> target) throws PatchFailedException {
+        getOriginal().verify(target);
+    }
 
     /**
      * Applies this delta as the patch for a given target

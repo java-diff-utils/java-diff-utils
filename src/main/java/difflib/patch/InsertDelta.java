@@ -39,11 +39,6 @@ public final class InsertDelta<T> extends Delta<T> {
         super(DeltaType.INSERT, original, revised);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws PatchFailedException
-     */
     @Override
     public void applyTo(List<T> target) throws PatchFailedException {
         verify(target);
@@ -53,10 +48,7 @@ public final class InsertDelta<T> extends Delta<T> {
             target.add(position + i, lines.get(i));
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public void restore(List<T> target) {
         int position = getRevised().getPosition();
@@ -64,15 +56,6 @@ public final class InsertDelta<T> extends Delta<T> {
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
-    }
-
-    @Override
-    public void verify(List<T> target) throws PatchFailedException {
-        if (getOriginal().getPosition() > target.size()) {
-            throw new PatchFailedException("Incorrect patch for delta: "
-                    + "delta original position > target size");
-        }
-
     }
 
     @Override

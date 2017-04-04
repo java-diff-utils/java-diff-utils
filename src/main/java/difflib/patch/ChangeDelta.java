@@ -39,11 +39,6 @@ public final class ChangeDelta<T> extends Delta<T> {
         super(DeltaType.CHANGE, original, revised);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws PatchFailedException
-     */
     @Override
     public void applyTo(List<T> target) throws PatchFailedException {
         verify(target);
@@ -59,9 +54,6 @@ public final class ChangeDelta<T> extends Delta<T> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void restore(List<T> target) {
         int position = getRevised().getPosition();
@@ -73,18 +65,6 @@ public final class ChangeDelta<T> extends Delta<T> {
         for (T line : getOriginal().getLines()) {
             target.add(position + i, line);
             i++;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void verify(List<T> target) throws PatchFailedException {
-        getOriginal().verify(target);
-        if (getOriginal().getPosition() > target.size()) {
-            throw new PatchFailedException("Incorrect patch for delta: "
-                    + "delta original position > target size");
         }
     }
 

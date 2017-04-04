@@ -68,7 +68,7 @@ public final class Chunk<T> {
      * @param target the sequence to verify against.
      */
     public void verify(List<T> target) throws PatchFailedException {
-        if (last() > target.size()) {
+        if (position > target.size() || last() > target.size()) {
             throw new PatchFailedException("Incorrect Chunk: the position of chunk > target size");
         }
         for (int i = 0; i < size(); i++) {
