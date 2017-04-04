@@ -86,4 +86,56 @@ public class DiffRowGeneratorTest {
         assertEquals("[CHANGE, ,]", rows.get(1).toString());
         assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
+    
+    @Test
+    public void testGeneratorWithInlineMerge() throws DiffException {
+        String first = "anything \n \nother";
+        String second = "anything\n\nother";
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeInline(true)
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+        print(rows);
+
+        assertEquals(3, rows.size());
+        assertEquals("[CHANGE,anything<span class=\"editOldInline\"> </span>,anything]", rows.get(0).toString());
+        assertEquals("[CHANGE,<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
+        assertEquals("[EQUAL,other,other]", rows.get(2).toString());
+    }
+    
+    @Test
+    public void testGeneratorWithInlineMerge2() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeInline(true)
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test"),Arrays.asList("ester"));
+        print(rows);
+
+        assertEquals(1, rows.size());
+        assertEquals("[CHANGE,<span class=\"editOldInline\">T</span>est<span class=\"editNewInline\">er</span>,ester]", rows.get(0).toString());
+    }
+    
+    @Test
+    public void testGeneratorWithInlineMerge3() throws DiffException {
+        String first = "test\nanything \n \nother";
+        String second = "anything\n\nother\ntest\ntest2";
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeInline(true)
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+        print(rows);
+
+        assertEquals(6, rows.size());
+        assertEquals("[CHANGE,<span class=\"editOldInline\">test,anything]", rows.get(0).toString());
+        assertEquals("[CHANGE,</span>anything<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
+        assertEquals("[CHANGE,<span class=\"editOldInline\"> </span>,]", rows.get(2).toString());
+        assertEquals("[EQUAL,other,other]", rows.get(3).toString());
+        assertEquals("[INSERT,<span class=\"editNewInline\">test</span>,test]", rows.get(4).toString());
+        assertEquals("[INSERT,<span class=\"editNewInline\">test2</span>,test2]", rows.get(5).toString());
+    }
 }
