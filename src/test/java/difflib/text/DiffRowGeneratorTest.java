@@ -152,4 +152,18 @@ public class DiffRowGeneratorTest {
         assertEquals(1, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">Test</span><span class=\"editNewInline\">ester</span>,ester]", rows.get(0).toString());
     }
+    
+    @Test
+    public void testGeneratorWithMergeByWord5() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test feature"),Arrays.asList("ester feature best"));
+        print(rows);
+
+        assertEquals(1, rows.size());
+        assertEquals("[CHANGE,<span class=\"editOldInline\">Test</span><span class=\"editNewInline\">ester</span> <br/>feature<span class=\"editNewInline\"> best</span>,ester feature best]", rows.get(0).toString());
+    }
 }
