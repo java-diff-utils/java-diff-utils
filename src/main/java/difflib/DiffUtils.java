@@ -1,28 +1,40 @@
-/*
-   Copyright 2010 Dmitry Naumenko (dm.naumenko@gmail.com)
+/*-
+ * #%L
+ * java-diff-utils
+ * %%
+ * Copyright (C) 2009 - 2017 java-diff-utils
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ * #L%
  */
 package difflib;
 
-import difflib.myers.Equalizer;
-import difflib.myers.MyersDiff;
+import difflib.algorithm.DiffAlgorithm;
+import difflib.algorithm.DiffException;
+import difflib.algorithm.myers.MyersDiff;
+import difflib.patch.ChangeDelta;
+import difflib.patch.Chunk;
+import difflib.patch.Delta;
+import difflib.patch.Equalizer;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Implements the difference and patching engine
@@ -33,7 +45,7 @@ import java.util.regex.Pattern;
  */
 public final class DiffUtils {
 
-    private static Pattern unifiedDiffChunkRe = Pattern
+    private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
             .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
 
     /**
@@ -45,7 +57,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never
      * {@code null}.
      */
-    public static <T> Patch<T> diff(List<T> original, List<T> revised) {
+    public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
         return DiffUtils.diff(original, revised, new MyersDiff<>());
     }
 
@@ -62,7 +74,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            Equalizer<T> equalizer) {
+            Equalizer<T> equalizer) throws DiffException {
         if (equalizer != null) {
             return DiffUtils.diff(original, revised,
                     new MyersDiff<>(equalizer));
@@ -81,7 +93,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithm<T> algorithm) {
+            DiffAlgorithm<T> algorithm) throws DiffException {
         if (original == null) {
             throw new IllegalArgumentException("original must not be null");
         }
@@ -103,7 +115,7 @@ public final class DiffUtils {
      * @param revised
      * @return
      */
-    public static Patch<String> diffInline(String original, String revised) {
+    public static Patch<String> diffInline(String original, String revised) throws DiffException {
         LinkedList<String> origList = new LinkedList<>();
         LinkedList<String> revList = new LinkedList<>();
         for (Character character : original.toCharArray()) {
@@ -121,17 +133,10 @@ public final class DiffUtils {
     }
 
     private static List<String> compressLines(List<String> lines, String delimiter) {
-        StringBuilder b = new StringBuilder();
-        for (String line : lines) {
-            b.append(line);
-            b.append(delimiter);
+        if (lines.isEmpty()) {
+            return Collections.emptyList();
         }
-        if (b.length() > 0) {
-            b.setLength(b.length() - delimiter.length());
-            return Collections.singletonList(b.toString());
-        } else {
-            return Collections.EMPTY_LIST;
-        }
+        return Collections.singletonList(lines.stream().collect(joining(delimiter)));
     }
 
     /**
@@ -180,7 +185,7 @@ public final class DiffUtils {
                 }
                 continue;
             }
-            Matcher m = unifiedDiffChunkRe.matcher(line);
+            Matcher m = UNIFIED_DIFF_CHUNK_REGEXP.matcher(line);
             if (m.find()) {
                 // Process the lines in the previous chunk
                 if (!rawChunk.isEmpty()) {

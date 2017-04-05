@@ -20,6 +20,31 @@
 		<developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
 		<url>https://github.com/wumpz/java-diff-utils.git</url>
 	</scm>
+	
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/wumpz/java-diff-utils/issues</url>
+	</issueManagement>
+	
+	<organization>
+		<name>java-diff-utils</name>
+	</organization>
+	
+	<developers>
+		<developer>
+			<name>Tobias Warneke</name>
+			<email>t.warneke@gmx.net</email>
+		</developer>
+		<developer>
+			<name>Dmitry Naumenko</name>
+			<email>dm.naumenko@gmail.com</email>
+		</developer>
+		<developer>
+			<name>Juanco Anez</name>
+			<email>juanco@suigeneris.org</email>
+		</developer>
+	</developers>
+	
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -84,7 +109,61 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.12</version>
+				<configuration>
+					<verbose>false</verbose>
+					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+					<canUpdateDescription>false</canUpdateDescription>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<licenseName>apache_v2</licenseName>
+							<roots>
+								<root>src/main/java</root>
+							</roots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
+			</properties>
+		</profile>
+	</profiles>
 </project>
 
