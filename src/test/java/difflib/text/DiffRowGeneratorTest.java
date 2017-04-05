@@ -166,4 +166,27 @@ public class DiffRowGeneratorTest {
         assertEquals(1, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">Test</span><span class=\"editNewInline\">ester</span> <br/>feature<span class=\"editNewInline\"> best</span>,ester feature best]", rows.get(0).toString());
     }
+    
+    @Test
+    public void testSplitString() {
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2");
+        assertEquals(3, list.size());
+        assertEquals("[test, ,, test2]", list.toString());
+    }
+    
+    @Test
+    public void testSplitString2() {
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test , test2");
+        System.out.println(list);
+        assertEquals(5, list.size());
+        assertEquals("[test,  , ,,  , test2]", list.toString());
+    }
+    
+    @Test
+    public void testSplitString3() {
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2,");
+        System.out.println(list);
+        assertEquals(4, list.size());
+        assertEquals("[test, ,, test2, ,]", list.toString());
+    }
 }

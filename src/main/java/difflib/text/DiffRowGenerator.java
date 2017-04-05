@@ -173,17 +173,18 @@ public class DiffRowGenerator {
         /**
          * Merge the complete result within the original text. This makes sense for one line
          * display.
+         *
          * @param mergeOriginalRevised
-         * @return 
+         * @return
          */
         public Builder mergeOriginalRevised(boolean mergeOriginalRevised) {
             this.mergeOriginalRevised = mergeOriginalRevised;
             return this;
         }
-        
+
         /**
-         * Per default each character is separatly processed. This variant introduces processing
-         * by word, which should deliver no in word changes.
+         * Per default each character is separatly processed. This variant introduces processing by
+         * word, which should deliver no in word changes.
          */
         public Builder inlineDiffByWord(boolean inlineDiffByWord) {
             this.inlineDiffByWord = inlineDiffByWord;
@@ -316,7 +317,7 @@ public class DiffRowGenerator {
         List<String> rev = StringUtils.normalize(delta.getRevised().getLines());
         List<String> origList;
         List<String> revList;
-        
+
         if (inlineDiffByWord) {
             origList = splitStringPreserveDelimiter(String.join("\n", orig));
             revList = splitStringPreserveDelimiter(String.join("\n", rev));
@@ -330,7 +331,7 @@ public class DiffRowGenerator {
                 revList.add(character.toString());
             }
         }
-        
+
         List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
 
         Collections.reverse(inlineDeltas);
@@ -411,20 +412,24 @@ public class DiffRowGenerator {
     private static String createOpenTag(String tag, String cssClass) {
         return "<" + tag + (cssClass != null ? " class=\"" + cssClass + "\"" : "") + ">";
     }
-    
-    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+");
-    
-    private List<String> splitStringPreserveDelimiter(String str) {
+
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+
+    static List<String> splitStringPreserveDelimiter(String str) {
         List<String> list = new ArrayList<>();
         if (str != null) {
             Matcher matcher = SPLIT_PATTERN.matcher(str);
             int pos = 0;
             while (matcher.find()) {
-                list.add(str.substring(pos, matcher.start()));
+                if (pos < matcher.start()) {
+                    list.add(str.substring(pos, matcher.start()));
+                }
                 list.add(matcher.group());
                 pos = matcher.end();
             }
-            list.add(str.substring(pos));
+            if (pos < str.length()) {
+                list.add(str.substring(pos));
+            }
         }
         return list;
     }
