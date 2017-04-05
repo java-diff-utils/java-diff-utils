@@ -20,6 +20,7 @@ limitations under the License.
 package difflib.patch;
 
 import java.util.Collections;
+import static java.util.Comparator.comparing;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -81,7 +82,7 @@ public final class Patch<T> {
      * @return the deltas
      */
     public List<Delta<T>> getDeltas() {
-        Collections.sort(deltas, DeltaComparator.INSTANCE);
+        Collections.sort(deltas, comparing(d -> d.getOriginal().getPosition()));
         return deltas;
     }
 }
