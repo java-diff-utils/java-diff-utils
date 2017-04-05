@@ -379,14 +379,6 @@ public class DiffRowGenerator {
         sequence.add(endPosition, generator.apply(false));
     }
 
-    private static String createCloseTag(String tag) {
-        return "</" + tag + ">";
-    }
-
-    private static String createOpenTag(String tag, String cssClass) {
-        return "<" + tag + (cssClass != null ? " class=\"" + cssClass + "\"" : "") + ">";
-    }
-
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
 
     static List<String> splitStringPreserveDelimiter(String str) {
