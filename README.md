@@ -22,7 +22,10 @@ This library implements Myer's diff algorithm. But it can easily replaced by any
     * switch to maven and removed other artifacts
     * changed groupid to *com.github.java-diff-utils* due to different forks at github
     * updated maven plugins
-    * JDK 1.7 compatibility
+    * JDK 1.8 compatibility
+    * support for inline merge 
+    * restructured packages
+    * changed API 
   * Version 1.2
     * JDK 1.5 compatibility
     * Ant build script
@@ -30,7 +33,7 @@ This library implements Myer's diff algorithm. But it can easily replaced by any
 
 ### To Install ###
 
-This jar is not yet to get at maven central.
+**This jar is not yet to get at maven central.**
 
 Just add the code below to your maven dependencies:
 ```
@@ -40,14 +43,3 @@ Just add the code below to your maven dependencies:
     <version>1.2.1</version>
 </dependency>
 ```
-
-## Coming eventually ##
-
-  * support for inline diffs in output
-  * helpers for showing side-by-side, line-by-line diffs or text with inter-line and intra-line change highlights
-  * customization of diff algorithm for better experience while computing diffs between strings (ignoring blank lines or spaces, etc)
-  * generating output in other formats (not only unified). E.g. CVS.
-
-### Tutorials ###
-
-http://www.adictosaltrabajo.com/tutoriales/tutoriales.php?pagina=CompararFicherosJavaDiffUtils (in Spanish). Thanks Miguel
