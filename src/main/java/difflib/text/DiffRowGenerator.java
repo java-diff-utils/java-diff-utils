@@ -30,6 +30,7 @@ import difflib.patch.InsertDelta;
 import difflib.patch.Patch;
 import difflib.text.DiffRow.Tag;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,10 +53,8 @@ public class DiffRowGenerator {
 
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
-    private final String inlineOldTag;
-    private final String inlineNewTag;
-    private final String inlineOldCssClass;
-    private final String inlineNewCssClass;
+    private final Function<Boolean,String> oldTag;
+    private final Function<Boolean,String> newTag;
     private final boolean inlineDiffByWord;
     private final int columnWidth;
     private final Equalizer<String> equalizer;
@@ -71,10 +70,10 @@ public class DiffRowGenerator {
 
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
-        private String inlineOldTag = "span";
-        private String inlineNewTag = "span";
-        private String inlineOldCssClass = "editOldInline";
-        private String inlineNewCssClass = "editNewInline";
+        
+        private Function<Boolean,String> oldTag = f -> f?"<span class=\"editOldInline\">":"</span>";
+        private Function<Boolean,String> newTag = f -> f?"<span class=\"editNewInline\">":"</span>";
+        
         private int columnWidth = 80;
         private boolean mergeOriginalRevised = false;
         private boolean inlineDiffByWord = false;
@@ -105,46 +104,23 @@ public class DiffRowGenerator {
         }
 
         /**
-         * Set the tag used for displaying changes in the original text.
+         * Generator for Old-Text-Tags.
          *
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder inlineOldTag(String tag) {
-            inlineOldTag = tag;
+        public Builder oldTag(Function<Boolean,String> generator) {
+            this.oldTag = generator;
             return this;
         }
 
         /**
-         * Set the tag used for displaying changes in the revised text.
-         *
-         * @param tag the tag to set. Without angle brackets. Default: span.
-         * @return builder with configured ignoreBlankLines parameter
+         * Generator for New-Text-Tags.
+         * @param generator
+         * @return 
          */
-        public Builder inlineNewTag(String tag) {
-            inlineNewTag = tag;
-            return this;
-        }
-
-        /**
-         * Set the css class used for displaying changes in the original text.
-         *
-         * @param cssClass the tag to set. Without any quotes, just word. Default: editOldInline.
-         * @return builder with configured ignoreBlankLines parameter
-         */
-        public Builder inlineOldCssClass(String cssClass) {
-            inlineOldCssClass = cssClass;
-            return this;
-        }
-
-        /**
-         * Set the css class used for displaying changes in the revised text.
-         *
-         * @param cssClass the tag to set. Without any quotes, just word. Default: editNewInline.
-         * @return builder with configured ignoreBlankLines parameter
-         */
-        public Builder inlineNewCssClass(String cssClass) {
-            inlineNewCssClass = cssClass;
+        public Builder newTag(Function<Boolean,String> generator) {
+            this.newTag = generator;
             return this;
         }
 
@@ -199,10 +175,8 @@ public class DiffRowGenerator {
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
-        inlineOldTag = builder.inlineOldTag;
-        inlineNewTag = builder.inlineNewTag;
-        inlineOldCssClass = builder.inlineOldCssClass;
-        inlineNewCssClass = builder.inlineNewCssClass;
+        oldTag = builder.oldTag;;
+        newTag = builder.newTag;
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
         inlineDiffByWord = builder.inlineDiffByWord;
@@ -233,11 +207,11 @@ public class DiffRowGenerator {
     private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
         String wrapOrg = StringUtils.wrapText(StringUtils.normalize(orgline), columnWidth);
         if (mergeOriginalRevised && Tag.DELETE == type) {
-            wrapOrg = createOpenTag(inlineOldTag, inlineOldCssClass) + wrapOrg + createCloseTag(inlineOldTag);
+            wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
         }
         String wrapNew = StringUtils.wrapText(StringUtils.normalize(newline), columnWidth);
         if (mergeOriginalRevised && Tag.INSERT == type) {
-            wrapOrg = createOpenTag(inlineNewTag, inlineNewCssClass) + wrapNew + createCloseTag(inlineNewTag);
+            wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
         }
         return new DiffRow(type, wrapOrg, wrapNew);
     }
@@ -341,17 +315,17 @@ public class DiffRowGenerator {
             if (inlineDelta instanceof DeleteDelta) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
+                        + inlineOrig.size() + 1, oldTag);
             } else if (inlineDelta instanceof InsertDelta) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
                             revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
                                     + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition(), inlineOrig.getPosition()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+                            + inlineRev.size() + 1, newTag);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+                            + inlineRev.size() + 1, newTag);
                 }
             } else if (inlineDelta instanceof ChangeDelta) {
                 if (mergeOriginalRevised) {
@@ -359,14 +333,14 @@ public class DiffRowGenerator {
                             revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
                                     + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(), inlineOrig.getPosition() + inlineOrig.size()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+                            + inlineRev.size() + 1, newTag);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, this.inlineNewTag, this.inlineNewCssClass);
+                            + inlineRev.size() + 1, newTag);
                 }
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size() + 1, this.inlineOldTag, this.inlineOldCssClass);
+                        + inlineOrig.size() + 1, oldTag);
             }
         }
         StringBuilder origResult = new StringBuilder();
@@ -400,9 +374,9 @@ public class DiffRowGenerator {
      * @param cssClass the optional css class
      */
     public static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, String tag, String cssClass) {
-        sequence.add(startPosition, createOpenTag(tag, cssClass));
-        sequence.add(endPosition, createCloseTag(tag));
+            int endPosition, Function<Boolean,String> generator) {
+        sequence.add(startPosition, generator.apply(true));
+        sequence.add(endPosition, generator.apply(false));
     }
 
     private static String createCloseTag(String tag) {
