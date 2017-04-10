@@ -1,6 +1,5 @@
 package difflib;
 
-import difflib.DiffUtils;
 import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;

@@ -1,10 +1,10 @@
 package difflib.examples;
 
 import difflib.DiffUtils;
+import difflib.TestConstants;
 import difflib.algorithm.DiffException;
 import difflib.patch.Delta;
 import difflib.patch.Patch;
-import difflib.TestConstants;
 import java.util.List;
 
 public class ComputeDifference extends Example {

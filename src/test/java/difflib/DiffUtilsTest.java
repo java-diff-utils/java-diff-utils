@@ -1,6 +1,5 @@
 package difflib;
 
-import difflib.*;
 import difflib.algorithm.DiffException;
 import difflib.patch.ChangeDelta;
 import difflib.patch.Chunk;

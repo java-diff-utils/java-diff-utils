@@ -15,7 +15,6 @@
  */
 package difflib.text;
 
-import difflib.text.StringUtils;
 import java.util.Collections;
 import org.junit.After;
 import org.junit.AfterClass;

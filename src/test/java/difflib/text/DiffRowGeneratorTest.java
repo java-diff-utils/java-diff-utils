@@ -1,8 +1,6 @@
 package difflib.text;
 
 import difflib.algorithm.DiffException;
-import difflib.text.DiffRow;
-import difflib.text.DiffRowGenerator;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertEquals;

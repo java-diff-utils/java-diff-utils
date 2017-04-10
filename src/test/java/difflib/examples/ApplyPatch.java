@@ -1,9 +1,9 @@
 package difflib.examples;
 
 import difflib.DiffUtils;
+import difflib.TestConstants;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
-import difflib.TestConstants;
 import java.util.List;
 
 public class ApplyPatch extends Example {
