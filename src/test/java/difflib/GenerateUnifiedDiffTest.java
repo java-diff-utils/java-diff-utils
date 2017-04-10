@@ -4,11 +4,11 @@ import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -16,33 +16,19 @@ import org.junit.Test;
 
 public class GenerateUnifiedDiffTest {
 
-    public List<String> fileToLines(String filename) {
-        List<String> lines = new LinkedList<>();
+    private static List<String> fileToLines(String filename) throws FileNotFoundException, IOException {
+        List<String> lines = new ArrayList<>();
         String line = "";
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new FileReader(filename));
+        try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             while ((line = in.readLine()) != null) {
                 lines.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // ignore ... any errors should already have been
-                    // reported via an IOException from the final flush.
-                }
             }
         }
         return lines;
     }
 
     @Test
-    public void testGenerateUnified() throws DiffException {
+    public void testGenerateUnified() throws DiffException, IOException {
         List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "original.txt");
         List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "revised.txt");
 
@@ -50,7 +36,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     @Test
-    public void testGenerateUnifiedWithOneDelta() throws DiffException {
+    public void testGenerateUnifiedWithOneDelta() throws DiffException, IOException {
         List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_original.txt");
         List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_revised.txt");
 
@@ -65,7 +51,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     @Test
-    public void testDiff_Issue10() {
+    public void testDiff_Issue10() throws IOException {
         final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
         final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
         final Patch<String> p = DiffUtils.parseUnifiedDiff(patchLines);
@@ -80,14 +66,14 @@ public class GenerateUnifiedDiffTest {
      * Issue 12
      */
     @Test
-    public void testPatchWithNoDeltas() throws DiffException {
+    public void testPatchWithNoDeltas() throws DiffException, IOException {
         final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_1.txt");
         final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_2.txt");
         verify(lines1, lines2, "issue11_1.txt", "issue11_2.txt");
     }
 
     @Test
-    public void testDiff5() throws DiffException {
+    public void testDiff5() throws DiffException, IOException {
         final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "5A.txt");
         final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "5B.txt");
         verify(lines1, lines2, "5A.txt", "5B.txt");

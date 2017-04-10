@@ -3,7 +3,7 @@ Diff Utils library is an OpenSource library for performing the comparison operat
 
 Main reason to build this library was the lack of easy-to-use libraries with all the usual stuff you need while working with diff files. Originally it was inspired by JRCS library and it's nice design of diff module.
 
-This is originally a fork of java-diff-utils from Google Code Archive.
+**This is originally a fork of java-diff-utils from Google Code Archive.**
 
 ## Main Features ##
 
@@ -12,6 +12,7 @@ This is originally a fork of java-diff-utils from Google Code Archive.
   * patch and unpatch the text with the given patch
   * parsing the unified diff format
   * producing human-readable differences
+  * inline difference construction
 
 ### Algoritms ###
 
@@ -20,7 +21,7 @@ This library implements Myer's diff algorithm. But it can easily replaced by any
 ### Changelog ###
   * Version 1.4
     * switch to maven and removed other artifacts
-    * changed groupid to *com.github.java-diff-utils* due to different forks at github
+    * changed groupid to **com.github.java-diff-utils** due to different forks at github
     * updated maven plugins
     * JDK 1.8 compatibility
     * support for inline merge 
