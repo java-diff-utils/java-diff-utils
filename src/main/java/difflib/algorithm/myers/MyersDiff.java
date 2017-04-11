@@ -50,12 +50,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     /**
      * Default equalizer.
      */
-    private final Equalizer<T> DEFAULT_EQUALIZER = new Equalizer<T>() {
-        @Override
-        public boolean equals(final T original, final T revised) {
-            return original.equals(revised);
-        }
-    };
+    private final Equalizer<T> DEFAULT_EQUALIZER = Object::equals;
 
     /**
      * The equalizer.
