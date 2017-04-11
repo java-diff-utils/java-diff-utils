@@ -71,7 +71,7 @@ public class DiffUtilsTest {
         final Delta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof InsertDelta);
     }
-    
+
     @Test
     public void testDiffInline() throws DiffException {
         final Patch<String> patch = DiffUtils.diffInline("", "test");
@@ -81,7 +81,7 @@ public class DiffUtilsTest {
         assertEquals(0, patch.getDeltas().get(0).getOriginal().getLines().size());
         assertEquals("test", patch.getDeltas().get(0).getRevised().getLines().get(0));
     }
-    
+
     @Test
     public void testDiffInline2() throws DiffException {
         final Patch<String> patch = DiffUtils.diffInline("es", "fest");
@@ -93,5 +93,21 @@ public class DiffUtilsTest {
         assertEquals(0, patch.getDeltas().get(1).getOriginal().getLines().size());
         assertEquals("f", patch.getDeltas().get(0).getRevised().getLines().get(0));
         assertEquals("t", patch.getDeltas().get(1).getRevised().getLines().get(0));
+    }
+
+    @Test
+    public void testDiffIntegerList() throws DiffException {
+        List<Integer> original = Arrays.asList(1, 2, 3, 4, 5);
+        List<Integer> revised = Arrays.asList(2, 3, 4, 6);
+
+        final Patch<Integer> patch = DiffUtils.diff(original, revised);
+        
+        for (Delta delta : patch.getDeltas()) {
+            System.out.println(delta);
+        }
+        
+        assertEquals(2, patch.getDeltas().size());
+        assertEquals("[DeleteDelta, position: 0, lines: [1]]", patch.getDeltas().get(0).toString());
+        assertEquals("[ChangeDelta, position: 4, lines: [5] to [6]]", patch.getDeltas().get(1).toString());
     }
 }
