@@ -2,6 +2,7 @@ package difflib.examples;
 
 import difflib.DiffUtils;
 import difflib.TestConstants;
+import difflib.UnifiedDiffUtils;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ApplyPatch extends Example {
         List<String> patched = fileToLines(PATCH);
 
         // At first, parse the unified diff file and get the patch
-        Patch<String> patch = DiffUtils.parseUnifiedDiff(patched);
+        Patch<String> patch = UnifiedDiffUtils.parseUnifiedDiff(patched);
 
         // Then apply the computed patch to the given text
         List<String> result = DiffUtils.patch(original, patch);

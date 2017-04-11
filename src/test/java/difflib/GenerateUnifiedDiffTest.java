@@ -47,14 +47,14 @@ public class GenerateUnifiedDiffTest {
     public void testGenerateUnifiedDiffWithoutAnyDeltas() throws DiffException {
         List<String> test = Arrays.asList("abc");
         Patch<String> patch = DiffUtils.diff(test, test);
-        DiffUtils.generateUnifiedDiff("abc", "abc", test, patch, 0);
+        UnifiedDiffUtils.generateUnifiedDiff("abc", "abc", test, patch, 0);
     }
 
     @Test
     public void testDiff_Issue10() throws IOException {
         final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
         final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
-        final Patch<String> p = DiffUtils.parseUnifiedDiff(patchLines);
+        final Patch<String> p = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
         try {
             DiffUtils.patch(baseLines, p);
         } catch (PatchFailedException e) {
@@ -99,18 +99,18 @@ public class GenerateUnifiedDiffTest {
         revised.add("test line 5");
 
         Patch<String> patch = DiffUtils.diff(original, revised);
-        List<String> udiff = DiffUtils.generateUnifiedDiff("original", "revised",
+        List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff("original", "revised",
                 original, patch, 10);
-        DiffUtils.parseUnifiedDiff(udiff);
+        UnifiedDiffUtils.parseUnifiedDiff(udiff);
     }
 
     private void verify(List<String> origLines, List<String> revLines,
             String originalFile, String revisedFile) throws DiffException {
         Patch<String> patch = DiffUtils.diff(origLines, revLines);
-        List<String> unifiedDiff = DiffUtils.generateUnifiedDiff(originalFile, revisedFile,
+        List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(originalFile, revisedFile,
                 origLines, patch, 10);
 
-        Patch<String> fromUnifiedPatch = DiffUtils.parseUnifiedDiff(unifiedDiff);
+        Patch<String> fromUnifiedPatch = UnifiedDiffUtils.parseUnifiedDiff(unifiedDiff);
         List<String> patchedLines;
         try {
             patchedLines = (List<String>) fromUnifiedPatch.applyTo(origLines);
