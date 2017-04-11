@@ -59,15 +59,10 @@ public abstract class Delta<T> {
      * @param revised Chunk describing the revised text. Must not be {@code null}.
      */
     public Delta(DeltaType deltaType, Chunk<T> original, Chunk<T> revised) {
-        if (deltaType == null) {
-            throw new IllegalArgumentException("deltaType must not be null");
-        }
-        if (original == null) {
-            throw new IllegalArgumentException("original must not be null");
-        }
-        if (revised == null) {
-            throw new IllegalArgumentException("revised must not be null");
-        }
+        Objects.requireNonNull(deltaType, "deltaType must not be null");
+        Objects.requireNonNull(original, "original must not be null");
+        Objects.requireNonNull(revised, "revised must not be null");
+        
         this.deltaType = deltaType;
         this.original = original;
         this.revised = revised;
