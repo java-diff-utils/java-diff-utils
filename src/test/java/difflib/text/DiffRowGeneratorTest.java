@@ -207,4 +207,27 @@ public class DiffRowGeneratorTest {
         assertEquals(1, rows.size());
         assertEquals("This is a test ~senctence~**for diffutils**.", rows.get(0).getOldLine());
     }
+    
+    @Test
+    public void testGeneratorExample2() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("This is a test senctence.", "This is the second line.", "And here is the finish."),
+                Arrays.asList("This is a test for diffutils.", "This is the second line."));
+        
+        System.out.println("|original|new|");
+        System.out.println("|--------|---|");
+        for (DiffRow row : rows) {
+            System.out.println("|" + row.getOldLine() + "|" + row.getNewLine() + "|");
+        }
+        
+        assertEquals(3, rows.size());
+        assertEquals("This is a test ~senctence~.", rows.get(0).getOldLine());
+        assertEquals("This is a test **for diffutils**.", rows.get(0).getNewLine());
+    }
 }

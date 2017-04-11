@@ -53,8 +53,8 @@ public class DiffRowGenerator {
 
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
-    private final Function<Boolean,String> oldTag;
-    private final Function<Boolean,String> newTag;
+    private final Function<Boolean, String> oldTag;
+    private final Function<Boolean, String> newTag;
     private final boolean inlineDiffByWord;
     private final int columnWidth;
     private final Equalizer<String> equalizer;
@@ -70,10 +70,10 @@ public class DiffRowGenerator {
 
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
-        
-        private Function<Boolean,String> oldTag = f -> f?"<span class=\"editOldInline\">":"</span>";
-        private Function<Boolean,String> newTag = f -> f?"<span class=\"editNewInline\">":"</span>";
-        
+
+        private Function<Boolean, String> oldTag = f -> f ? "<span class=\"editOldInline\">" : "</span>";
+        private Function<Boolean, String> newTag = f -> f ? "<span class=\"editNewInline\">" : "</span>";
+
         private int columnWidth = 80;
         private boolean mergeOriginalRevised = false;
         private boolean inlineDiffByWord = false;
@@ -109,17 +109,18 @@ public class DiffRowGenerator {
          * @param tag the tag to set. Without angle brackets. Default: span.
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder oldTag(Function<Boolean,String> generator) {
+        public Builder oldTag(Function<Boolean, String> generator) {
             this.oldTag = generator;
             return this;
         }
 
         /**
          * Generator for New-Text-Tags.
+         *
          * @param generator
-         * @return 
+         * @return
          */
-        public Builder newTag(Function<Boolean,String> generator) {
+        public Builder newTag(Function<Boolean, String> generator) {
             this.newTag = generator;
             return this;
         }
@@ -206,12 +207,18 @@ public class DiffRowGenerator {
 
     private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
         String wrapOrg = StringUtils.wrapText(StringUtils.normalize(orgline), columnWidth);
-        if (mergeOriginalRevised && Tag.DELETE == type) {
-            wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+        if (Tag.DELETE == type) {
+            if (mergeOriginalRevised || showInlineDiffs) {
+                wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+            }
         }
         String wrapNew = StringUtils.wrapText(StringUtils.normalize(newline), columnWidth);
-        if (mergeOriginalRevised && Tag.INSERT == type) {
-            wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
+        if (Tag.INSERT == type) {
+            if (mergeOriginalRevised) {
+                wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
+            } else if (showInlineDiffs) {
+                wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
+            }
         }
         return new DiffRow(type, wrapOrg, wrapNew);
     }
@@ -374,7 +381,7 @@ public class DiffRowGenerator {
      * @param cssClass the optional css class
      */
     public static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, Function<Boolean,String> generator) {
+            int endPosition, Function<Boolean, String> generator) {
         sequence.add(startPosition, generator.apply(true));
         sequence.add(endPosition, generator.apply(false));
     }
