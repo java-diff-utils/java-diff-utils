@@ -75,9 +75,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * @param equalizer Must not be {@code null}.
      */
     public MyersDiff(final Equalizer<T> equalizer) {
-        if (equalizer == null) {
-            throw new IllegalArgumentException("equalizer must not be null");
-        }
+        Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
 
