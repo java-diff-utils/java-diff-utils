@@ -43,7 +43,8 @@ public final class UnifiedDiffUtils {
         List<String[]> rawChunk = new ArrayList<>();
         Patch<String> patch = new Patch<>();
 
-        int old_ln = 0, new_ln = 0;
+        int old_ln = 0;
+        int new_ln = 0;
         String tag;
         String rest;
         for (String line : diff) {
@@ -64,10 +65,10 @@ public final class UnifiedDiffUtils {
                     for (String[] raw_line : rawChunk) {
                         tag = raw_line[0];
                         rest = raw_line[1];
-                        if (tag.equals(" ") || tag.equals("-")) {
+                        if (" ".equals(tag) || "-".equals(tag)) {
                             oldChunkLines.add(rest);
                         }
-                        if (tag.equals(" ") || tag.equals("+")) {
+                        if (" ".equals(tag) || "+".equals(tag)) {
                             newChunkLines.add(rest);
                         }
                     }
@@ -90,7 +91,7 @@ public final class UnifiedDiffUtils {
                 if (line.length() > 0) {
                     tag = line.substring(0, 1);
                     rest = line.substring(1);
-                    if (tag.equals(" ") || tag.equals("+") || tag.equals("-")) {
+                    if (" ".equals(tag) || "+".equals(tag) || "-".equals(tag)) {
                         rawChunk.add(new String[]{tag, rest});
                     }
                 } else {

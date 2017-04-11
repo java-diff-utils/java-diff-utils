@@ -183,11 +183,12 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
      * path.
      */
-    private Patch<T> buildRevision(PathNode path, List<T> orig, List<T> rev) {
-        Objects.requireNonNull(path, "path is null");
+    private Patch<T> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
+        Objects.requireNonNull(actualPath, "path is null");
         Objects.requireNonNull(orig, "original sequence is null");
         Objects.requireNonNull(rev, "revised sequence is null");
 
+        PathNode path = actualPath;
         Patch<T> patch = new Patch<>();
         if (path.isSnake()) {
             path = path.prev;

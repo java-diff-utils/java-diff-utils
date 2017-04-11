@@ -147,10 +147,7 @@ public final class Chunk<T> {
         } else if (!lines.equals(other.lines)) {
             return false;
         }
-        if (position != other.position) {
-            return false;
-        }
-        return true;
+        return position == other.position;
     }
 
     @Override

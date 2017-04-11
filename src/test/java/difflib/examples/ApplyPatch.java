@@ -12,8 +12,8 @@ import java.util.List;
 
 public class ApplyPatch {
 
-    static final String ORIGINAL = TestConstants.MOCK_FOLDER + "issue10_base.txt";
-    static final String PATCH = TestConstants.MOCK_FOLDER + "issue10_patch.txt";
+    private static final String ORIGINAL = TestConstants.MOCK_FOLDER + "issue10_base.txt";
+    private static final String PATCH = TestConstants.MOCK_FOLDER + "issue10_patch.txt";
 
     public static void main(String[] args) throws PatchFailedException, IOException {
         List<String> original = Files.readAllLines(new File(ORIGINAL).toPath());

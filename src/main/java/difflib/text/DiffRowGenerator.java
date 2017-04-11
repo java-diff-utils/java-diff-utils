@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
  */
 public class DiffRowGenerator {
 
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
     private final Function<Boolean, String> oldTag;
@@ -176,7 +177,7 @@ public class DiffRowGenerator {
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
-        oldTag = builder.oldTag;;
+        oldTag = builder.oldTag;
         newTag = builder.newTag;
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
@@ -185,10 +186,10 @@ public class DiffRowGenerator {
             @Override
             public boolean equals(String original, String revised) {
                 if (ignoreWhiteSpaces) {
-                    original = original.trim().replaceAll("\\s+", " ");
-                    revised = revised.trim().replaceAll("\\s+", " ");
+                    return original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
+                } else {
+                    return original.equals(revised);
                 }
-                return original.equals(revised);
             }
         };
     }
@@ -386,9 +387,7 @@ public class DiffRowGenerator {
         sequence.add(endPosition, generator.apply(false));
     }
 
-    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
-
-    static List<String> splitStringPreserveDelimiter(String str) {
+    protected final static List<String> splitStringPreserveDelimiter(String str) {
         List<String> list = new ArrayList<>();
         if (str != null) {
             Matcher matcher = SPLIT_PATTERN.matcher(str);
