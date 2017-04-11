@@ -7,7 +7,7 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 ## Examples ##
 
-Look [Examples] to find some examples. 
+Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful informations and examples. 
 
 ## Main Features ##
 
