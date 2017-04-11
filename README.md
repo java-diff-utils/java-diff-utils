@@ -5,6 +5,8 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 **This is originally a fork of java-diff-utils from Google Code Archive.**
 
+[![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)
+
 ## Examples ##
 
 Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful informations and examples. 
