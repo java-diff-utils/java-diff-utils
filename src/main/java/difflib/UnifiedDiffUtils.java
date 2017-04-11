@@ -108,10 +108,10 @@ public final class UnifiedDiffUtils {
             for (String[] raw_line : rawChunk) {
                 tag = raw_line[0];
                 rest = raw_line[1];
-                if (tag.equals(" ") || tag.equals("-")) {
+                if (" ".equals(tag) || "-".equals(tag)) {
                     oldChunkLines.add(rest);
                 }
-                if (tag.equals(" ") || tag.equals("+")) {
+                if (" ".equals(tag) || "+".equals(tag)) {
                     newChunkLines.add(rest);
                 }
             }
