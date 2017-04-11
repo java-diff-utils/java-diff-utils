@@ -5,6 +5,10 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 **This is originally a fork of java-diff-utils from Google Code Archive.**
 
+## Examples ##
+
+Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful informations and examples. 
+
 ## Main Features ##
 
   * computing the difference between two texts.
