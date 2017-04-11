@@ -46,8 +46,6 @@ import java.util.regex.Pattern;
  *    DiffRowGenerator generator = new DiffRowGenerator.Builder().showInlineDiffs(true).
  *    	ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
- *
- * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */
 public class DiffRowGenerator {
 
