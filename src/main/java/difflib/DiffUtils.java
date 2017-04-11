@@ -29,6 +29,7 @@ import difflib.patch.PatchFailedException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -85,15 +86,10 @@ public final class DiffUtils {
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
             DiffAlgorithm<T> algorithm) throws DiffException {
-        if (original == null) {
-            throw new IllegalArgumentException("original must not be null");
-        }
-        if (revised == null) {
-            throw new IllegalArgumentException("revised must not be null");
-        }
-        if (algorithm == null) {
-            throw new IllegalArgumentException("algorithm must not be null");
-        }
+        Objects.requireNonNull(original,"original must not be null");
+        Objects.requireNonNull(revised,"revised must not be null");
+        Objects.requireNonNull(algorithm,"algorithm must not be null");
+        
         return algorithm.diff(original, revised);
     }
 

@@ -32,6 +32,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A clean-room implementation of <a href="http://www.cs.arizona.edu/people/gene/">
@@ -97,12 +98,9 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      */
     @Override
     public Patch<T> diff(final List<T> original, final List<T> revised) throws DiffException {
-        if (original == null) {
-            throw new IllegalArgumentException("original list must not be null");
-        }
-        if (revised == null) {
-            throw new IllegalArgumentException("revised list must not be null");
-        }
+        Objects.requireNonNull(original, "original list must not be null");
+        Objects.requireNonNull(revised, "revised list must not be null");
+        
         PathNode path = buildPath(original, revised);
         return buildRevision(path, original, revised);
     }
@@ -118,12 +116,8 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      */
     private PathNode buildPath(final List<T> orig, final List<T> rev)
             throws DifferentiationFailedException {
-        if (orig == null) {
-            throw new IllegalArgumentException("original sequence is null");
-        }
-        if (rev == null) {
-            throw new IllegalArgumentException("revised sequence is null");
-        }
+        Objects.requireNonNull(orig, "original sequence is null");
+        Objects.requireNonNull(rev, "revised sequence is null");
 
         // these are local constants
         final int N = orig.size();
@@ -192,15 +186,9 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * path.
      */
     private Patch<T> buildRevision(PathNode path, List<T> orig, List<T> rev) {
-        if (path == null) {
-            throw new IllegalArgumentException("path is null");
-        }
-        if (orig == null) {
-            throw new IllegalArgumentException("original sequence is null");
-        }
-        if (rev == null) {
-            throw new IllegalArgumentException("revised sequence is null");
-        }
+        Objects.requireNonNull(path, "path is null");
+        Objects.requireNonNull(orig, "original sequence is null");
+        Objects.requireNonNull(rev, "revised sequence is null");
 
         Patch<T> patch = new Patch<>();
         if (path.isSnake()) {
