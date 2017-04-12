@@ -17,18 +17,18 @@ Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful 
 These two outputs are generated using this java-diff-utils. The source code can also be found at the *Examples* page:
 
 Producing a one liner including all difference information.
-```
+
 This is a test ~senctence~**for diffutils**.
-```
+
 
 Producing a side by side view of computed differences.
-```
+
 |original|new|
 |--------|---|
 |This is a test ~senctence~.|This is a test **for diffutils**.|
 |This is the second line.|This is the second line.|
 |~And here is the finish.~||
-```
+
 
 ## Main Features ##
 
