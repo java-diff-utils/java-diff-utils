@@ -1,9 +1,7 @@
 # java-diff-utils
 
 ## Status ##
-[![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)
-
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
 
 ## Intro ##
 Diff Utils library is an OpenSource library for performing the comparison operations between texts: computing diffs, applying patches, generating unified diffs or parsing them, generating diff output for easy future displaying (like side-by-side view) and so on.
