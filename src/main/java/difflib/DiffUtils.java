@@ -26,6 +26,7 @@ import difflib.patch.Delta;
 import difflib.patch.Equalizer;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +52,13 @@ public final class DiffUtils {
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
         return DiffUtils.diff(original, revised, new MyersDiff<>());
+    }
+    
+    /**
+     * Computes the difference between the original and revised text.
+     */
+    public static Patch<String> diff(String originalText, String revisedText) throws DiffException {
+        return DiffUtils.diff(Arrays.asList(originalText.split("\n")), Arrays.asList(revisedText.split("\n")));
     }
 
     /**

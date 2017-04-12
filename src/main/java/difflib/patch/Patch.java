@@ -85,4 +85,9 @@ public final class Patch<T> {
         Collections.sort(deltas, comparing(d -> d.getOriginal().getPosition()));
         return deltas;
     }
+
+    @Override
+    public String toString() {
+        return "Patch{" + "deltas=" + deltas + '}';
+    }
 }
