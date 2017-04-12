@@ -16,12 +16,12 @@ Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful 
 
 These two outputs are generated using this java-diff-utils. The source code can also be found at the *Examples* page:
 
-Producing a one liner including all difference information.
+**Producing a one liner including all difference information.**
 
 This is a test ~senctence~**for diffutils**.
 
 
-Producing a side by side view of computed differences.
+**Producing a side by side view of computed differences.**
 
 |original|new|
 |--------|---|
