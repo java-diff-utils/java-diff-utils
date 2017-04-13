@@ -44,6 +44,8 @@ public final class PathNode {
     public final PathNode prev;
 
     public final boolean snake;
+    
+    public final boolean bootstrap;
 
     /**
      * Concatenates a new path node with an existing diffpath.
@@ -52,9 +54,10 @@ public final class PathNode {
      * @param j The position in the revised sequence for the new node.
      * @param prev The previous node in the path.
      */
-    public PathNode(int i, int j, boolean snake, PathNode prev) {
+    public PathNode(int i, int j, boolean snake, boolean bootstrap, PathNode prev) {
         this.i = i;
         this.j = j;
+        this.bootstrap = bootstrap;
         if (snake) {
             this.prev = prev;
         } else {
@@ -75,7 +78,7 @@ public final class PathNode {
      * @return tru if this is a bootstrap node.
      */
     public boolean isBootstrap() {
-        return i < 0 || j < 0;
+        return bootstrap;
     }
 
     /**

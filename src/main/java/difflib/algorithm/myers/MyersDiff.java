@@ -111,7 +111,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
         final int middle = size / 2;
         final PathNode diagonal[] = new PathNode[size];
 
-        diagonal[middle + 1] = new PathNode(0, -1, true, null);
+        diagonal[middle + 1] = new PathNode(0, -1, true, true, null);
         for (int d = 0; d < MAX; d++) {
             for (int k = -d; k <= d; k += 2) {
                 final int kmiddle = middle + k;
@@ -132,7 +132,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
                 int j = i - k;
 
-                PathNode node = new PathNode(i, j, false, prev);
+                PathNode node = new PathNode(i, j, false, false, prev);
 
                 while (i < N && j < M && equalizer.equals(orig.get(i), rev.get(j))) {
                     i++;
@@ -140,7 +140,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
                 }
 
                 if (i != node.i) {
-                    node = new PathNode(i, j, true, node);
+                    node = new PathNode(i, j, true, false, node);
                 }
 
                 diagonal[kmiddle] = node;
