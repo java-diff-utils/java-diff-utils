@@ -40,6 +40,6 @@ public class XHistogram<T> implements DiffAlgorithm<T> {
     }
 
     private void histogramDiff(XPParam xpp, XDFEnv env, int line1, int count1, int line2, int count2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 }
