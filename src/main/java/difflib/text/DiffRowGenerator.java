@@ -172,6 +172,10 @@ public class DiffRowGenerator {
         return new Builder();
     }
 
+    public static final Equalizer<String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
+            -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
+    public static final Equalizer<String> DEFAULT_EQUALIZER = Object::equals;
+    
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
@@ -180,16 +184,7 @@ public class DiffRowGenerator {
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
         inlineDiffByWord = builder.inlineDiffByWord;
-        equalizer = new Equalizer<String>() {
-            @Override
-            public boolean equals(String original, String revised) {
-                if (ignoreWhiteSpaces) {
-                    return original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
-                } else {
-                    return original.equals(revised);
-                }
-            }
-        };
+        equalizer = ignoreWhiteSpaces?IGNORE_WHITESPACE_EQUALIZER:DEFAULT_EQUALIZER;
     }
 
     /**

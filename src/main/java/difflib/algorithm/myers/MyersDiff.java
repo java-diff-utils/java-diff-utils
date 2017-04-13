@@ -33,15 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A clean-room implementation of <a href="http://www.cs.arizona.edu/people/gene/">
- * Eugene Myers</a> differencing algorithm.
- *
- * <p>
- * See the paper at <a href="http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps">
- * http://www.cs.arizona.edu/people/gene/PAPERS/diff.ps</a></p>
- *
- * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
- * @param T The type of the compared elements in the 'lines'.
+ * A clean-room implementation of Eugene Myers greedy differencing algorithm.
  */
 public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
@@ -116,8 +108,8 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
                 final int kplus = kmiddle + 1;
                 final int kminus = kmiddle - 1;
                 PathNode prev = null;
-
                 int i;
+                
                 if ((k == -d) || (k != d && diagonal[kminus].i < diagonal[kplus].i)) {
                     i = diagonal[kplus].i;
                     prev = diagonal[kplus];
