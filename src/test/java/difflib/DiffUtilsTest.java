@@ -145,11 +145,19 @@ public class DiffUtilsTest {
         assertEquals(1, patch.getDeltas().size());
     }
     
-    private static List<String> readStringListFromInputStream(InputStream is) throws IOException {
+    public static List<String> readStringListFromInputStream(InputStream is) throws IOException {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))) {
             
             return reader.lines().collect(toList());
         }
+    }
+    
+    @Test
+    public void testDiffMyersExample1() throws DiffException {
+        final Patch<String> patch = DiffUtils.diff(Arrays.asList("A","B","C","A","B","B","A"), Arrays.asList("C","B","A","B","A","C"));
+        assertNotNull(patch);
+        assertEquals(4, patch.getDeltas().size());
+        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
     }
 }

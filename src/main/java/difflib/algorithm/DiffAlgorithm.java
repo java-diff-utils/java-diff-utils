@@ -38,7 +38,9 @@ public interface DiffAlgorithm<T> {
      * @param revised The revised sequence. Must not be {@code null}.
      * @return The patch representing the diff of the given sequences. Never {@code null}.
      */
-    public Patch<T> diff(T[] original, T[] revised) throws DiffException;
+    public default Patch<T> diff(T[] original, T[] revised) throws DiffException {
+        return diff(Arrays.asList(original), Arrays.asList(revised));
+    }
 
     /**
      * Computes the difference between the original sequence and the revised sequence and returns it

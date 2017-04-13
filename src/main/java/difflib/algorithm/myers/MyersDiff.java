@@ -77,23 +77,13 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     /**
      * {@inheritDoc}
      *
-     * @return Returns an empty diff if get the error while procession the difference.
-     */
-    @Override
-    public Patch<T> diff(final T[] original, final T[] revised) throws DiffException {
-        return diff(Arrays.asList(original), Arrays.asList(revised));
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * Return empty diff if get the error while procession the difference.
      */
     @Override
     public Patch<T> diff(final List<T> original, final List<T> revised) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
-        
+
         PathNode path = buildPath(original, revised);
         return buildRevision(path, original, revised);
     }
@@ -121,7 +111,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
         final int middle = size / 2;
         final PathNode diagonal[] = new PathNode[size];
 
-        diagonal[middle + 1] = new Snake(0, -1, null);
+        diagonal[middle + 1] = new PathNode(0, -1, true, true, null);
         for (int d = 0; d < MAX; d++) {
             for (int k = -d; k <= d; k += 2) {
                 final int kmiddle = middle + k;
@@ -142,17 +132,15 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
                 int j = i - k;
 
-                PathNode node = new DiffNode(i, j, prev);
+                PathNode node = new PathNode(i, j, false, false, prev);
 
-                // orig and rev are zero-based
-                // but the algorithm is one-based
-                // that's why there's no +1 when indexing the sequences
                 while (i < N && j < M && equalizer.equals(orig.get(i), rev.get(j))) {
                     i++;
                     j++;
                 }
-                if (i > node.i) {
-                    node = new Snake(i, j, node);
+
+                if (i != node.i) {
+                    node = new PathNode(i, j, true, false, node);
                 }
 
                 diagonal[kmiddle] = node;
@@ -162,7 +150,6 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
                 }
             }
             diagonal[middle + d - 1] = null;
-
         }
         // According to Myers, this cannot happen
         throw new DifferentiationFailedException("could not find a diff path");
