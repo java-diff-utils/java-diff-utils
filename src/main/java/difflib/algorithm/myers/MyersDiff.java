@@ -217,29 +217,4 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     private List<T> copyOfRange(final List<T> original, final int fromIndex, final int to) {
         return new ArrayList<>(original.subList(fromIndex, to));
     }
-
-    /**
-     * Copied here from JDK 1.6
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T[] copyOfRange2(T[] original, int from, int to) {
-        return copyOfRange2(original, from, to, (Class<T[]>) original.getClass());
-    }
-
-    /**
-     * Copied here from JDK 1.6
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, U> T[] copyOfRange2(U[] original, int from, int to,
-            Class<? extends T[]> newType) {
-        int newLength = to - from;
-        if (newLength < 0) {
-            throw new IllegalArgumentException(from + " > " + to);
-        }
-        T[] copy = ((Object) newType == (Object) Object[].class) ? (T[]) new Object[newLength]
-                : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-        System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
-        return copy;
-    }
-
 }
