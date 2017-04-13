@@ -17,16 +17,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
  * #L%
  */
-package difflib.algorithm.myers;
+package difflib.algorithm;
 
 import difflib.algorithm.DiffException;
 
 /**
  * Thrown whenever the differencing engine cannot produce the differences between two revisions of
  * ta text.
- *
- *
- * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
+
  * @see MyersDiff
  * @see difflib.DiffAlgorithm
  */

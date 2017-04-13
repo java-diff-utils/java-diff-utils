@@ -19,6 +19,7 @@ limitations under the License.
  */
 package difflib.algorithm.myers;
 
+import difflib.algorithm.DifferentiationFailedException;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
 import difflib.patch.ChangeDelta;
