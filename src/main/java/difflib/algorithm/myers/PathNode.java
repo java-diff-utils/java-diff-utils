@@ -22,13 +22,13 @@ package difflib.algorithm.myers;
 /**
  * A node in a diffpath.
  *
-  * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
+ * @author <a href="mailto:juanco@suigeneris.org">Juanco Anez</a>
  *
  * @see DiffNode
  * @see Snake
  *
  */
-public abstract class PathNode {
+public final class PathNode {
 
     /**
      * Position in the original sequence.
@@ -43,6 +43,8 @@ public abstract class PathNode {
      */
     public final PathNode prev;
 
+    public final boolean snake;
+
     /**
      * Concatenates a new path node with an existing diffpath.
      *
@@ -50,18 +52,20 @@ public abstract class PathNode {
      * @param j The position in the revised sequence for the new node.
      * @param prev The previous node in the path.
      */
-    public PathNode(int i, int j, PathNode prev) {
+    public PathNode(int i, int j, boolean snake, PathNode prev) {
         this.i = i;
         this.j = j;
-        this.prev = prev;
+        if (snake) {
+            this.prev = prev;
+        } else {
+            this.prev = (prev == null ? null : prev.previousSnake());
+        }
+        this.snake = snake;
     }
 
-    /**
-     * Is this node a {@link Snake Snake node}?
-     *
-     * @return true if this is a {@link Snake Snake node}
-     */
-    public abstract boolean isSnake();
+    public boolean isSnake() {
+        return snake;
+    }
 
     /**
      * Is this a bootstrap node?
