@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package difflib.algorithm.xdiff;
+package difflib.algorithm.jgit;
 
+import difflib.DiffUtils;
+import difflib.algorithm.DiffException;
+import difflib.patch.Patch;
+import difflib.patch.PatchFailedException;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -25,11 +30,11 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author tw
+ * @author toben
  */
-public class XPrepareTest {
+public class JGitDiffTest {
     
-    public XPrepareTest() {
+    public JGitDiffTest() {
     }
     
     @BeforeClass
@@ -49,18 +54,20 @@ public class XPrepareTest {
     }
 
     /**
-     * Test of prepareEnvironment method, of class XPrepare.
+     * Test of diff method, of class JGitDiff.
      */
     @Test
-    public void testPrepareEnvironment() {
-        XDFEnv<String> env = new XDFEnv<>();
-        XPrepare.prepareEnvironment(
-                Arrays.asList("A","B","C","A","B","B","A"), 
-                Arrays.asList("C","B","A","B","A","C"),
-                new XPParam(),
-                env);
-        System.out.println(Arrays.toString(env.xdf1.ha));
-        System.out.println(Arrays.toString(env.xdf2.ha));
+    public void testDiff() throws DiffException, PatchFailedException {
+        List<String> orgList = Arrays.asList("A","B","C","A","B","B","A");
+        List<String> revList = Arrays.asList("C","B","A","B","A","C");
+        final Patch<String> patch = new JGitDiff().diff(orgList, revList);
+        System.out.println(patch);
+        assertNotNull(patch);
+        assertEquals(3, patch.getDeltas().size());
+        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [DeleteDelta, position: 3, lines: [A, B]], [InsertDelta, position: 7, lines: [B, A, C]]]}", patch.toString());
+        
+        List<String> patched = patch.applyTo(orgList);
+        assertEquals(revList, patched);
     }
     
 }

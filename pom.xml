@@ -66,6 +66,11 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>org.eclipse.jgit</groupId>
+	  <artifactId>org.eclipse.jgit</artifactId>
+	  <version>4.4.1.201607150455-r</version>
+	 </dependency>
 	</dependencies>
 
 	<build>
