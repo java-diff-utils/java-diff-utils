@@ -35,9 +35,9 @@ import static org.junit.Assert.*;
  *
  * @author toben
  */
-public class JGitDiffTest {
+public class LRJGitDiffTest {
     
-    public JGitDiffTest() {
+    public LRJGitDiffTest() {
     }
     
     @BeforeClass
@@ -56,20 +56,19 @@ public class JGitDiffTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of diff method, of class JGitDiff.
-     */
+    
     @Test
-    public void testDiff() throws DiffException, PatchFailedException {
-        List<String> orgList = Arrays.asList("A","B","C","A","B","B","A");
-        List<String> revList = Arrays.asList("C","B","A","B","A","C");
-        final Patch<String> patch = new JGitDiff().diff(orgList, revList);
-        System.out.println(patch);
-        assertNotNull(patch);
-        assertEquals(3, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [DeleteDelta, position: 3, lines: [A, B]], [InsertDelta, position: 7, lines: [B, A, C]]]}", patch.toString());
+    public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {
+        ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
+        List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
+        List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
         
-        List<String> patched = patch.applyTo(orgList);
-        assertEquals(revList, patched);
+        Patch<String> patch = new JGitDiff().diff(original, revised);
+        
+        assertEquals(34, patch.getDeltas().size());
+        
+        List<String> created = patch.applyTo(original);
+        assertArrayEquals(revised.toArray(), created.toArray());
     }
+    
 }
