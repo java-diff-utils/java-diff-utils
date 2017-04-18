@@ -30,7 +30,9 @@ import org.eclipse.jgit.diff.Sequence;
 import org.eclipse.jgit.diff.SequenceComparator;
 
 /**
- *
+ * HistorgramDiff using JGit - Library. This one is much more performant than the
+ * orginal Myers implementation.
+ * 
  * @author toben
  */
 public class JGitDiff<T> implements DiffAlgorithm<T> {
@@ -41,8 +43,6 @@ public class JGitDiff<T> implements DiffAlgorithm<T> {
         diffList.addAll(new HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
         Patch<T> patch = new Patch<>();
         for (Edit edit : diffList) {
-            System.out.println(edit);
-
             Chunk<T> orgChunk = new Chunk<>(edit.getBeginA(), original.subList(edit.getBeginA(), edit.getEndA()));
             Chunk<T> revChunk = new Chunk<>(edit.getBeginA(), revised.subList(edit.getBeginB(), edit.getEndB()));
             switch (edit.getType()) {

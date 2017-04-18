@@ -15,12 +15,15 @@
  */
 package difflib.algorithm.jgit;
 
-import difflib.DiffUtils;
+import static difflib.DiffUtilsTest.readStringListFromInputStream;
+import difflib.TestConstants;
 import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipFile;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -68,6 +71,20 @@ public class JGitDiffTest {
         
         List<String> patched = patch.applyTo(orgList);
         assertEquals(revList, patched);
+    }
+    
+    @Test
+    public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {
+        ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
+        List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
+        List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
+        
+        Patch<String> patch = new JGitDiff().diff(original, revised);
+        
+        assertEquals(34, patch.getDeltas().size());
+        
+        List<String> created = patch.applyTo(original);
+        assertArrayEquals(revised.toArray(), created.toArray());
     }
     
 }
