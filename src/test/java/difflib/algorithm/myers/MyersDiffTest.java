@@ -19,6 +19,7 @@ import difflib.DiffUtils;
 import difflib.algorithm.DiffException;
 import difflib.patch.Patch;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -31,36 +32,34 @@ import static org.junit.Assert.*;
  * @author tw
  */
 public class MyersDiffTest {
-    
+
     public MyersDiffTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
-    }   
+    }
 
-    
-    
     @Test
     public void testDiffMyersExample1Forward() throws DiffException {
-        final Patch<String> patch = new MyersDiff<String>().diff(
-                Arrays.asList("A","B","C","A","B","B","A"), 
-                Arrays.asList("C","B","A","B","A","C"));
+        List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
+        List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
+        final Patch<String> patch = Patch.generate(original, revised, new MyersDiff<String>().diff(original, revised));
         assertNotNull(patch);
         assertEquals(4, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
     }
-    
+
 }

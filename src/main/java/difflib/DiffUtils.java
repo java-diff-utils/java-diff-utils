@@ -98,7 +98,7 @@ public final class DiffUtils {
         Objects.requireNonNull(revised,"revised must not be null");
         Objects.requireNonNull(algorithm,"algorithm must not be null");
         
-        return algorithm.diff(original, revised);
+        return Patch.generate(original, revised, algorithm.diff(original, revised));
     }
 
     /**

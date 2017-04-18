@@ -19,6 +19,10 @@ limitations under the License.
  */
 package difflib.patch;
 
+import difflib.algorithm.Change;
+import static difflib.patch.DeltaType.DELETE;
+import static difflib.patch.DeltaType.INSERT;
+import java.util.ArrayList;
 import java.util.Collections;
 import static java.util.Comparator.comparing;
 import java.util.LinkedList;
@@ -89,5 +93,25 @@ public final class Patch<T> {
     @Override
     public String toString() {
         return "Patch{" + "deltas=" + deltas + '}';
+    }
+    
+    public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes) {
+        Patch<T> patch = new Patch<>();
+        for (Change change : changes) {
+            Chunk<T> orgChunk = new Chunk<>(change.startOriginal, new ArrayList<>(original.subList(change.startOriginal, change.endOriginal)));
+            Chunk<T> revChunk = new Chunk<>(change.startOriginal, new ArrayList<>(revised.subList(change.startRevised, change.endRevised)));
+            switch (change.deltaType) {
+                case DELETE:
+                    patch.addDelta(new DeleteDelta<>(orgChunk, revChunk));
+                    break;
+                case INSERT:
+                    patch.addDelta(new InsertDelta<>(orgChunk, revChunk));
+                    break;
+                case CHANGE:
+                    patch.addDelta(new ChangeDelta<>(orgChunk, revChunk));
+                    break;
+            }
+        }
+        return patch;
     }
 }

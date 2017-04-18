@@ -63,7 +63,7 @@ public class JGitDiffTest {
     public void testDiff() throws DiffException, PatchFailedException {
         List<String> orgList = Arrays.asList("A","B","C","A","B","B","A");
         List<String> revList = Arrays.asList("C","B","A","B","A","C");
-        final Patch<String> patch = new JGitDiff().diff(orgList, revList);
+        final Patch<String> patch = Patch.generate(orgList, revList, new JGitDiff().diff(orgList, revList));
         System.out.println(patch);
         assertNotNull(patch);
         assertEquals(3, patch.getDeltas().size());

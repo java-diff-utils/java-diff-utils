@@ -15,13 +15,14 @@
  */
 package difflib.algorithm.jgit;
 
+import difflib.algorithm.Change;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
 import difflib.patch.ChangeDelta;
-import difflib.patch.Chunk;
 import difflib.patch.DeleteDelta;
+import difflib.patch.DeltaType;
 import difflib.patch.InsertDelta;
-import difflib.patch.Patch;
+import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
@@ -38,24 +39,24 @@ import org.eclipse.jgit.diff.SequenceComparator;
 public class JGitDiff<T> implements DiffAlgorithm<T> {
 
     @Override
-    public Patch diff(List<T> original, List<T> revised) throws DiffException {
+    public List<Change> diff(List<T> original, List<T> revised) throws DiffException {
         EditList diffList = new EditList();
         diffList.addAll(new HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
-        Patch<T> patch = new Patch<>();
+        List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
-            Chunk<T> orgChunk = new Chunk<>(edit.getBeginA(), original.subList(edit.getBeginA(), edit.getEndA()));
-            Chunk<T> revChunk = new Chunk<>(edit.getBeginA(), revised.subList(edit.getBeginB(), edit.getEndB()));
+            DeltaType type = DeltaType.EQUAL; 
             switch (edit.getType()) {
                 case DELETE:
-                    patch.addDelta(new DeleteDelta<>(orgChunk, revChunk));
+                    type = DeltaType.DELETE; 
                     break;
                 case INSERT:
-                    patch.addDelta(new InsertDelta<>(orgChunk, revChunk));
+                    type = DeltaType.INSERT; 
                     break;
                 case REPLACE:
-                    patch.addDelta(new ChangeDelta<>(orgChunk, revChunk));
+                    type = DeltaType.CHANGE; 
                     break;
             }
+            patch.add(new Change(type,edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
         }
         return patch;
     }

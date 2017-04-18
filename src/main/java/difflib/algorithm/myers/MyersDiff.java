@@ -19,15 +19,12 @@ limitations under the License.
  */
 package difflib.algorithm.myers;
 
+import difflib.algorithm.Change;
 import difflib.algorithm.DifferentiationFailedException;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
-import difflib.patch.ChangeDelta;
-import difflib.patch.Chunk;
-import difflib.patch.DeleteDelta;
-import difflib.patch.Delta;
+import difflib.patch.DeltaType;
 import difflib.patch.Equalizer;
-import difflib.patch.InsertDelta;
 import difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +68,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * Return empty diff if get the error while procession the difference.
      */
     @Override
-    public Patch<T> diff(final List<T> original, final List<T> revised) throws DiffException {
+    public List<Change> diff(final List<T> original, final List<T> revised) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
 
@@ -80,8 +77,9 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences between the original and revised
-     * sequences, according to Gene Myers differencing algorithm.
+     * Computes the minimum diffpath that expresses de differences between the
+     * original and revised sequences, according to Gene Myers differencing
+     * algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
@@ -108,9 +106,9 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
                 final int kmiddle = middle + k;
                 final int kplus = kmiddle + 1;
                 final int kminus = kmiddle - 1;
-                PathNode prev = null;
+                PathNode prev;
                 int i;
-                
+
                 if ((k == -d) || (k != d && diagonal[kminus].i < diagonal[kplus].i)) {
                     i = diagonal[kplus].i;
                     prev = diagonal[kplus];
@@ -153,16 +151,16 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
-     * path.
+     * @throws DifferentiationFailedException if a {@link Patch} could not be
+     * built from the given path.
      */
-    private Patch<T> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
+    private List<Change> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
         Objects.requireNonNull(actualPath, "path is null");
         Objects.requireNonNull(orig, "original sequence is null");
         Objects.requireNonNull(rev, "revised sequence is null");
 
         PathNode path = actualPath;
-        Patch<T> patch = new Patch<>();
+        List<Change> changes = new ArrayList<>();
         if (path.isSnake()) {
             path = path.prev;
         }
@@ -177,35 +175,29 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
             int ianchor = path.i;
             int janchor = path.j;
 
-            Chunk<T> original = new Chunk<>(ianchor, copyOfRange(orig, ianchor, i));
-            Chunk<T> revised = new Chunk<>(janchor, copyOfRange(rev, janchor, j));
-            Delta<T> delta = null;
-            if (original.size() == 0 && revised.size() != 0) {
-                delta = new InsertDelta<>(original, revised);
-            } else if (original.size() > 0 && revised.size() == 0) {
-                delta = new DeleteDelta<>(original, revised);
+            if (ianchor == i && janchor != j) {
+                changes.add(new Change(DeltaType.INSERT, ianchor, i, janchor, j));
+            } else if (ianchor != i && janchor == j) {
+                changes.add(new Change(DeltaType.DELETE, ianchor, i, janchor, j));
             } else {
-                delta = new ChangeDelta<>(original, revised);
+                changes.add(new Change(DeltaType.CHANGE, ianchor, i, janchor, j));
             }
-
-            patch.addDelta(delta);
+//            Chunk<T> original = new Chunk<>(ianchor, copyOfRange(orig, ianchor, i));
+//            Chunk<T> revised = new Chunk<>(janchor, copyOfRange(rev, janchor, j));
+//            Delta<T> delta = null;
+//            if (original.size() == 0 && revised.size() != 0) {
+//                delta = new InsertDelta<>(original, revised);
+//            } else if (original.size() > 0 && revised.size() == 0) {
+//                delta = new DeleteDelta<>(original, revised);
+//            } else {
+//                delta = new ChangeDelta<>(original, revised);
+//            }
+//
+//            patch.addDelta(delta);
             if (path.isSnake()) {
                 path = path.prev;
             }
         }
-        return patch;
-    }
-
-    /**
-     * Creates a new list containing the elements returned by {@link List#subList(int, int)}.
-     *
-     * @param original The original sequence. Must not be {@code null}.
-     * @param fromIndex low endpoint (inclusive) of the subList.
-     * @param to high endpoint (exclusive) of the subList.
-     * @return A new list of the specified range within the original list.
-     *
-     */
-    private List<T> copyOfRange(final List<T> original, final int fromIndex, final int to) {
-        return new ArrayList<>(original.subList(fromIndex, to));
+        return changes;
     }
 }

@@ -63,7 +63,7 @@ public class LRJGitDiffTest {
         List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
         
-        Patch<String> patch = new JGitDiff().diff(original, revised);
+        Patch<String> patch = Patch.generate(original, revised, new JGitDiff().diff(original, revised));
         
         assertEquals(34, patch.getDeltas().size());
         

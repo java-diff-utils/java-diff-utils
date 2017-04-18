@@ -34,25 +34,6 @@ public abstract class Delta<T> {
     private final Chunk<T> revised;
 
     /**
-     * Specifies the type of the delta.
-     *
-     */
-    public static enum DeltaType {
-        /**
-         * A change in the original.
-         */
-        CHANGE,
-        /**
-         * A delete from the original.
-         */
-        DELETE,
-        /**
-         * An insert into the original.
-         */
-        INSERT
-    }
-
-    /**
      * Construct the delta for original and revised chunks
      *
      * @param original Chunk describing the original text. Must not be {@code null}.
