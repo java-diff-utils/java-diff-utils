@@ -99,7 +99,7 @@ public final class Patch<T> {
         Patch<T> patch = new Patch<>();
         for (Change change : changes) {
             Chunk<T> orgChunk = new Chunk<>(change.startOriginal, new ArrayList<>(original.subList(change.startOriginal, change.endOriginal)));
-            Chunk<T> revChunk = new Chunk<>(change.startOriginal, new ArrayList<>(revised.subList(change.startRevised, change.endRevised)));
+            Chunk<T> revChunk = new Chunk<>(change.startRevised, new ArrayList<>(revised.subList(change.startRevised, change.endRevised)));
             switch (change.deltaType) {
                 case DELETE:
                     patch.addDelta(new DeleteDelta<>(orgChunk, revChunk));
