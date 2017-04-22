@@ -23,7 +23,6 @@ import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
 import difflib.algorithm.myers.MyersDiff;
 import difflib.patch.Delta;
-import difflib.patch.Equalizer;
 import difflib.patch.Patch;
 import difflib.patch.PatchFailedException;
 import java.util.Arrays;
@@ -31,6 +30,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -74,7 +74,7 @@ public final class DiffUtils {
      * {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            Equalizer<T> equalizer) throws DiffException {
+            BiPredicate<T,T> equalizer) throws DiffException {
         if (equalizer != null) {
             return DiffUtils.diff(original, revised,
                     new MyersDiff<>(equalizer));

@@ -25,11 +25,11 @@ import difflib.patch.ChangeDelta;
 import difflib.patch.Chunk;
 import difflib.patch.DeleteDelta;
 import difflib.patch.Delta;
-import difflib.patch.Equalizer;
 import difflib.patch.InsertDelta;
 import difflib.patch.Patch;
 import difflib.text.DiffRow.Tag;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +56,7 @@ public class DiffRowGenerator {
     private final Function<Boolean, String> newTag;
     private final boolean inlineDiffByWord;
     private final int columnWidth;
-    private final Equalizer<String> equalizer;
+    private final BiPredicate<String, String> equalizer;
     private final boolean mergeOriginalRevised;
 
     /**
@@ -172,9 +172,9 @@ public class DiffRowGenerator {
         return new Builder();
     }
 
-    public static final Equalizer<String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
+    public static final BiPredicate<String,String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
             -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
-    public static final Equalizer<String> DEFAULT_EQUALIZER = Object::equals;
+    public static final BiPredicate<String,String> DEFAULT_EQUALIZER = Object::equals;
     
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;

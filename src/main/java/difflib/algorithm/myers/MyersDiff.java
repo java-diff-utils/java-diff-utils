@@ -24,11 +24,11 @@ import difflib.algorithm.DifferentiationFailedException;
 import difflib.algorithm.DiffAlgorithm;
 import difflib.algorithm.DiffException;
 import difflib.patch.DeltaType;
-import difflib.patch.Equalizer;
 import difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 
 /**
  * A clean-room implementation of Eugene Myers greedy differencing algorithm.
@@ -38,12 +38,12 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     /**
      * Default equalizer.
      */
-    private final Equalizer<T> DEFAULT_EQUALIZER = Object::equals;
+    private final BiPredicate<T,T> DEFAULT_EQUALIZER = Object::equals;
 
     /**
      * The equalizer.
      */
-    private final Equalizer<T> equalizer;
+    private final BiPredicate<T,T> equalizer;
 
     /**
      * Constructs an instance of the Myers differencing algorithm.
@@ -57,7 +57,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      *
      * @param equalizer Must not be {@code null}.
      */
-    public MyersDiff(final Equalizer<T> equalizer) {
+    public MyersDiff(final BiPredicate<T,T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
@@ -123,7 +123,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
                 PathNode node = new PathNode(i, j, false, false, prev);
 
-                while (i < N && j < M && equalizer.equals(orig.get(i), rev.get(j))) {
+                while (i < N && j < M && equalizer.test(orig.get(i), rev.get(j))) {
                     i++;
                     j++;
                 }
