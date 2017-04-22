@@ -38,10 +38,16 @@ This is a test ~senctence~**for diffutils**.
   * parsing the unified diff format
   * producing human-readable differences
   * inline difference construction
+  * Algorithms:
+    * Myer
+    * HistogramDiff using JGit Library
 
 ### Algoritms ###
 
-This library implements Myer's diff algorithm. But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
+* Myer's diff
+* HistogramDiff 
+
+But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
   * Version 1.4
@@ -52,6 +58,8 @@ This library implements Myer's diff algorithm. But it can easily replaced by any
     * support for inline merge 
     * restructured packages
     * changed API 
+    * changed Algorithm to provide only cursor positions
+    * integrated JGit (Eclipse Licensed) to provide HistogramDiff to gain speed for large datasets
   * Version 1.2
     * JDK 1.5 compatibility
     * Ant build script
