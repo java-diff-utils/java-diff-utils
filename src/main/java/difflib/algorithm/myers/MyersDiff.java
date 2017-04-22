@@ -35,28 +35,15 @@ import java.util.function.BiPredicate;
  */
 public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
-    /**
-     * Default equalizer.
-     */
     private final BiPredicate<T,T> DEFAULT_EQUALIZER = Object::equals;
-
-    /**
-     * The equalizer.
-     */
     private final BiPredicate<T,T> equalizer;
 
-    /**
-     * Constructs an instance of the Myers differencing algorithm.
-     */
+
     public MyersDiff() {
         equalizer = DEFAULT_EQUALIZER;
     }
 
-    /**
-     * Constructs an instance of the Myers differencing algorithm.
-     *
-     * @param equalizer Must not be {@code null}.
-     */
+
     public MyersDiff(final BiPredicate<T,T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
