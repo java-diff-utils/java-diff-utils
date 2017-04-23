@@ -54,8 +54,8 @@ But it can easily replaced by any other which is better for handing your texts. 
     * switch to maven and removed other artifacts
     * changed groupid to **com.github.java-diff-utils** due to different forks at github
     * updated maven plugins
-    * JDK 1.8 compatibility
-    * support for inline merge 
+    * JDK 1.8 compatibility, sorry if you have to stick with older versions
+    * support for inline merge 
     * restructured packages
     * changed API 
     * changed Algorithm to provide only cursor positions
