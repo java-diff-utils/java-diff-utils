@@ -15,20 +15,14 @@
  */
 package com.github.difflib.algorithm.jgit;
 
-import com.github.difflib.algorithm.jgit.JGitDiff;
 import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
 import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipFile;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,26 +31,6 @@ import static org.junit.Assert.*;
  * @author toben
  */
 public class LRJGitDiffTest {
-    
-    public LRJGitDiffTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
     
     @Test
     public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {

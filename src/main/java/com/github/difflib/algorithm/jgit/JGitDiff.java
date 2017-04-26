@@ -44,7 +44,7 @@ public class JGitDiff<T> implements DiffAlgorithm<T> {
         diffList.addAll(new HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
-            DeltaType type = DeltaType.EQUAL; 
+            DeltaType type; 
             switch (edit.getType()) {
                 case DELETE:
                     type = DeltaType.DELETE; 
@@ -55,6 +55,8 @@ public class JGitDiff<T> implements DiffAlgorithm<T> {
                 case REPLACE:
                     type = DeltaType.CHANGE; 
                     break;
+                default:
+                    type = DeltaType.EQUAL;
             }
             patch.add(new Change(type,edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
         }
