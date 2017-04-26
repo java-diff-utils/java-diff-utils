@@ -50,16 +50,17 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
-  * Version 1.4
+  * Version 2.0
     * switch to maven and removed other artifacts
     * changed groupid to **com.github.java-diff-utils** due to different forks at github
     * updated maven plugins
     * JDK 1.8 compatibility, sorry if you have to stick with older versions
     * support for inline merge 
-    * restructured packages
+    * restructured packages heavily
     * changed API 
     * changed Algorithm to provide only cursor positions
-    * integrated JGit (Eclipse Licensed) to provide HistogramDiff to gain speed for large datasets
+    * integrated JGit (Eclipse Licensed) to provide HistogramDiff to gain speed for large datasets 
+    * removed all kinds of helper classes in favour of new JDK 8 function classes like Predicate
   * Version 1.2
     * JDK 1.5 compatibility
     * Ant build script
