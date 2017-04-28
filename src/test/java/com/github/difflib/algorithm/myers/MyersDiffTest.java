@@ -34,25 +34,6 @@ import static org.junit.Assert.*;
  */
 public class MyersDiffTest {
 
-    public MyersDiffTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
     public void testDiffMyersExample1Forward() throws DiffException {
         List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");

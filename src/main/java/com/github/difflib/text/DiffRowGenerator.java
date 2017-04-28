@@ -49,6 +49,9 @@ import java.util.regex.Pattern;
  */
 public class DiffRowGenerator {
 
+    public static final BiPredicate<String,String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
+            -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
+    public static final BiPredicate<String,String> DEFAULT_EQUALIZER = Object::equals;
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
@@ -171,10 +174,6 @@ public class DiffRowGenerator {
     public static Builder create() {
         return new Builder();
     }
-
-    public static final BiPredicate<String,String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
-            -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
-    public static final BiPredicate<String,String> DEFAULT_EQUALIZER = Object::equals;
     
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
