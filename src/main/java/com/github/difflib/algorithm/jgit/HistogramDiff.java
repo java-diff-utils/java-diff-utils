@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.HistogramDiff;
 import org.eclipse.jgit.diff.Sequence;
 import org.eclipse.jgit.diff.SequenceComparator;
 
@@ -34,14 +33,14 @@ import org.eclipse.jgit.diff.SequenceComparator;
  * 
  * @author toben
  */
-public class JGitDiff<T> implements DiffAlgorithm<T> {
+public class HistogramDiff<T> implements DiffAlgorithm<T> {
 
     @Override
     public List<Change> diff(List<T> original, List<T> revised) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
         EditList diffList = new EditList();
-        diffList.addAll(new HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
+        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
             DeltaType type = DeltaType.EQUAL; 

@@ -15,7 +15,7 @@
  */
 package com.github.difflib.algorithm.jgit;
 
-import com.github.difflib.algorithm.jgit.JGitDiff;
+import com.github.difflib.algorithm.jgit.HistogramDiff;
 import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
 import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffException;
@@ -36,9 +36,9 @@ import static org.junit.Assert.*;
  *
  * @author toben
  */
-public class LRJGitDiffTest {
+public class HistogramDiffTest {
     
-    public LRJGitDiffTest() {
+    public HistogramDiffTest() {
     }
     
     @BeforeClass
@@ -57,19 +57,20 @@ public class LRJGitDiffTest {
     public void tearDown() {
     }
 
-    
+    /**
+     * Test of diff method, of class HistogramDiff.
+     */
     @Test
-    public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {
-        ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
-        List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
-        List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
+    public void testDiff() throws DiffException, PatchFailedException {
+        List<String> orgList = Arrays.asList("A","B","C","A","B","B","A");
+        List<String> revList = Arrays.asList("C","B","A","B","A","C");
+        final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().diff(orgList, revList));
+        System.out.println(patch);
+        assertNotNull(patch);
+        assertEquals(3, patch.getDeltas().size());
+        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [DeleteDelta, position: 3, lines: [A, B]], [InsertDelta, position: 7, lines: [B, A, C]]]}", patch.toString());
         
-        Patch<String> patch = Patch.generate(original, revised, new JGitDiff().diff(original, revised));
-        
-        assertEquals(34, patch.getDeltas().size());
-        
-        List<String> created = patch.applyTo(original);
-        assertArrayEquals(revised.toArray(), created.toArray());
+        List<String> patched = patch.applyTo(orgList);
+        assertEquals(revList, patched);
     }
-    
 }
