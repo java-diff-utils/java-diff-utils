@@ -75,6 +75,6 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>com.github.java-diff-utils</groupId>
     <artifactId>diffutils</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 </dependency>
 ```
