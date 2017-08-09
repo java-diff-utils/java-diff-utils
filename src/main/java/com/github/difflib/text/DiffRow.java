@@ -19,13 +19,15 @@ limitations under the License.
  */
 package com.github.difflib.text;
 
+import java.io.Serializable;
+
 /**
  * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two
  * texts
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */
-public final class DiffRow {
+public final class DiffRow implements Serializable {
 
     private Tag tag;
     private final String oldLine;
