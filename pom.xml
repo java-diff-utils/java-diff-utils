@@ -166,33 +166,16 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!-- 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>1.12</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
-                    <verbose>false</verbose>
-                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-                    <canUpdateDescription>false</canUpdateDescription>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>first</id>
-                        <goals>
-                            <goal>update-file-header</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>apache_v2</licenseName>
-                            <roots>
-                                <root>src/main/java</root>
-                            </roots>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
-            -->
         </plugins>
     </build>
     <profiles>
