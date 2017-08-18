@@ -146,7 +146,7 @@ public class DiffRowGenerator {
          * ured ignoreBlankLines parameter
          */
         public Builder columnWidth(int width) {
-            if (width > 0) {
+            if (width >= 0) {
                 columnWidth = width;
             }
             return this;
