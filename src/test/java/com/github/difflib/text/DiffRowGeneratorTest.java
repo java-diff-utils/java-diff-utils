@@ -24,6 +24,20 @@ public class DiffRowGeneratorTest {
 
         assertEquals(3, rows.size());
     }
+    
+    @Test
+    public void testGenerator_Default2() throws DiffException {
+        String first = "anything \n \nother";
+        String second = "anything\n\nother";
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .columnWidth(0) // do not wrap
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+        print(rows);
+
+        assertEquals(3, rows.size());
+    }
 
     @Test
     public void testGenerator_InlineDiff() throws DiffException {
@@ -231,5 +245,23 @@ public class DiffRowGeneratorTest {
         assertEquals(3, rows.size());
         assertEquals("This is a test ~senctence~.", rows.get(0).getOldLine());
         assertEquals("This is a test **for diffutils**.", rows.get(0).getNewLine());
+    }
+    
+    @Test
+    public void testGeneratorUnchanged() throws DiffException {
+        String first = "anything \n \nother";
+        String second = "anything\n\nother";
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .columnWidth(5) 
+                .reportLinesUnchanged(true)
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
+        print(rows);
+
+        assertEquals(3, rows.size());
+        assertEquals("[CHANGE,anything ,anything]", rows.get(0).toString());
+        assertEquals("[CHANGE, ,]", rows.get(1).toString());
+        assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
 }

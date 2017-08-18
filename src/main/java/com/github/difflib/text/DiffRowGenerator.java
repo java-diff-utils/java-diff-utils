@@ -35,10 +35,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class for generating DiffRows for side-by-sidy view. You can customize the way of
- * generating. For example, show inline diffs on not, ignoring white spaces or/and blank lines and
- * so on. All parameters for generating are optional. If you do not specify them, the class will use
- * the default values.
+ * This class for generating DiffRows for side-by-sidy view. You can customize the way of generating. For example, show
+ * inline diffs on not, ignoring white spaces or/and blank lines and so on. All parameters for generating are optional.
+ * If you do not specify them, the class will use the default values.
  *
  * These values are: showInlineDiffs = false; ignoreWhiteSpaces = true; ignoreBlankLines = true; ...
  *
@@ -49,9 +48,9 @@ import java.util.regex.Pattern;
  */
 public class DiffRowGenerator {
 
-    public static final BiPredicate<String,String> IGNORE_WHITESPACE_EQUALIZER = (original, revised) 
+    public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
             -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
-    public static final BiPredicate<String,String> DEFAULT_EQUALIZER = Object::equals;
+    public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
@@ -61,6 +60,7 @@ public class DiffRowGenerator {
     private final int columnWidth;
     private final BiPredicate<String, String> equalizer;
     private final boolean mergeOriginalRevised;
+    private final boolean reportLinesUnchanged;
 
     /**
      * This class used for building the DiffRowGenerator.
@@ -79,6 +79,7 @@ public class DiffRowGenerator {
         private int columnWidth = 80;
         private boolean mergeOriginalRevised = false;
         private boolean inlineDiffByWord = false;
+        private boolean reportLinesUnchanged = false;
 
         private Builder() {
         }
@@ -102,6 +103,17 @@ public class DiffRowGenerator {
          */
         public Builder ignoreWhiteSpaces(boolean val) {
             ignoreWhiteSpaces = val;
+            return this;
+        }
+
+        /**
+         * Give the originial old and new text lines to Diffrow without any additional processing.
+         *
+         * @param val the value to set. Default: false.
+         * @return builder with configured reportLinesUnWrapped parameter
+         */
+        public Builder reportLinesUnchanged(final boolean val) {
+            reportLinesUnchanged = val;
             return this;
         }
 
@@ -130,8 +142,8 @@ public class DiffRowGenerator {
         /**
          * Set the column with of generated lines of original and revised texts.
          *
-         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return
-         * builder with config ured ignoreBlankLines parameter
+         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return builder with config
+         * ured ignoreBlankLines parameter
          */
         public Builder columnWidth(int width) {
             if (width > 0) {
@@ -150,8 +162,7 @@ public class DiffRowGenerator {
         }
 
         /**
-         * Merge the complete result within the original text. This makes sense for one line
-         * display.
+         * Merge the complete result within the original text. This makes sense for one line display.
          *
          * @param mergeOriginalRevised
          * @return
@@ -162,8 +173,8 @@ public class DiffRowGenerator {
         }
 
         /**
-         * Per default each character is separatly processed. This variant introduces processing by
-         * word, which should deliver no in word changes.
+         * Per default each character is separatly processed. This variant introduces processing by word, which should
+         * deliver no in word changes.
          */
         public Builder inlineDiffByWord(boolean inlineDiffByWord) {
             this.inlineDiffByWord = inlineDiffByWord;
@@ -174,7 +185,7 @@ public class DiffRowGenerator {
     public static Builder create() {
         return new Builder();
     }
-    
+
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
         ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
@@ -183,12 +194,13 @@ public class DiffRowGenerator {
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
         inlineDiffByWord = builder.inlineDiffByWord;
-        equalizer = ignoreWhiteSpaces?IGNORE_WHITESPACE_EQUALIZER:DEFAULT_EQUALIZER;
+        equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
+        reportLinesUnchanged = builder.reportLinesUnchanged;
     }
 
     /**
-     * Get the DiffRows describing the difference between original and revised texts using the given
-     * patch. Useful for displaying side-by-side diff.
+     * Get the DiffRows describing the difference between original and revised texts using the given patch. Useful for
+     * displaying side-by-side diff.
      *
      * @param original the original text
      * @param revised the revised text
@@ -198,22 +210,34 @@ public class DiffRowGenerator {
         return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
     }
 
+    private String preprocessLine(String line) {
+        if (columnWidth == 0) {
+            return StringUtils.normalize(line);
+        } else {
+            return StringUtils.wrapText(StringUtils.normalize(line), columnWidth);
+        }
+    }
+
     private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
-        String wrapOrg = StringUtils.wrapText(StringUtils.normalize(orgline), columnWidth);
-        if (Tag.DELETE == type) {
-            if (mergeOriginalRevised || showInlineDiffs) {
-                wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+        if (reportLinesUnchanged) {
+            return new DiffRow(type, orgline, newline);
+        } else {
+            String wrapOrg = preprocessLine(orgline);
+            if (Tag.DELETE == type) {
+                if (mergeOriginalRevised || showInlineDiffs) {
+                    wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+                }
             }
-        }
-        String wrapNew = StringUtils.wrapText(StringUtils.normalize(newline), columnWidth);
-        if (Tag.INSERT == type) {
-            if (mergeOriginalRevised) {
-                wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
-            } else if (showInlineDiffs) {
-                wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
+            String wrapNew = preprocessLine(newline);
+            if (Tag.INSERT == type) {
+                if (mergeOriginalRevised) {
+                    wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
+                } else if (showInlineDiffs) {
+                    wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
+                }
             }
+            return new DiffRow(type, wrapOrg, wrapNew);
         }
-        return new DiffRow(type, wrapOrg, wrapNew);
     }
 
     private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline) {
@@ -223,8 +247,8 @@ public class DiffRowGenerator {
     }
 
     /**
-     * Generates the DiffRows describing the difference between original and revised texts using the
-     * given patch. Useful for displaying side-by-side diff.
+     * Generates the DiffRows describing the difference between original and revised texts using the given patch. Useful
+     * for displaying side-by-side diff.
      *
      * @param original the original text
      * @param revised the revised text
@@ -367,8 +391,7 @@ public class DiffRowGenerator {
     /**
      * Wrap the elements in the sequence with the given tag
      *
-     * @param startPosition the position from which tag should start. The counting start from a
-     * zero.
+     * @param startPosition the position from which tag should start. The counting start from a zero.
      * @param endPosition the position before which tag should should be closed.
      * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
