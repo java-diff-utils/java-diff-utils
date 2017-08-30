@@ -25,9 +25,9 @@ import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.patch.Delta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -111,8 +111,8 @@ public final class DiffUtils {
      * @return
      */
     public static Patch<String> diffInline(String original, String revised) throws DiffException {
-        LinkedList<String> origList = new LinkedList<>();
-        LinkedList<String> revList = new LinkedList<>();
+        List<String> origList = new ArrayList<>();
+        List<String> revList = new ArrayList<>();
         for (Character character : original.toCharArray()) {
             origList.add(character.toString());
         }

@@ -25,7 +25,6 @@ import static com.github.difflib.patch.DeltaType.INSERT;
 import java.util.ArrayList;
 import java.util.Collections;
 import static java.util.Comparator.comparing;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -37,8 +36,16 @@ import java.util.ListIterator;
  */
 public final class Patch<T> {
 
-    private final List<Delta<T>> deltas = new LinkedList<>();
+    private final List<Delta<T>> deltas;
 
+    public Patch() {
+        this(10);
+    }
+    
+    public Patch(int estimatedPatchSize) {
+         deltas = new ArrayList<>(estimatedPatchSize);
+    }
+    
     /**
      * Apply this patch to the given target
      *
@@ -46,7 +53,7 @@ public final class Patch<T> {
      * @throws PatchFailedException if can't apply patch
      */
     public List<T> applyTo(List<T> target) throws PatchFailedException {
-        List<T> result = new LinkedList<>(target);
+        List<T> result = new ArrayList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             Delta<T> delta = it.previous();
@@ -62,7 +69,7 @@ public final class Patch<T> {
      * @return the restored text
      */
     public List<T> restore(List<T> target) {
-        List<T> result = new LinkedList<>(target);
+        List<T> result = new ArrayList<>(target);
         ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             Delta<T> delta = it.previous();
@@ -96,7 +103,7 @@ public final class Patch<T> {
     }
     
     public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes) {
-        Patch<T> patch = new Patch<>();
+        Patch<T> patch = new Patch<>(changes.size());
         for (Change change : changes) {
             Chunk<T> orgChunk = new Chunk<>(change.startOriginal, new ArrayList<>(original.subList(change.startOriginal, change.endOriginal)));
             Chunk<T> revChunk = new Chunk<>(change.startRevised, new ArrayList<>(revised.subList(change.startRevised, change.endRevised)));

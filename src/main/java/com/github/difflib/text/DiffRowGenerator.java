@@ -315,17 +315,19 @@ public class DiffRowGenerator {
         List<String> rev = StringUtils.normalize(delta.getRevised().getLines());
         List<String> origList;
         List<String> revList;
+        String joinedOrig = String.join("\n", orig);
+        String joinedRev = String.join("\n", rev);
 
         if (inlineDiffByWord) {
-            origList = splitStringPreserveDelimiter(String.join("\n", orig));
-            revList = splitStringPreserveDelimiter(String.join("\n", rev));
+            origList = splitStringPreserveDelimiter(joinedOrig);
+            revList = splitStringPreserveDelimiter(joinedRev);
         } else {
-            origList = new LinkedList<>();
-            revList = new LinkedList<>();
-            for (Character character : String.join("\n", orig).toCharArray()) {
+            origList = new ArrayList<>(joinedOrig.length());
+            revList = new ArrayList<>(joinedRev.length());
+            for (Character character : joinedOrig.toCharArray()) {
                 origList.add(character.toString());
             }
-            for (Character character : String.join("\n", rev).toCharArray()) {
+            for (Character character : joinedRev.toCharArray()) {
                 revList.add(character.toString());
             }
         }
