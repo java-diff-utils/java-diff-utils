@@ -15,7 +15,6 @@
  */
 package com.github.difflib.text;
 
-import com.github.difflib.text.StringUtils;
 import java.util.Collections;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -62,7 +61,7 @@ public class StringUtilsTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testWrapText_String_int_zero() {
-        assertEquals("test", StringUtils.wrapText("test", 0));
+        assertEquals("test", StringUtils.wrapText("test", -1));
     }
     
 }

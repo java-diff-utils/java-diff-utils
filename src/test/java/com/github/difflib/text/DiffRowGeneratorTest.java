@@ -173,6 +173,7 @@ public class DiffRowGeneratorTest {
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
+                .columnWidth(80)
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test feature"),Arrays.asList("ester feature best"));
         print(rows);

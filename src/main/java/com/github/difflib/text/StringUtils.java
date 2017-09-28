@@ -58,8 +58,11 @@ final class StringUtils {
      * @return the wrapped text
      */
     public static String wrapText(String line, int columnWidth) {
-        if (columnWidth <= 0) {
-            throw new IllegalArgumentException("columnWidth may not be less or equal 0");
+        if (columnWidth < 0) {
+            throw new IllegalArgumentException("columnWidth may not be less 0");
+        }
+        if (columnWidth == 0) {
+            return line;
         }
         int length = line.length();
         int delimiter = "<br/>".length();

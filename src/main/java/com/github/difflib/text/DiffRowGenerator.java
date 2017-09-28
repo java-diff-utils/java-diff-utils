@@ -76,7 +76,7 @@ public class DiffRowGenerator {
         private Function<Boolean, String> oldTag = f -> f ? "<span class=\"editOldInline\">" : "</span>";
         private Function<Boolean, String> newTag = f -> f ? "<span class=\"editNewInline\">" : "</span>";
 
-        private int columnWidth = 80;
+        private int columnWidth = 0;
         private boolean mergeOriginalRevised = false;
         private boolean inlineDiffByWord = false;
         private boolean reportLinesUnchanged = false;
