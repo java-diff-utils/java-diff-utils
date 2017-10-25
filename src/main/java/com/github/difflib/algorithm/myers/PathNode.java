@@ -44,7 +44,7 @@ public final class PathNode {
     public final PathNode prev;
 
     public final boolean snake;
-    
+
     public final boolean bootstrap;
 
     /**
@@ -61,7 +61,7 @@ public final class PathNode {
         if (snake) {
             this.prev = prev;
         } else {
-            this.prev = (prev == null ? null : prev.previousSnake());
+            this.prev = prev == null ? null : prev.previousSnake();
         }
         this.snake = snake;
     }
@@ -82,11 +82,10 @@ public final class PathNode {
     }
 
     /**
-     * Skips sequences of {@link DiffNode DiffNodes} until a {@link Snake} or bootstrap node is
-     * found, or the end of the path is reached.
+     * Skips sequences of {@link DiffNode DiffNodes} until a {@link Snake} or bootstrap node is found, or the end of the
+     * path is reached.
      *
-     * @return The next first {@link Snake} or bootstrap node in the path, or <code>null</code> if
-     * none found.
+     * @return The next first {@link Snake} or bootstrap node in the path, or <code>null</code> if none found.
      */
     public final PathNode previousSnake() {
         if (isBootstrap()) {

@@ -15,18 +15,12 @@
  */
 package com.github.difflib.algorithm.myers;
 
-import com.github.difflib.algorithm.myers.MyersDiff;
-import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

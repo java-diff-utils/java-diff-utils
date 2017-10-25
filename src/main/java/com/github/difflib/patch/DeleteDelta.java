@@ -48,7 +48,7 @@ public final class DeleteDelta<T> extends Delta<T> {
             target.remove(position);
         }
     }
-    
+
     @Override
     public void restore(List<T> target) {
         int position = this.getRevised().getPosition();

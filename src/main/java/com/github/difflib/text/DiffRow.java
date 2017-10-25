@@ -22,8 +22,7 @@ package com.github.difflib.text;
 import java.io.Serializable;
 
 /**
- * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two
- * texts
+ * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two texts
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */

@@ -42,18 +42,16 @@ import static java.util.stream.Collectors.joining;
 public final class DiffUtils {
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements with default diff algorithm
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
         return DiffUtils.diff(original, revised, new MyersDiff<>());
     }
-    
+
     /**
      * Computes the difference between the original and revised text.
      */
@@ -62,19 +60,17 @@ public final class DiffUtils {
     }
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements with default diff algorithm
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      *
-     * @param equalizer the equalizer object to replace the default compare algorithm
-     * (Object.equals). If {@code null} the default equalizer of the default algorithm is used..
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @param equalizer the equalizer object to replace the default compare algorithm (Object.equals). If {@code null}
+     * the default equalizer of the default algorithm is used..
+     * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            BiPredicate<T,T> equalizer) throws DiffException {
+            BiPredicate<T, T> equalizer) throws DiffException {
         if (equalizer != null) {
             return DiffUtils.diff(original, revised,
                     new MyersDiff<>(equalizer));
@@ -83,28 +79,25 @@ public final class DiffUtils {
     }
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements with default diff algorithm
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param algorithm The diff algorithm. Must not be {@code null}.
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
             DiffAlgorithm<T> algorithm) throws DiffException {
-        Objects.requireNonNull(original,"original must not be null");
-        Objects.requireNonNull(revised,"revised must not be null");
-        Objects.requireNonNull(algorithm,"algorithm must not be null");
-        
+        Objects.requireNonNull(original, "original must not be null");
+        Objects.requireNonNull(revised, "revised must not be null");
+        Objects.requireNonNull(algorithm, "algorithm must not be null");
+
         return Patch.generate(original, revised, algorithm.diff(original, revised));
     }
 
     /**
-     * Computes the difference between the given texts inline. This one uses the "trick" to make out
-     * of texts lists of characters, like DiffRowGenerator does and merges those changes at the end
-     * together again.
+     * Computes the difference between the given texts inline. This one uses the "trick" to make out of texts lists of
+     * characters, like DiffRowGenerator does and merges those changes at the end together again.
      *
      * @param original
      * @param revised

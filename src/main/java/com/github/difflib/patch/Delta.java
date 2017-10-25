@@ -43,7 +43,7 @@ public abstract class Delta<T> {
         Objects.requireNonNull(deltaType, "deltaType must not be null");
         Objects.requireNonNull(original, "original must not be null");
         Objects.requireNonNull(revised, "revised must not be null");
-        
+
         this.deltaType = deltaType;
         this.original = original;
         this.revised = revised;

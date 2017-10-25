@@ -41,11 +41,11 @@ public final class Patch<T> {
     public Patch() {
         this(10);
     }
-    
+
     public Patch(int estimatedPatchSize) {
-         deltas = new ArrayList<>(estimatedPatchSize);
+        deltas = new ArrayList<>(estimatedPatchSize);
     }
-    
+
     /**
      * Apply this patch to the given target
      *
@@ -87,7 +87,7 @@ public final class Patch<T> {
         deltas.add(delta);
     }
 
-    /** 
+    /**
      * Get the list of computed deltas
      *
      * @return the deltas
@@ -101,7 +101,7 @@ public final class Patch<T> {
     public String toString() {
         return "Patch{" + "deltas=" + deltas + '}';
     }
-    
+
     public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes) {
         Patch<T> patch = new Patch<>(changes.size());
         for (Change change : changes) {

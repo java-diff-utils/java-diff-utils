@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
  * @author toben
  */
 public final class UnifiedDiffUtils {
+
     private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
             .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
 
@@ -124,10 +125,10 @@ public final class UnifiedDiffUtils {
 
         return patch;
     }
-    
+
     /**
-     * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format
-     * text representing the Patch.
+     * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format text representing
+     * the Patch.
      *
      * @param original - Filename of the original (unrevised file)
      * @param revised - Filename of the revised file
@@ -195,10 +196,9 @@ public final class UnifiedDiffUtils {
         }
         return new ArrayList<>();
     }
-    
+
     /**
-     * processDeltas takes a list of Deltas and outputs them together in a single block of
-     * Unified-Diff-format text.
+     * processDeltas takes a list of Deltas and outputs them together in a single block of Unified-Diff-format text.
      *
      * @param origLines - the lines of the original file
      * @param deltas - the Deltas to be output as a single block
@@ -289,7 +289,7 @@ public final class UnifiedDiffUtils {
 
         return buffer;
     }
-    
+
     /**
      * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter
      *
@@ -307,7 +307,7 @@ public final class UnifiedDiffUtils {
         }
         return buffer;
     }
-    
+
     private UnifiedDiffUtils() {
     }
 }

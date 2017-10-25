@@ -19,12 +19,9 @@ limitations under the License.
  */
 package com.github.difflib.algorithm;
 
-import com.github.difflib.algorithm.DiffException;
-
 /**
- * Thrown whenever the differencing engine cannot produce the differences between two revisions of
- * ta text.
-
+ * Thrown whenever the differencing engine cannot produce the differences between two revisions of ta text.
+ *
  * @see MyersDiff
  * @see difflib.DiffAlgorithm
  */

@@ -48,7 +48,7 @@ public final class InsertDelta<T> extends Delta<T> {
             target.add(position + i, lines.get(i));
         }
     }
-    
+
     @Override
     public void restore(List<T> target) {
         int position = getRevised().getPosition();

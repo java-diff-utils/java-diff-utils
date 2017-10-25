@@ -1,7 +1,5 @@
 package com.github.difflib.patch;
 
-import com.github.difflib.patch.Patch;
-import com.github.difflib.patch.PatchFailedException;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffException;
 import java.util.Arrays;

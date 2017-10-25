@@ -20,9 +20,9 @@ limitations under the License.
 package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.Change;
-import com.github.difflib.algorithm.DifferentiationFailedException;
 import com.github.difflib.algorithm.DiffAlgorithm;
 import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.algorithm.DifferentiationFailedException;
 import com.github.difflib.patch.DeltaType;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
@@ -35,16 +35,14 @@ import java.util.function.BiPredicate;
  */
 public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
-    private final BiPredicate<T,T> DEFAULT_EQUALIZER = Object::equals;
-    private final BiPredicate<T,T> equalizer;
-
+    private final BiPredicate<T, T> DEFAULT_EQUALIZER = Object::equals;
+    private final BiPredicate<T, T> equalizer;
 
     public MyersDiff() {
         equalizer = DEFAULT_EQUALIZER;
     }
 
-
-    public MyersDiff(final BiPredicate<T,T> equalizer) {
+    public MyersDiff(final BiPredicate<T, T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
@@ -64,9 +62,8 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences between the
-     * original and revised sequences, according to Gene Myers differencing
-     * algorithm.
+     * Computes the minimum diffpath that expresses de differences between the original and revised sequences, according
+     * to Gene Myers differencing algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
@@ -138,8 +135,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Patch} could not be
-     * built from the given path.
+     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given path.
      */
     private List<Change> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
         Objects.requireNonNull(actualPath, "path is null");

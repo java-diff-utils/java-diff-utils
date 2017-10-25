@@ -31,8 +31,8 @@ import java.util.*;
 public interface DiffAlgorithm<T> {
 
     /**
-     * Computes the difference between the original sequence and the revised sequence and returns it
-     * as a {@link Patch} object.
+     * Computes the difference between the original sequence and the revised sequence and returns it as a {@link Patch}
+     * object.
      *
      * @param original The original sequence. Must not be {@code null}.
      * @param revised The revised sequence. Must not be {@code null}.
@@ -43,8 +43,8 @@ public interface DiffAlgorithm<T> {
     }
 
     /**
-     * Computes the difference between the original sequence and the revised sequence and returns it
-     * as a {@link Patch} object.
+     * Computes the difference between the original sequence and the revised sequence and returns it as a {@link Patch}
+     * object.
      *
      * @param original The original sequence. Must not be {@code null}.
      * @param revised The revised sequence. Must not be {@code null}.

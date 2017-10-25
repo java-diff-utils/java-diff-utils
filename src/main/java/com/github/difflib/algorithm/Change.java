@@ -22,6 +22,7 @@ import com.github.difflib.patch.DeltaType;
  * @author toben
  */
 public class Change {
+
     public final DeltaType deltaType;
     public final int startOriginal;
     public final int endOriginal;

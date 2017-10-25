@@ -1,7 +1,5 @@
 package com.github.difflib.text;
 
-import com.github.difflib.text.DiffRow;
-import com.github.difflib.text.DiffRowGenerator;
 import com.github.difflib.algorithm.DiffException;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +22,7 @@ public class DiffRowGeneratorTest {
 
         assertEquals(3, rows.size());
     }
-    
+
     @Test
     public void testGenerator_Default2() throws DiffException {
         String first = "anything \n \nother";
@@ -83,14 +81,14 @@ public class DiffRowGeneratorTest {
             System.out.println(row);
         }
     }
-    
+
     @Test
     public void testGeneratorWithWordWrap() throws DiffException {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
         DiffRowGenerator generator = DiffRowGenerator.create()
-                .columnWidth(5) 
+                .columnWidth(5)
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));
         print(rows);
@@ -100,7 +98,7 @@ public class DiffRowGeneratorTest {
         assertEquals("[CHANGE, ,]", rows.get(1).toString());
         assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
-    
+
     @Test
     public void testGeneratorWithMerge() throws DiffException {
         String first = "anything \n \nother";
@@ -118,20 +116,20 @@ public class DiffRowGeneratorTest {
         assertEquals("[CHANGE,<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
         assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
-    
+
     @Test
     public void testGeneratorWithMerge2() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .build();
-        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test"),Arrays.asList("ester"));
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test"), Arrays.asList("ester"));
         print(rows);
 
         assertEquals(1, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">T</span>est<span class=\"editNewInline\">er</span>,ester]", rows.get(0).toString());
     }
-    
+
     @Test
     public void testGeneratorWithMerge3() throws DiffException {
         String first = "test\nanything \n \nother";
@@ -152,7 +150,7 @@ public class DiffRowGeneratorTest {
         assertEquals("[INSERT,<span class=\"editNewInline\">test</span>,test]", rows.get(4).toString());
         assertEquals("[INSERT,<span class=\"editNewInline\">test2</span>,test2]", rows.get(5).toString());
     }
-    
+
     @Test
     public void testGeneratorWithMergeByWord4() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -160,13 +158,13 @@ public class DiffRowGeneratorTest {
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
                 .build();
-        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test"),Arrays.asList("ester"));
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test"), Arrays.asList("ester"));
         print(rows);
 
         assertEquals(1, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">Test</span><span class=\"editNewInline\">ester</span>,ester]", rows.get(0).toString());
     }
-    
+
     @Test
     public void testGeneratorWithMergeByWord5() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -175,20 +173,20 @@ public class DiffRowGeneratorTest {
                 .inlineDiffByWord(true)
                 .columnWidth(80)
                 .build();
-        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test feature"),Arrays.asList("ester feature best"));
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("Test feature"), Arrays.asList("ester feature best"));
         print(rows);
 
         assertEquals(1, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">Test</span><span class=\"editNewInline\">ester</span> <br/>feature<span class=\"editNewInline\"> best</span>,ester feature best]", rows.get(0).toString());
     }
-    
+
     @Test
     public void testSplitString() {
         List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2");
         assertEquals(3, list.size());
         assertEquals("[test, ,, test2]", list.toString());
     }
-    
+
     @Test
     public void testSplitString2() {
         List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test , test2");
@@ -196,7 +194,7 @@ public class DiffRowGeneratorTest {
         assertEquals(5, list.size());
         assertEquals("[test,  , ,,  , test2]", list.toString());
     }
-    
+
     @Test
     public void testSplitString3() {
         List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2,");
@@ -204,8 +202,7 @@ public class DiffRowGeneratorTest {
         assertEquals(4, list.size());
         assertEquals("[test, ,, test2, ,]", list.toString());
     }
-    
-    
+
     @Test
     public void testGeneratorExample1() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -218,13 +215,13 @@ public class DiffRowGeneratorTest {
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList("This is a test senctence."),
                 Arrays.asList("This is a test for diffutils."));
-        
-        System.out.println(rows.get(0).getOldLine());        
-        
+
+        System.out.println(rows.get(0).getOldLine());
+
         assertEquals(1, rows.size());
         assertEquals("This is a test ~senctence~**for diffutils**.", rows.get(0).getOldLine());
     }
-    
+
     @Test
     public void testGeneratorExample2() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -236,25 +233,25 @@ public class DiffRowGeneratorTest {
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList("This is a test senctence.", "This is the second line.", "And here is the finish."),
                 Arrays.asList("This is a test for diffutils.", "This is the second line."));
-        
+
         System.out.println("|original|new|");
         System.out.println("|--------|---|");
         for (DiffRow row : rows) {
             System.out.println("|" + row.getOldLine() + "|" + row.getNewLine() + "|");
         }
-        
+
         assertEquals(3, rows.size());
         assertEquals("This is a test ~senctence~.", rows.get(0).getOldLine());
         assertEquals("This is a test **for diffutils**.", rows.get(0).getNewLine());
     }
-    
+
     @Test
     public void testGeneratorUnchanged() throws DiffException {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
         DiffRowGenerator generator = DiffRowGenerator.create()
-                .columnWidth(5) 
+                .columnWidth(5)
                 .reportLinesUnchanged(true)
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(split(first), split(second));

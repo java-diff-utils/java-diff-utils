@@ -15,44 +15,39 @@
  */
 package com.github.difflib.algorithm.jgit;
 
-import com.github.difflib.algorithm.jgit.HistogramDiff;
-import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
-import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.ZipFile;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author toben
  */
 public class HistogramDiffTest {
-    
+
     public HistogramDiffTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -62,14 +57,14 @@ public class HistogramDiffTest {
      */
     @Test
     public void testDiff() throws DiffException, PatchFailedException {
-        List<String> orgList = Arrays.asList("A","B","C","A","B","B","A");
-        List<String> revList = Arrays.asList("C","B","A","B","A","C");
+        List<String> orgList = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
+        List<String> revList = Arrays.asList("C", "B", "A", "B", "A", "C");
         final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().diff(orgList, revList));
         System.out.println(patch);
         assertNotNull(patch);
         assertEquals(3, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [DeleteDelta, position: 3, lines: [A, B]], [InsertDelta, position: 7, lines: [B, A, C]]]}", patch.toString());
-        
+
         List<String> patched = patch.applyTo(orgList);
         assertEquals(revList, patched);
     }

@@ -31,8 +31,7 @@ public enum DeltaType {
     /**
      * An insert into the original.
      */
-    INSERT, 
-    
+    INSERT,
     /**
      * An do nothing.
      */

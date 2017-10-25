@@ -15,61 +15,58 @@
  */
 package com.github.difflib.algorithm.jgit;
 
-import com.github.difflib.algorithm.jgit.HistogramDiff;
 import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
 import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipFile;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author toben
  */
 public class LRHistogramDiffTest {
-    
+
     public LRHistogramDiffTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
 
-    
     @Test
     public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {
         ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
         List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
-        
+
         Patch<String> patch = Patch.generate(original, revised, new HistogramDiff().diff(original, revised));
-        
+
         assertEquals(34, patch.getDeltas().size());
-        
+
         List<String> created = patch.applyTo(original);
         assertArrayEquals(revised.toArray(), created.toArray());
     }
-    
+
 }

@@ -50,6 +50,8 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
+  * Version 2.1-SNAPSHOT
+    * included checkstyle source code conventions
   * Version 2.0
     * switch to maven and removed other artifacts
     * changed groupid to **com.github.java-diff-utils** due to different forks at github
@@ -65,6 +67,26 @@ But it can easily replaced by any other which is better for handing your texts. 
     * JDK 1.5 compatibility
     * Ant build script
     * Generate output in unified diff format (thanks for Bill James)
+
+## Source Code conventions
+
+Recently a checkstyle process was integrated into the build process. JSqlParser follows the sun java format convention. There are no TABs allowed. Use spaces.
+
+```java
+public static <T> Patch<T> diff(List<T> original, List<T> revised,
+	BiPredicate<T, T> equalizer) throws DiffException {
+	if (equalizer != null) {
+		return DiffUtils.diff(original, revised,
+				new MyersDiff<>(equalizer));
+	}
+	return DiffUtils.diff(original, revised, new MyersDiff<>());
+}
+```
+
+This is a valid piece of source code:
+* blocks without braces are not allowed
+* after control statements (if, while, for) a whitespace is expected
+* the opening brace should be in the same line as the control statement
 
 ### To Install ###
 

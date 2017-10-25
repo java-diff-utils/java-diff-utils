@@ -28,9 +28,8 @@ import org.eclipse.jgit.diff.Sequence;
 import org.eclipse.jgit.diff.SequenceComparator;
 
 /**
- * HistorgramDiff using JGit - Library. This one is much more performant than the
- * orginal Myers implementation.
- * 
+ * HistorgramDiff using JGit - Library. This one is much more performant than the orginal Myers implementation.
+ *
  * @author toben
  */
 public class HistogramDiff<T> implements DiffAlgorithm<T> {
@@ -43,19 +42,19 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
         diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
-            DeltaType type = DeltaType.EQUAL; 
+            DeltaType type = DeltaType.EQUAL;
             switch (edit.getType()) {
                 case DELETE:
-                    type = DeltaType.DELETE; 
+                    type = DeltaType.DELETE;
                     break;
                 case INSERT:
-                    type = DeltaType.INSERT; 
+                    type = DeltaType.INSERT;
                     break;
                 case REPLACE:
-                    type = DeltaType.CHANGE; 
+                    type = DeltaType.CHANGE;
                     break;
             }
-            patch.add(new Change(type,edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
+            patch.add(new Change(type, edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
         }
         return patch;
     }

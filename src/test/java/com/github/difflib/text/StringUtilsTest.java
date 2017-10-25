@@ -16,8 +16,8 @@
 package com.github.difflib.text;
 
 import java.util.Collections;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -38,7 +38,7 @@ public class StringUtilsTest {
      */
     @Test
     public void testNormalize_String() {
-        assertEquals("    test",StringUtils.normalize("\ttest"));
+        assertEquals("    test", StringUtils.normalize("\ttest"));
     }
 
     /**
@@ -46,7 +46,7 @@ public class StringUtilsTest {
      */
     @Test
     public void testNormalize_List() {
-        assertEquals(Collections.singletonList("    test"),StringUtils.normalize(Collections.singletonList("\ttest")));
+        assertEquals(Collections.singletonList("    test"), StringUtils.normalize(Collections.singletonList("\ttest")));
     }
 
     /**
@@ -58,10 +58,10 @@ public class StringUtilsTest {
         assertEquals("tes<br/>t", StringUtils.wrapText("test", 3));
         assertEquals("test", StringUtils.wrapText("test", 10));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testWrapText_String_int_zero() {
         assertEquals("test", StringUtils.wrapText("test", -1));
     }
-    
+
 }

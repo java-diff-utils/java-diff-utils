@@ -1,213 +1,272 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.java-diff-utils</groupId>
-    <artifactId>diffutils</artifactId>
-    <packaging>jar</packaging>
-    <version>2.1-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.java-diff-utils</groupId>
+	<artifactId>diffutils</artifactId>
+	<packaging>jar</packaging>
+	<version>2.1-SNAPSHOT</version>
 
-    <name>java-diff-utils</name>
-    <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
-    <url>https://github.com/wumpz/java-diff-utils</url>
-    <inceptionYear>2009</inceptionYear>
+	<name>java-diff-utils</name>
+	<description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
+	<url>https://github.com/wumpz/java-diff-utils</url>
+	<inceptionYear>2009</inceptionYear>
 	<!-- 
 	to make a local release
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
 	-->
-    <scm>
-        <connection>scm:git:https://github.com/wumpz/java-diff-utils.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
-        <url>https://github.com/wumpz/java-diff-utils.git</url>
-      <tag>diffutils-2.0</tag>
-  </scm>
+	<scm>
+		<connection>scm:git:https://github.com/wumpz/java-diff-utils.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
+		<url>https://github.com/wumpz/java-diff-utils.git</url>
+		<tag>diffutils-2.0</tag>
+	</scm>
 	
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/wumpz/java-diff-utils/issues</url>
-    </issueManagement>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/wumpz/java-diff-utils/issues</url>
+	</issueManagement>
 	
-    <organization>
-        <name>java-diff-utils</name>
-    </organization>
+	<organization>
+		<name>java-diff-utils</name>
+	</organization>
 	
-    <developers>
-        <developer>
-            <name>Tobias Warneke</name>
-            <email>t.warneke@gmx.net</email>
-        </developer>
-        <developer>
-            <name>Dmitry Naumenko</name>
-            <email>dm.naumenko@gmail.com</email>
-        </developer>
-        <developer>
-            <name>Juanco Anez</name>
-            <email>juanco@suigeneris.org</email>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<name>Tobias Warneke</name>
+			<email>t.warneke@gmx.net</email>
+		</developer>
+		<developer>
+			<name>Dmitry Naumenko</name>
+			<email>dm.naumenko@gmail.com</email>
+		</developer>
+		<developer>
+			<name>Juanco Anez</name>
+			<email>juanco@suigeneris.org</email>
+		</developer>
+	</developers>
 	
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.4.1.201607150455-r</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.googlecode.javaewah</groupId>
-                    <artifactId>JavaEWAH</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jcraft</groupId>
-                    <artifactId>jsch</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>4.4.1.201607150455-r</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.googlecode.javaewah</groupId>
+					<artifactId>JavaEWAH</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.jcraft</groupId>
+					<artifactId>jsch</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
+	<build>
+		<plugins>
 			
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
 			
-            <!-- Make this JAR OSGi ready -->
-            <!-- We want to keep packaging type as jar. Therefore we need to customize the MANIFEST.MF. 
-            See http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
-            -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <configuration>
-                    <additionalparam>${javadoc.opts}</additionalparam>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/LR*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <localCheckout>true</localCheckout>
-                    <pushChanges>false</pushChanges>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
+			<!-- Make this JAR OSGi ready -->
+			<!-- We want to keep packaging type as jar. Therefore we need to customize the MANIFEST.MF. 
+			See http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
+			-->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>bundle-manifest</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<excludes>
+						<exclude>**/LR*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<localCheckout>true</localCheckout>
+					<pushChanges>false</pushChanges>
+					<mavenExecutorId>forked-path</mavenExecutorId>
 					<goals>install</goals>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <profiles>
-        <profile>
-            <id>doclint-java8-disable</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <properties>
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-        </profile>
-        <profile>
-            <id>long-running-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>xxx</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.17</version>
+				<executions>
+					<execution>
+						<id>verify-style</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<logViolationsToConsole>true</logViolationsToConsole>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+					<checkstyleRules>
+						<module name="Checker">
+							<module name="SuppressWarningsFilter" />
+							<module name="FileTabCharacter" />
+							<!-- git checkout may change linefeeds on the fly
+							<module name="RegexpMultiline">
+								<property name="format" value="(?s:(\r\n|\r).*)" />
+								<property name="message" value="CRLF and CR line endings are prohibited, but this file uses them." />
+							</module>
+							-->
+							<module name="TreeWalker">
+								<module name="AvoidNestedBlocks" />
+								<module name="ConstantName" />
+								<module name="EmptyCatchBlock" />
+								<module name="EmptyStatement" />
+								<module name="MissingOverride" />
+								<module name="MultipleVariableDeclarations" />
+								<module name="ParameterAssignment" />
+								<module name="StringLiteralEquality" />
+								<module name="RedundantImport" />
+								<module name="UnusedImports" />
+                                        
+								<module name="WhitespaceAfter" />
+										
+								<module name="NeedBraces" />
+								<module name="UnnecessaryParentheses" />
+								<module name="LeftCurly" />
+								<module name="RightCurly" />
+                                        
+								<module name="SuppressWarningsHolder" />
+							</module>
+						</module>
+					</checkstyleRules>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>6.19</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
+			</properties>
+		</profile>
+		<profile>
+			<id>long-running-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>xxx</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
 

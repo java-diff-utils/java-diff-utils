@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  *
  * For instantiating the DiffRowGenerator you should use the its builder. Like in example  <code>
  *    DiffRowGenerator generator = new DiffRowGenerator.Builder().showInlineDiffs(true).
- *    	ignoreWhiteSpaces(true).columnWidth(100).build();
+ *      ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
  */
 public class DiffRowGenerator {

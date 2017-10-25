@@ -1,7 +1,5 @@
 package com.github.difflib;
 
-import com.github.difflib.DiffUtils;
-import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
