@@ -4,24 +4,27 @@
 	<artifactId>diffutils</artifactId>
 	<packaging>jar</packaging>
 	<version>2.1-SNAPSHOT</version>
-
 	<name>java-diff-utils</name>
 	<description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
 	<url>https://github.com/wumpz/java-diff-utils</url>
 	<inceptionYear>2009</inceptionYear>
-	<!-- 
-	to make a local release
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
-	-->
+	
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<scm>
 		<connection>scm:git:https://github.com/wumpz/java-diff-utils.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
 		<url>https://github.com/wumpz/java-diff-utils.git</url>
-		<tag>diffutils-2.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 	
 	<issueManagement>
