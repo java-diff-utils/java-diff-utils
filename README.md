@@ -101,6 +101,6 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>com.github.wumpz</groupId>
     <artifactId>diffutils</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.2</version>
 </dependency>
 ```
