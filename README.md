@@ -50,7 +50,9 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
-  * Version 2.1-SNAPSHOT
+  * Version 2.3-SNAPSHOT
+  * Version 2.2
+    * released at maven central
     * included checkstyle source code conventions
     * groupid changed to **com.github.wumpz**, due to maven central releasing
     * allow configurable splitting of lines to define the blocks to compare (words, characters, phrases).
