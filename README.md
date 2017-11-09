@@ -96,7 +96,7 @@ This is a valid piece of source code:
 Just add the code below to your maven dependencies:
 ```
 <dependency>
-    <groupId>com.github.java-diff-utils</groupId>
+    <groupId>com.github.wumpz</groupId>
     <artifactId>diffutils</artifactId>
     <version>2.0-SNAPSHOT</version>
 </dependency>
