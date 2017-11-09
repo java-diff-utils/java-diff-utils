@@ -47,16 +47,34 @@ import java.util.regex.Pattern;
  * </code>
  */
 public class DiffRowGenerator {
-
+    public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+    
     public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
             -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
+    
     public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
-    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+    
+    /**
+     * Splitting lines by word to achieve word by word diff checking.
+     */
+    public static final Function<String, List<String>> SPLITTER_BY_WORD = line -> splitStringPreserveDelimiter(line, SPLIT_BY_WORD_PATTERN);
+
+    /**
+     * Splitting lines by character to achieve char by char diff checking.
+     */
+    public static final Function<String, List<String>> SPLITTER_BY_CHARACTER = line -> {
+        List<String> list = new ArrayList<>(line.length());
+        for (Character character : line.toCharArray()) {
+            list.add(character.toString());
+        }
+        return list;
+    };
+    
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
     private final Function<Boolean, String> oldTag;
     private final Function<Boolean, String> newTag;
-    private final boolean inlineDiffByWord;
+    private final Function<String, List<String>> inlineDiffSplitter;
     private final int columnWidth;
     private final BiPredicate<String, String> equalizer;
     private final boolean mergeOriginalRevised;
@@ -78,8 +96,8 @@ public class DiffRowGenerator {
 
         private int columnWidth = 0;
         private boolean mergeOriginalRevised = false;
-        private boolean inlineDiffByWord = false;
         private boolean reportLinesUnchanged = false;
+        private Function<String, List<String>> inlineDiffSplitter = SPLITTER_BY_CHARACTER;
 
         private Builder() {
         }
@@ -177,7 +195,13 @@ public class DiffRowGenerator {
          * deliver no in word changes.
          */
         public Builder inlineDiffByWord(boolean inlineDiffByWord) {
-            this.inlineDiffByWord = inlineDiffByWord;
+            inlineDiffSplitter = inlineDiffByWord?SPLITTER_BY_WORD:SPLITTER_BY_CHARACTER;
+            return this;
+        }
+        
+        
+        public Builder inlineDiffBySplitter(Function<String, List<String>> inlineDiffSplitter) {
+            this.inlineDiffSplitter = inlineDiffSplitter;
             return this;
         }
     }
@@ -193,9 +217,11 @@ public class DiffRowGenerator {
         newTag = builder.newTag;
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
-        inlineDiffByWord = builder.inlineDiffByWord;
+        inlineDiffSplitter = builder.inlineDiffSplitter;
         equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
         reportLinesUnchanged = builder.reportLinesUnchanged;
+        
+        Objects.requireNonNull(inlineDiffSplitter);
     }
 
     /**
@@ -318,19 +344,8 @@ public class DiffRowGenerator {
         String joinedOrig = String.join("\n", orig);
         String joinedRev = String.join("\n", rev);
 
-        if (inlineDiffByWord) {
-            origList = splitStringPreserveDelimiter(joinedOrig);
-            revList = splitStringPreserveDelimiter(joinedRev);
-        } else {
-            origList = new ArrayList<>(joinedOrig.length());
-            revList = new ArrayList<>(joinedRev.length());
-            for (Character character : joinedOrig.toCharArray()) {
-                origList.add(character.toString());
-            }
-            for (Character character : joinedRev.toCharArray()) {
-                revList.add(character.toString());
-            }
-        }
+        origList = inlineDiffSplitter.apply(joinedOrig);
+        revList = inlineDiffSplitter.apply(joinedRev);
 
         List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
 
@@ -404,7 +419,7 @@ public class DiffRowGenerator {
         sequence.add(endPosition, generator.apply(false));
     }
 
-    protected final static List<String> splitStringPreserveDelimiter(String str) {
+    protected final static List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {
         List<String> list = new ArrayList<>();
         if (str != null) {
             Matcher matcher = SPLIT_PATTERN.matcher(str);

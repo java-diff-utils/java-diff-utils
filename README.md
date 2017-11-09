@@ -53,6 +53,7 @@ But it can easily replaced by any other which is better for handing your texts. 
   * Version 2.1-SNAPSHOT
     * included checkstyle source code conventions
     * groupid changed to **com.github.wumpz**, due to maven central releasing
+    * allow configurable splitting of lines to define the blocks to compare (words, characters, phrases).
   * Version 2.0
     * switch to maven and removed other artifacts
     * changed groupid to **com.github.java-diff-utils** due to different forks at github

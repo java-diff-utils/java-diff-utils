@@ -3,6 +3,7 @@ package com.github.difflib.text;
 import com.github.difflib.algorithm.DiffException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -182,14 +183,14 @@ public class DiffRowGeneratorTest {
 
     @Test
     public void testSplitString() {
-        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2");
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2", DiffRowGenerator.SPLIT_BY_WORD_PATTERN);
         assertEquals(3, list.size());
         assertEquals("[test, ,, test2]", list.toString());
     }
 
     @Test
     public void testSplitString2() {
-        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test , test2");
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test , test2", DiffRowGenerator.SPLIT_BY_WORD_PATTERN);
         System.out.println(list);
         assertEquals(5, list.size());
         assertEquals("[test,  , ,,  , test2]", list.toString());
@@ -197,7 +198,7 @@ public class DiffRowGeneratorTest {
 
     @Test
     public void testSplitString3() {
-        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2,");
+        List<String> list = DiffRowGenerator.splitStringPreserveDelimiter("test,test2,", DiffRowGenerator.SPLIT_BY_WORD_PATTERN);
         System.out.println(list);
         assertEquals(4, list.size());
         assertEquals("[test, ,, test2, ,]", list.toString());
@@ -261,5 +262,24 @@ public class DiffRowGeneratorTest {
         assertEquals("[CHANGE,anything ,anything]", rows.get(0).toString());
         assertEquals("[CHANGE, ,]", rows.get(1).toString());
         assertEquals("[EQUAL,other,other]", rows.get(2).toString());
+    }
+    
+    @Test
+    public void testGeneratorIssue14() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffBySplitter(line -> DiffRowGenerator.splitStringPreserveDelimiter(line, Pattern.compile(",")))
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("J. G. Feldstein, Chair"),
+                Arrays.asList("T. P. Pastor, Chair"));
+
+        System.out.println(rows.get(0).getOldLine());
+
+        assertEquals(1, rows.size());
+        assertEquals("~J. G. Feldstein~**T. P. Pastor**, Chair", rows.get(0).getOldLine());
     }
 }
