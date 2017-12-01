@@ -74,7 +74,7 @@ But it can easily replaced by any other which is better for handing your texts. 
 
 ## Source Code conventions
 
-Recently a checkstyle process was integrated into the build process. JSqlParser follows the sun java format convention. There are no TABs allowed. Use spaces.
+Recently a checkstyle process was integrated into the build process. java-diff-utils follows the sun java format convention. There are no TABs allowed. Use spaces.
 
 ```java
 public static <T> Patch<T> diff(List<T> original, List<T> revised,
