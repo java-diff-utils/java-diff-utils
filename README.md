@@ -3,7 +3,7 @@
 ## Status ##
 [![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
 
-After a while using it, at least for me, this one seems to be feature complete. If someone finds bugs or has improvement ideas, please file an issue. I wonder why that this project is a zero issue project.
+**After a while using it, at least for me, this one seems to be feature complete. If someone finds bugs or has improvement ideas, please file an issue. I wonder why that this project is a zero issue project.**
 
 
 ## Intro ##
