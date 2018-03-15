@@ -97,8 +97,6 @@ This is a valid piece of source code:
 
 ### To Install ###
 
-**This jar is not yet to get at maven central.**
-
 Just add the code below to your maven dependencies:
 ```
 <dependency>
