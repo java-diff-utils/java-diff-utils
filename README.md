@@ -105,3 +105,8 @@ Just add the code below to your maven dependencies:
     <version>2.2</version>
 </dependency>
 ```
+or using gradle:
+```
+// https://mvnrepository.com/artifact/com.github.wumpz/diffutils
+compile group: 'com.github.wumpz', name: 'diffutils', version: '2.2'
+```
