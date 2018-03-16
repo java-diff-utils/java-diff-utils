@@ -3,6 +3,9 @@
 ## Status ##
 [![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
 
+**After a while using it, at least for me, this one seems to be feature complete. If someone finds bugs or has improvement ideas, please file an issue. I wonder why that this project is a zero issue project.**
+
+
 ## Intro ##
 Diff Utils library is an OpenSource library for performing the comparison operations between texts: computing diffs, applying patches, generating unified diffs or parsing them, generating diff output for easy future displaying (like side-by-side view) and so on.
 
@@ -74,7 +77,7 @@ But it can easily replaced by any other which is better for handing your texts. 
 
 ## Source Code conventions
 
-Recently a checkstyle process was integrated into the build process. JSqlParser follows the sun java format convention. There are no TABs allowed. Use spaces.
+Recently a checkstyle process was integrated into the build process. java-diff-utils follows the sun java format convention. There are no TABs allowed. Use spaces.
 
 ```java
 public static <T> Patch<T> diff(List<T> original, List<T> revised,
@@ -94,8 +97,6 @@ This is a valid piece of source code:
 
 ### To Install ###
 
-**This jar is not yet to get at maven central.**
-
 Just add the code below to your maven dependencies:
 ```
 <dependency>
@@ -103,4 +104,9 @@ Just add the code below to your maven dependencies:
     <artifactId>diffutils</artifactId>
     <version>2.2</version>
 </dependency>
+```
+or using gradle:
+```
+// https://mvnrepository.com/artifact/com.github.wumpz/diffutils
+compile group: 'com.github.wumpz', name: 'diffutils', version: '2.2'
 ```
