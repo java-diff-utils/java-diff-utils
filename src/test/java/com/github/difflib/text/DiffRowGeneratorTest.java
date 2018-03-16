@@ -1,9 +1,13 @@
 package com.github.difflib.text;
 
 import com.github.difflib.algorithm.DiffException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -263,7 +267,7 @@ public class DiffRowGeneratorTest {
         assertEquals("[CHANGE, ,]", rows.get(1).toString());
         assertEquals("[EQUAL,other,other]", rows.get(2).toString());
     }
-    
+
     @Test
     public void testGeneratorIssue14() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -281,5 +285,34 @@ public class DiffRowGeneratorTest {
 
         assertEquals(1, rows.size());
         assertEquals("~J. G. Feldstein~**T. P. Pastor**, Chair", rows.get(0).getOldLine());
+    }
+
+    @Test
+    public void testGeneratorIssue15() throws DiffException, IOException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true) //show the ~ ~ and ** ** symbols on each difference
+                .inlineDiffByWord(true) //show the ~ ~ and ** ** around each different word instead of each letter
+                //.reportLinesUnchanged(true) //experiment
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+
+        List<String> listOne = Files.lines(new File("target/test-classes/mocks/issue15_1.txt").toPath())
+                .collect(toList());
+
+        List<String> listTwo = Files.lines(new File("target/test-classes/mocks/issue15_2.txt").toPath())
+                .collect(toList());
+
+        List<DiffRow> rows = generator.generateDiffRows(listOne, listTwo);
+
+        assertEquals(9, rows.size());
+
+        for (DiffRow row : rows) {
+            System.out.println("|" + row.getOldLine() + "| " + row.getNewLine() + " |");
+            if (!row.getOldLine().startsWith("TABLE_NAME")) {
+                assertTrue(row.getNewLine().startsWith("**ACTIONS_C16913**"));
+                assertTrue(row.getOldLine().startsWith("~ACTIONS_C1700"));
+            }
+        }
     }
 }
