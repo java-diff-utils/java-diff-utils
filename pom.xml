@@ -129,6 +129,10 @@
 				<configuration>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestEntries>
+                            <!-- identical to OSGI name -->
+                            <Automatic-Module-Name>com.github.wumpz.diffutils</Automatic-Module-Name>
+                        </manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
