@@ -130,21 +130,21 @@ public final class UnifiedDiffUtils {
      * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format text representing
      * the Patch.
      *
-     * @param original - Filename of the original (unrevised file)
-     * @param revised - Filename of the revised file
+     * @param originalFileName - Filename of the original (unrevised file)
+     * @param revisedFileName - Filename of the revised file
      * @param originalLines - Lines of the original file
      * @param patch - Patch created by the diff() function
      * @param contextSize - number of lines of context output around each difference in the file.
      * @return List of strings representing the Unified Diff representation of the Patch argument.
      * @author Bill James (tankerbay@gmail.com)
      */
-    public static List<String> generateUnifiedDiff(String original,
-            String revised, List<String> originalLines, Patch<String> patch,
+    public static List<String> generateUnifiedDiff(String originalFileName,
+            String revisedFileName, List<String> originalLines, Patch<String> patch,
             int contextSize) {
         if (!patch.getDeltas().isEmpty()) {
             List<String> ret = new ArrayList<>();
-            ret.add("--- " + original);
-            ret.add("+++ " + revised);
+            ret.add("--- " + originalFileName);
+            ret.add("+++ " + revisedFileName);
 
             List<Delta<String>> patchDeltas = new ArrayList<>(
                     patch.getDeltas());
