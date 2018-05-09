@@ -54,6 +54,7 @@ But it can easily replaced by any other which is better for handing your texts. 
 
 ### Changelog ###
   * Version 2.3-SNAPSHOT
+    * automatic module name for JDK 9 and hight usage
   * Version 2.2
     * released at maven central
     * included checkstyle source code conventions
