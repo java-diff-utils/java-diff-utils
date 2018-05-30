@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.wumpz</groupId>
+	<groupId>com.github.ktsour</groupId>
 	<artifactId>diffutils</artifactId>
 	<packaging>jar</packaging>
 	<version>2.3-SNAPSHOT</version>
 	<name>java-diff-utils</name>
 	<description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
-	<url>https://github.com/wumpz/java-diff-utils</url>
+	<url>https://github.com/ktsour/java-diff-utils</url>
 	<inceptionYear>2009</inceptionYear>
 	
 	<distributionManagement>
@@ -21,15 +21,15 @@
 	</distributionManagement>
 	
 	<scm>
-		<connection>scm:git:https://github.com/wumpz/java-diff-utils.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
-		<url>https://github.com/wumpz/java-diff-utils.git</url>
+		<connection>scm:git:https://github.com/ktsour/java-diff-utils.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:ktsour/java-diff-utils.git</developerConnection>
+		<url>https://github.com/ktsour/java-diff-utils.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/wumpz/java-diff-utils/issues</url>
+		<url>https://github.com/ktsour/java-diff-utils/issues</url>
 	</issueManagement>
 	
 	<organization>
@@ -131,7 +131,7 @@
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         <manifestEntries>
                             <!-- identical to OSGI name -->
-                            <Automatic-Module-Name>com.github.wumpz.diffutils</Automatic-Module-Name>
+                            <Automatic-Module-Name>com.github.ktsour.diffutils</Automatic-Module-Name>
                         </manifestEntries>
 					</archive>
 				</configuration>
