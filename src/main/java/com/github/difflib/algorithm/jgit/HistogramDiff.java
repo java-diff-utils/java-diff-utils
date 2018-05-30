@@ -34,12 +34,46 @@ import org.eclipse.jgit.diff.SequenceComparator;
  */
 public class HistogramDiff<T> implements DiffAlgorithm<T> {
 
+    private long sleepMillis = 0; // Need to be 0 to disable sleeping
+    private long millisWithoutSleep;
+
+    /**
+     * Default constructor, without CPU sleeping.
+     */
+    public HistogramDiff() {
+    }
+
+    /**
+     * Enable CPU sleeping based on provided parameters.
+     *
+     * @param sleepMillis How long to sleep in millis
+     * @param millisWithoutSleep How long to wait until the next sleep in millis
+     */
+    public HistogramDiff(long sleepMillis, long millisWithoutSleep) {
+        this.sleepMillis = sleepMillis;
+        this.millisWithoutSleep = millisWithoutSleep;
+    }
+
+    /**
+     * Enable CPU sleeping for 1ms every 10ms
+     *
+     * @param avoidCpuDrain Enable CPU sleeping or not
+     */
+    public HistogramDiff(boolean avoidCpuDrain) {
+        if (avoidCpuDrain) {
+            this.sleepMillis = 1;
+            this.millisWithoutSleep = 10;
+        }
+    }
+
     @Override
     public List<Change> diff(List<T> original, List<T> revised) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
         EditList diffList = new EditList();
-        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
+        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(
+                new DataListComparator<>(sleepMillis, millisWithoutSleep),
+                new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
             DeltaType type = DeltaType.EQUAL;
@@ -62,8 +96,28 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
 
 class DataListComparator<T> extends SequenceComparator<DataList<T>> {
 
+    private long sleepMillis;
+    private long millisWithoutSleep;
+    private long timePoint = System.currentTimeMillis();
+
+    public DataListComparator(long sleepMillis, long millisWithoutSleep) {
+        this.sleepMillis = sleepMillis;
+        this.millisWithoutSleep = millisWithoutSleep;
+    }
+
     @Override
     public boolean equals(DataList<T> original, int orgIdx, DataList<T> revised, int revIdx) {
+        if (sleepMillis > 0) {
+            if (System.currentTimeMillis() - timePoint > millisWithoutSleep) {
+                try {
+                    Thread.sleep(sleepMillis);
+                } catch (InterruptedException ie) {
+                    // Nothing to do
+                }
+                // Note that we need to call the currentTimeMillis after sleeping to get the new time
+                timePoint = System.currentTimeMillis();
+            }
+        }
         return original.data.get(orgIdx).equals(revised.data.get(revIdx));
     }
 
