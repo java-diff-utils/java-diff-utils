@@ -22,6 +22,7 @@ import com.github.difflib.patch.DeltaType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.Sequence;
@@ -35,7 +36,7 @@ import org.eclipse.jgit.diff.SequenceComparator;
 public class HistogramDiff<T> implements DiffAlgorithm<T> {
 
     private long sleepMillis = 0; // Need to be 0 to disable sleeping
-    private long millisWithoutSleep;
+    private float diffSleepPossibility;
 
     /**
      * Default constructor, without CPU sleeping.
@@ -47,22 +48,22 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
      * Enable CPU sleeping based on provided parameters.
      *
      * @param sleepMillis How long to sleep in millis
-     * @param millisWithoutSleep How long to wait until the next sleep in millis
+     * @param diffSleepPossibility Possibility to sleep. Number from 0 to 1. Closer to 1, higher the possibility.
      */
-    public HistogramDiff(long sleepMillis, long millisWithoutSleep) {
+    public HistogramDiff(long sleepMillis, float diffSleepPossibility) {
         this.sleepMillis = sleepMillis;
-        this.millisWithoutSleep = millisWithoutSleep;
+        this.diffSleepPossibility = diffSleepPossibility;
     }
 
     /**
-     * Enable CPU sleeping for 1ms every 10ms
+     * Enable CPU sleeping for 1ms with possibility 5%
      *
      * @param avoidCpuDrain Enable CPU sleeping or not
      */
     public HistogramDiff(boolean avoidCpuDrain) {
         if (avoidCpuDrain) {
             this.sleepMillis = 1;
-            this.millisWithoutSleep = 10;
+            this.diffSleepPossibility = 0.05f;
         }
     }
 
@@ -72,7 +73,7 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
         Objects.requireNonNull(revised, "revised list must not be null");
         EditList diffList = new EditList();
         diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(
-                new DataListComparator<>(sleepMillis, millisWithoutSleep),
+                new DataListComparator<>(sleepMillis, diffSleepPossibility),
                 new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
@@ -97,33 +98,38 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
 class DataListComparator<T> extends SequenceComparator<DataList<T>> {
 
     private long sleepMillis;
-    private long millisWithoutSleep;
-    private long timePoint = System.currentTimeMillis();
+    private float diffSleepPossibility;
 
-    public DataListComparator(long sleepMillis, long millisWithoutSleep) {
+    public DataListComparator(long sleepMillis, float diffSleepPossibility) {
         this.sleepMillis = sleepMillis;
-        this.millisWithoutSleep = millisWithoutSleep;
+        this.diffSleepPossibility = diffSleepPossibility;
     }
 
     @Override
     public boolean equals(DataList<T> original, int orgIdx, DataList<T> revised, int revIdx) {
-        if (sleepMillis > 0) {
-            if (System.currentTimeMillis() - timePoint > millisWithoutSleep) {
-                try {
-                    Thread.sleep(sleepMillis);
-                } catch (InterruptedException ie) {
-                    // Nothing to do
-                }
-                // Note that we need to call the currentTimeMillis after sleeping to get the new time
-                timePoint = System.currentTimeMillis();
-            }
-        }
+        sleepRandomly(diffSleepPossibility, sleepMillis);
         return original.data.get(orgIdx).equals(revised.data.get(revIdx));
     }
 
     @Override
     public int hash(DataList<T> s, int i) {
         return s.data.get(i).hashCode();
+    }
+
+    /**
+     * Sleep randomly based on given possibility
+     *
+     * @param possibility A number from 0 to 1. The biggest, the most probable it is to sleep.
+     * @param sleep Time to sleep in millis
+     */
+    private void sleepRandomly(double possibility, long sleep) {
+        if (Math.random() < possibility) {
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException ie) {
+                // Nothing to do
+            }
+        }
     }
 
 }
