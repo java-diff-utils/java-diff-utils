@@ -2,6 +2,7 @@
 
 ## Status ##
 [![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.wumpz/diffutils/badge.svg)](http://maven-badges.herokuapp.com/maven-central/com.github.wumpz/diffutils)
 
 
 ## Intro ##
@@ -54,6 +55,7 @@ But it can easily replaced by any other which is better for handing your texts. 
   * Version 2.3-SNAPSHOT
     * Introduced a process listener to diff algorithms. For long running
       diffs one could implement some progress information.
+    * automatic module name for JDK 9 and higher usage
   * Version 2.2
     * released at maven central
     * included checkstyle source code conventions
