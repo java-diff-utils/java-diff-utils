@@ -38,8 +38,8 @@ public interface DiffAlgorithm<T> {
      * @param revised The revised sequence. Must not be {@code null}.
      * @return The patch representing the diff of the given sequences. Never {@code null}.
      */
-    public default List<Change> diff(T[] original, T[] revised) throws DiffException {
-        return diff(Arrays.asList(original), Arrays.asList(revised));
+    default List<Change> diff(T[] original, T[] revised, DiffAlgorithmListener progress) throws DiffException {
+        return diff(Arrays.asList(original), Arrays.asList(revised), progress);
     }
 
     /**
@@ -50,5 +50,5 @@ public interface DiffAlgorithm<T> {
      * @param revised The revised sequence. Must not be {@code null}.
      * @return The patch representing the diff of the given sequences. Never {@code null}.
      */
-    public List<Change> diff(List<T> original, List<T> revised) throws DiffException;
+    List<Change> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) throws DiffException;
 }

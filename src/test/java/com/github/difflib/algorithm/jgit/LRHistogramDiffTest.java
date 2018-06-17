@@ -17,10 +17,12 @@ package com.github.difflib.algorithm.jgit;
 
 import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
 import com.github.difflib.TestConstants;
+import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipFile;
 import org.junit.After;
@@ -61,12 +63,30 @@ public class LRHistogramDiffTest {
         List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
 
-        Patch<String> patch = Patch.generate(original, revised, new HistogramDiff().diff(original, revised));
+        List<String> logdata = new ArrayList<>();
+        Patch<String> patch = Patch.generate(original, revised, new HistogramDiff().diff(original, revised, new DiffAlgorithmListener() {
+            @Override
+            public void diffStart() {
+                logdata.add("start");
+            }
+
+            @Override
+            public void diffStep(int value, int max) {
+                logdata.add(value + " - " + max);
+            }
+
+            @Override
+            public void diffEnd() {
+                logdata.add("end");
+            }
+        }));
 
         assertEquals(34, patch.getDeltas().size());
 
         List<String> created = patch.applyTo(original);
         assertArrayEquals(revised.toArray(), created.toArray());
+        
+        assertEquals(50, logdata.size());
     }
 
 }

@@ -17,6 +17,7 @@ package com.github.difflib.algorithm.jgit;
 
 import com.github.difflib.algorithm.Change;
 import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.DeltaType;
 import java.util.ArrayList;
@@ -28,18 +29,22 @@ import org.eclipse.jgit.diff.Sequence;
 import org.eclipse.jgit.diff.SequenceComparator;
 
 /**
- * HistorgramDiff using JGit - Library. This one is much more performant than the orginal Myers implementation.
+ * HistorgramDiff using JGit - Library. This one is much more performant than the orginal Myers
+ * implementation.
  *
  * @author toben
  */
 public class HistogramDiff<T> implements DiffAlgorithm<T> {
 
     @Override
-    public List<Change> diff(List<T> original, List<T> revised) throws DiffException {
+    public List<Change> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
+        if (progress != null) {
+            progress.diffStart();
+        }
         EditList diffList = new EditList();
-        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(), new DataList<>(original), new DataList<>(revised)));
+        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(progress), new DataList<>(original), new DataList<>(revised)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
             DeltaType type = DeltaType.EQUAL;
@@ -56,14 +61,26 @@ public class HistogramDiff<T> implements DiffAlgorithm<T> {
             }
             patch.add(new Change(type, edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
         }
+        if (progress != null) {
+            progress.diffEnd();
+        }
         return patch;
     }
 }
 
 class DataListComparator<T> extends SequenceComparator<DataList<T>> {
 
+    private final DiffAlgorithmListener progress;
+
+    public DataListComparator(DiffAlgorithmListener progress) {
+        this.progress = progress;
+    }
+
     @Override
     public boolean equals(DataList<T> original, int orgIdx, DataList<T> revised, int revIdx) {
+        if (progress != null) {
+            progress.diffStep(orgIdx + revIdx, original.size() + revised.size());
+        }
         return original.data.get(orgIdx).equals(revised.data.get(revIdx));
     }
 

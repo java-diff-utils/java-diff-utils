@@ -21,6 +21,7 @@ package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.Change;
 import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.algorithm.DifferentiationFailedException;
 import com.github.difflib.patch.DeltaType;
@@ -53,24 +54,31 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * Return empty diff if get the error while procession the difference.
      */
     @Override
-    public List<Change> diff(final List<T> original, final List<T> revised) throws DiffException {
+    public List<Change> diff(final List<T> original, final List<T> revised, DiffAlgorithmListener progress) throws DiffException {
         Objects.requireNonNull(original, "original list must not be null");
         Objects.requireNonNull(revised, "revised list must not be null");
 
-        PathNode path = buildPath(original, revised);
-        return buildRevision(path, original, revised);
+        if (progress != null) {
+            progress.diffStart();
+        }
+        PathNode path = buildPath(original, revised, progress);
+        List<Change> result = buildRevision(path, original, revised);
+        if (progress != null) {
+            progress.diffEnd();
+        }
+        return result;
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences between the original and revised sequences, according
-     * to Gene Myers differencing algorithm.
+     * Computes the minimum diffpath that expresses de differences between the original and revised
+     * sequences, according to Gene Myers differencing algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A minimum {@link PathNode Path} accross the differences graph.
      * @throws DifferentiationFailedException if a diff path could not be found.
      */
-    private PathNode buildPath(final List<T> orig, final List<T> rev)
+    private PathNode buildPath(final List<T> orig, final List<T> rev, DiffAlgorithmListener progress)
             throws DifferentiationFailedException {
         Objects.requireNonNull(orig, "original sequence is null");
         Objects.requireNonNull(rev, "revised sequence is null");
@@ -86,6 +94,9 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
 
         diagonal[middle + 1] = new PathNode(0, -1, true, true, null);
         for (int d = 0; d < MAX; d++) {
+            if (progress != null) {
+                progress.diffStep(d, MAX);
+            }
             for (int k = -d; k <= d; k += 2) {
                 final int kmiddle = middle + k;
                 final int kplus = kmiddle + 1;
@@ -135,7 +146,8 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given path.
+     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
+     * path.
      */
     private List<Change> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
         Objects.requireNonNull(actualPath, "path is null");

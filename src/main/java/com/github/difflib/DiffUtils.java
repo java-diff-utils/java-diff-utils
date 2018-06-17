@@ -20,6 +20,7 @@ limitations under the License.
 package com.github.difflib;
 
 import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.patch.Delta;
@@ -37,7 +38,6 @@ import static java.util.stream.Collectors.joining;
  * Implements the difference and patching engine
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
- * @version 0.4.1
  */
 public final class DiffUtils {
 
@@ -46,17 +46,23 @@ public final class DiffUtils {
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
+     * @param progress progress listener
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
+     * @throws com.github.difflib.algorithm.DiffException
      */
+    public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) throws DiffException {
+        return DiffUtils.diff(original, revised, new MyersDiff<>(), progress);
+    }
+    
     public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
-        return DiffUtils.diff(original, revised, new MyersDiff<>());
+        return DiffUtils.diff(original, revised, new MyersDiff<>(), null);
     }
 
     /**
      * Computes the difference between the original and revised text.
      */
-    public static Patch<String> diff(String originalText, String revisedText) throws DiffException {
-        return DiffUtils.diff(Arrays.asList(originalText.split("\n")), Arrays.asList(revisedText.split("\n")));
+    public static Patch<String> diff(String originalText, String revisedText, DiffAlgorithmListener progress) throws DiffException {
+        return DiffUtils.diff(Arrays.asList(originalText.split("\n")), Arrays.asList(revisedText.split("\n")), progress);
     }
 
     /**
@@ -84,16 +90,30 @@ public final class DiffUtils {
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param algorithm The diff algorithm. Must not be {@code null}.
+     * @param progress The diff algorithm listener.
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithm<T> algorithm) throws DiffException {
+            DiffAlgorithm<T> algorithm, DiffAlgorithmListener progress) throws DiffException {
         Objects.requireNonNull(original, "original must not be null");
         Objects.requireNonNull(revised, "revised must not be null");
         Objects.requireNonNull(algorithm, "algorithm must not be null");
 
-        return Patch.generate(original, revised, algorithm.diff(original, revised));
+        return Patch.generate(original, revised, algorithm.diff(original, revised, progress));
     }
+    
+    /**
+     * Computes the difference between the original and revised list of elements with default diff algorithm
+     *
+     * @param original The original text. Must not be {@code null}.
+     * @param revised The revised text. Must not be {@code null}.
+     * @param algorithm The diff algorithm. Must not be {@code null}.
+     * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
+     */
+     public static <T> Patch<T> diff(List<T> original, List<T> revised,
+            DiffAlgorithm<T> algorithm) throws DiffException {
+         return diff(original, revised, algorithm, null);
+     }
 
     /**
      * Computes the difference between the given texts inline. This one uses the "trick" to make out of texts lists of
