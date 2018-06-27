@@ -26,6 +26,7 @@ import java.util.*;
  * The general interface for computing diffs between two lists of elements of type T.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @author <a href="t.warneke@gmx.net">Tobias Warneke</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public interface DiffAlgorithm<T> {

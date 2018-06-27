@@ -25,6 +25,7 @@ import java.util.*;
  * Describes the delta between original and revised texts.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
+ * @author <a href="t.warneke@gmx.net">Tobias Warneke</a>
  * @param T The type of the compared elements in the 'lines'.
  */
 public abstract class Delta<T> {
