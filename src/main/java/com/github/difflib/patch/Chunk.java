@@ -65,6 +65,7 @@ public final class Chunk<T> {
      * Verifies that this chunk's saved text matches the corresponding text in the given sequence.
      *
      * @param target the sequence to verify against.
+     * @throws com.github.difflib.patch.PatchFailedException
      */
     public void verify(List<T> target) throws PatchFailedException {
         if (position > target.size() || last() > target.size()) {

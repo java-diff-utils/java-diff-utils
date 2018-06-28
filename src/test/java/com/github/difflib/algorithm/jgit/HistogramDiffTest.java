@@ -61,7 +61,7 @@ public class HistogramDiffTest {
     public void testDiff() throws DiffException, PatchFailedException {
         List<String> orgList = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revList = Arrays.asList("C", "B", "A", "B", "A", "C");
-        final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().diff(orgList, revList, null));
+        final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().computeDiff(orgList, revList, null));
         System.out.println(patch);
         assertNotNull(patch);
         assertEquals(3, patch.getDeltas().size());
@@ -77,7 +77,7 @@ public class HistogramDiffTest {
         List<String> revList = Arrays.asList("C", "B", "A", "B", "A", "C");
         
         List<String> logdata = new ArrayList<>();
-        final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().diff(orgList, revList, new DiffAlgorithmListener() {
+        final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().computeDiff(orgList, revList, new DiffAlgorithmListener() {
             @Override
             public void diffStart() {
                 logdata.add("start");

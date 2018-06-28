@@ -20,7 +20,7 @@ limitations under the License.
 package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.Change;
-import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.algorithm.DifferentiationFailedException;
@@ -34,7 +34,7 @@ import java.util.function.BiPredicate;
 /**
  * A clean-room implementation of Eugene Myers greedy differencing algorithm.
  */
-public final class MyersDiff<T> implements DiffAlgorithm<T> {
+public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 
     private final BiPredicate<T, T> DEFAULT_EQUALIZER = Object::equals;
     private final BiPredicate<T, T> equalizer;
@@ -54,15 +54,15 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
      * Return empty diff if get the error while procession the difference.
      */
     @Override
-    public List<Change> diff(final List<T> original, final List<T> revised, DiffAlgorithmListener progress) throws DiffException {
-        Objects.requireNonNull(original, "original list must not be null");
-        Objects.requireNonNull(revised, "revised list must not be null");
+    public List<Change> computeDiff(final List<T> source, final List<T> target, DiffAlgorithmListener progress) throws DiffException {
+        Objects.requireNonNull(source, "source list must not be null");
+        Objects.requireNonNull(target, "target list must not be null");
 
         if (progress != null) {
             progress.diffStart();
         }
-        PathNode path = buildPath(original, revised, progress);
-        List<Change> result = buildRevision(path, original, revised);
+        PathNode path = buildPath(source, target, progress);
+        List<Change> result = buildRevision(path, source, target);
         if (progress != null) {
             progress.diffEnd();
         }
@@ -177,18 +177,7 @@ public final class MyersDiff<T> implements DiffAlgorithm<T> {
             } else {
                 changes.add(new Change(DeltaType.CHANGE, ianchor, i, janchor, j));
             }
-//            Chunk<T> original = new Chunk<>(ianchor, copyOfRange(orig, ianchor, i));
-//            Chunk<T> revised = new Chunk<>(janchor, copyOfRange(rev, janchor, j));
-//            Delta<T> delta = null;
-//            if (original.size() == 0 && revised.size() != 0) {
-//                delta = new InsertDelta<>(original, revised);
-//            } else if (original.size() > 0 && revised.size() == 0) {
-//                delta = new DeleteDelta<>(original, revised);
-//            } else {
-//                delta = new ChangeDelta<>(original, revised);
-//            }
-//
-//            patch.addDelta(delta);
+
             if (path.isSnake()) {
                 path = path.prev;
             }

@@ -3,7 +3,7 @@ package com.github.difflib.examples;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffException;
-import com.github.difflib.patch.Delta;
+import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class ComputeDifference {
         // Compute diff. Get the Patch object. Patch is the container for computed deltas.
         Patch<String> patch = DiffUtils.diff(original, revised);
 
-        for (Delta<String> delta : patch.getDeltas()) {
+        for (AbstractDelta<String> delta : patch.getDeltas()) {
             System.out.println(delta);
         }
     }

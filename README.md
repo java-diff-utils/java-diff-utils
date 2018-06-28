@@ -52,6 +52,8 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
+  * Version 3.0-SNAPSHOT
+    * Due to licensing issues Delta.java and DiffAlgorithm.java were removed.
   * Version 2.3-SNAPSHOT
     * Introduced a process listener to diff algorithms. For long running
       diffs one could implement some progress information.

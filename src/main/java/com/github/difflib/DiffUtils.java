@@ -19,11 +19,11 @@ limitations under the License.
  */
 package com.github.difflib;
 
-import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.algorithm.myers.MyersDiff;
-import com.github.difflib.patch.Delta;
+import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.util.ArrayList;
@@ -61,27 +61,30 @@ public final class DiffUtils {
     /**
      * Computes the difference between the original and revised text.
      */
-    public static Patch<String> diff(String originalText, String revisedText, DiffAlgorithmListener progress) throws DiffException {
-        return DiffUtils.diff(Arrays.asList(originalText.split("\n")), Arrays.asList(revisedText.split("\n")), progress);
+    public static Patch<String> diff(String sourceText, String targetText,
+            DiffAlgorithmListener progress) throws DiffException {
+        return DiffUtils.diff(
+                 Arrays.asList(sourceText.split("\n")), 
+                 Arrays.asList(targetText.split("\n")), progress);
     }
 
     /**
      * Computes the difference between the original and revised list of elements with default diff algorithm
      *
-     * @param original The original text. Must not be {@code null}.
-     * @param revised The revised text. Must not be {@code null}.
+     * @param source The original text. Must not be {@code null}.
+     * @param target The revised text. Must not be {@code null}.
      *
      * @param equalizer the equalizer object to replace the default compare algorithm (Object.equals). If {@code null}
      * the default equalizer of the default algorithm is used..
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
-    public static <T> Patch<T> diff(List<T> original, List<T> revised,
+    public static <T> Patch<T> diff(List<T> source, List<T> target,
             BiPredicate<T, T> equalizer) throws DiffException {
         if (equalizer != null) {
-            return DiffUtils.diff(original, revised,
+            return DiffUtils.diff(source, target,
                     new MyersDiff<>(equalizer));
         }
-        return DiffUtils.diff(original, revised, new MyersDiff<>());
+        return DiffUtils.diff(source, target, new MyersDiff<>());
     }
 
     /**
@@ -94,12 +97,12 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithm<T> algorithm, DiffAlgorithmListener progress) throws DiffException {
+            DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress) throws DiffException {
         Objects.requireNonNull(original, "original must not be null");
         Objects.requireNonNull(revised, "revised must not be null");
         Objects.requireNonNull(algorithm, "algorithm must not be null");
 
-        return Patch.generate(original, revised, algorithm.diff(original, revised, progress));
+        return Patch.generate(original, revised, algorithm.computeDiff(original, revised, progress));
     }
     
     /**
@@ -111,7 +114,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
      public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithm<T> algorithm) throws DiffException {
+            DiffAlgorithmI<T> algorithm) throws DiffException {
          return diff(original, revised, algorithm, null);
      }
 
@@ -133,9 +136,9 @@ public final class DiffUtils {
             revList.add(character.toString());
         }
         Patch<String> patch = DiffUtils.diff(origList, revList);
-        for (Delta<String> delta : patch.getDeltas()) {
-            delta.getOriginal().setLines(compressLines(delta.getOriginal().getLines(), ""));
-            delta.getRevised().setLines(compressLines(delta.getRevised().getLines(), ""));
+        for (AbstractDelta<String> delta : patch.getDeltas()) {
+            delta.getSource().setLines(compressLines(delta.getSource().getLines(), ""));
+            delta.getTarget().setLines(compressLines(delta.getTarget().getLines(), ""));
         }
         return patch;
     }

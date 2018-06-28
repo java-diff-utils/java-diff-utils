@@ -16,7 +16,7 @@
 package com.github.difflib.algorithm.jgit;
 
 import com.github.difflib.algorithm.Change;
-import com.github.difflib.algorithm.DiffAlgorithm;
+import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.DeltaType;
@@ -34,17 +34,17 @@ import org.eclipse.jgit.diff.SequenceComparator;
  *
  * @author toben
  */
-public class HistogramDiff<T> implements DiffAlgorithm<T> {
+public class HistogramDiff<T> implements DiffAlgorithmI<T> {
 
     @Override
-    public List<Change> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) throws DiffException {
-        Objects.requireNonNull(original, "original list must not be null");
-        Objects.requireNonNull(revised, "revised list must not be null");
+    public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) throws DiffException {
+        Objects.requireNonNull(source, "source list must not be null");
+        Objects.requireNonNull(target, "target list must not be null");
         if (progress != null) {
             progress.diffStart();
         }
         EditList diffList = new EditList();
-        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(progress), new DataList<>(original), new DataList<>(revised)));
+        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(progress), new DataList<>(source), new DataList<>(target)));
         List<Change> patch = new ArrayList<>();
         for (Edit edit : diffList) {
             DeltaType type = DeltaType.EQUAL;

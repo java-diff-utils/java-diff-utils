@@ -4,7 +4,7 @@ import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.DeleteDelta;
-import com.github.difflib.patch.Delta;
+import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import java.io.BufferedReader;
@@ -33,10 +33,10 @@ public class DiffUtilsTest {
                 asList("hhh", "jjj", "kkk"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
-        final Delta<String> delta = patch.getDeltas().get(0);
+        final AbstractDelta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof InsertDelta);
-        assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getOriginal());
-        assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getRevised());
+        assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getSource());
+        assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getTarget());
     }
 
     @Test
@@ -45,10 +45,10 @@ public class DiffUtilsTest {
                 asList("ggg"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
-        final Delta<String> delta = patch.getDeltas().get(0);
+        final AbstractDelta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof DeleteDelta);
-        assertEquals(new Chunk<>(0, Arrays.asList("ddd", "fff")), delta.getOriginal());
-        assertEquals(new Chunk<>(0, Collections.<String>emptyList()), delta.getRevised());
+        assertEquals(new Chunk<>(0, Arrays.asList("ddd", "fff")), delta.getSource());
+        assertEquals(new Chunk<>(0, Collections.<String>emptyList()), delta.getTarget());
     }
 
     @Test
@@ -59,10 +59,10 @@ public class DiffUtilsTest {
         final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
-        final Delta<String> delta = patch.getDeltas().get(0);
+        final AbstractDelta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof ChangeDelta);
-        assertEquals(new Chunk<>(1, Arrays.asList("bbb")), delta.getOriginal());
-        assertEquals(new Chunk<>(1, Arrays.asList("zzz")), delta.getRevised());
+        assertEquals(new Chunk<>(1, Arrays.asList("bbb")), delta.getSource());
+        assertEquals(new Chunk<>(1, Arrays.asList("zzz")), delta.getTarget());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DiffUtilsTest {
         final Patch<String> patch = DiffUtils.diff(new ArrayList<>(), Arrays.asList("aaa"));
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
-        final Delta<String> delta = patch.getDeltas().get(0);
+        final AbstractDelta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof InsertDelta);
     }
 
@@ -86,9 +86,9 @@ public class DiffUtilsTest {
         final Patch<String> patch = DiffUtils.diffInline("", "test");
         assertEquals(1, patch.getDeltas().size());
         assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
-        assertEquals(0, patch.getDeltas().get(0).getOriginal().getPosition());
-        assertEquals(0, patch.getDeltas().get(0).getOriginal().getLines().size());
-        assertEquals("test", patch.getDeltas().get(0).getRevised().getLines().get(0));
+        assertEquals(0, patch.getDeltas().get(0).getSource().getPosition());
+        assertEquals(0, patch.getDeltas().get(0).getSource().getLines().size());
+        assertEquals("test", patch.getDeltas().get(0).getTarget().getLines().get(0));
     }
 
     @Test
@@ -96,12 +96,12 @@ public class DiffUtilsTest {
         final Patch<String> patch = DiffUtils.diffInline("es", "fest");
         assertEquals(2, patch.getDeltas().size());
         assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
-        assertEquals(0, patch.getDeltas().get(0).getOriginal().getPosition());
-        assertEquals(2, patch.getDeltas().get(1).getOriginal().getPosition());
-        assertEquals(0, patch.getDeltas().get(0).getOriginal().getLines().size());
-        assertEquals(0, patch.getDeltas().get(1).getOriginal().getLines().size());
-        assertEquals("f", patch.getDeltas().get(0).getRevised().getLines().get(0));
-        assertEquals("t", patch.getDeltas().get(1).getRevised().getLines().get(0));
+        assertEquals(0, patch.getDeltas().get(0).getSource().getPosition());
+        assertEquals(2, patch.getDeltas().get(1).getSource().getPosition());
+        assertEquals(0, patch.getDeltas().get(0).getSource().getLines().size());
+        assertEquals(0, patch.getDeltas().get(1).getSource().getLines().size());
+        assertEquals("f", patch.getDeltas().get(0).getTarget().getLines().get(0));
+        assertEquals("t", patch.getDeltas().get(1).getTarget().getLines().get(0));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class DiffUtilsTest {
 
         final Patch<Integer> patch = DiffUtils.diff(original, revised);
 
-        for (Delta delta : patch.getDeltas()) {
+        for (AbstractDelta delta : patch.getDeltas()) {
             System.out.println(delta);
         }
 
