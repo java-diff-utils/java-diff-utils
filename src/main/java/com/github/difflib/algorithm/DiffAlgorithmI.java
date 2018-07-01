@@ -15,15 +15,16 @@
  */
 package com.github.difflib.algorithm;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Interface of a diff algorithm.
- * 
+ *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public interface DiffAlgorithmI<T> {
-    
+
     /**
      * Computes the changeset to patch the source list to the target list.
      *
@@ -34,4 +35,17 @@ public interface DiffAlgorithmI<T> {
      * @throws DiffException
      */
     List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) throws DiffException;
+
+    /**
+     * Simple extension to compute a changeset using arrays.
+     *
+     * @param source
+     * @param target
+     * @param progress
+     * @return
+     * @throws com.github.difflib.algorithm.DiffException
+     */
+    default List<Change> computeDiff(T[] source, T[] target, DiffAlgorithmListener progress) throws DiffException {
+        return computeDiff(Arrays.asList(source), Arrays.asList(target), progress);
+    }
 }
