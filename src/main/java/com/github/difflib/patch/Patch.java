@@ -36,7 +36,7 @@ import java.util.ListIterator;
  */
 public final class Patch<T> {
 
-    private final List<Delta<T>> deltas;
+    private final List<AbstractDelta<T>> deltas;
 
     public Patch() {
         this(10);
@@ -54,9 +54,9 @@ public final class Patch<T> {
      */
     public List<T> applyTo(List<T> target) throws PatchFailedException {
         List<T> result = new ArrayList<>(target);
-        ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
+        ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta<T> delta = it.previous();
+            AbstractDelta<T> delta = it.previous();
             delta.applyTo(result);
         }
         return result;
@@ -70,9 +70,9 @@ public final class Patch<T> {
      */
     public List<T> restore(List<T> target) {
         List<T> result = new ArrayList<>(target);
-        ListIterator<Delta<T>> it = getDeltas().listIterator(deltas.size());
+        ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
-            Delta<T> delta = it.previous();
+            AbstractDelta<T> delta = it.previous();
             delta.restore(result);
         }
         return result;
@@ -83,7 +83,7 @@ public final class Patch<T> {
      *
      * @param delta the given delta
      */
-    public void addDelta(Delta<T> delta) {
+    public void addDelta(AbstractDelta<T> delta) {
         deltas.add(delta);
     }
 
@@ -92,8 +92,8 @@ public final class Patch<T> {
      *
      * @return the deltas
      */
-    public List<Delta<T>> getDeltas() {
-        Collections.sort(deltas, comparing(d -> d.getOriginal().getPosition()));
+    public List<AbstractDelta<T>> getDeltas() {
+        Collections.sort(deltas, comparing(d -> d.getSource().getPosition()));
         return deltas;
     }
 

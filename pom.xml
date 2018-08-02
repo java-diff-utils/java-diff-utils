@@ -3,7 +3,7 @@
 	<groupId>com.github.wumpz</groupId>
 	<artifactId>diffutils</artifactId>
 	<packaging>jar</packaging>
-	<version>2.3-SNAPSHOT</version>
+	<version>3.0-SNAPSHOT</version>
 	<name>java-diff-utils</name>
 	<description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
 	<url>https://github.com/wumpz/java-diff-utils</url>

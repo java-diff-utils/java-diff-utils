@@ -27,7 +27,7 @@ import java.util.List;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param T The type of the compared elements in the 'lines'.
  */
-public final class DeleteDelta<T> extends Delta<T> {
+public final class DeleteDelta<T> extends AbstractDelta<T> {
 
     /**
      * Creates a change delta with the two given chunks.
@@ -41,9 +41,9 @@ public final class DeleteDelta<T> extends Delta<T> {
 
     @Override
     public void applyTo(List<T> target) throws PatchFailedException {
-        verify(target);
-        int position = getOriginal().getPosition();
-        int size = getOriginal().size();
+        verifyChunk(target);
+        int position = getSource().getPosition();
+        int size = getSource().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
@@ -51,8 +51,8 @@ public final class DeleteDelta<T> extends Delta<T> {
 
     @Override
     public void restore(List<T> target) {
-        int position = this.getRevised().getPosition();
-        List<T> lines = this.getOriginal().getLines();
+        int position = this.getTarget().getPosition();
+        List<T> lines = this.getSource().getLines();
         for (int i = 0; i < lines.size(); i++) {
             target.add(position + i, lines.get(i));
         }
@@ -60,7 +60,7 @@ public final class DeleteDelta<T> extends Delta<T> {
 
     @Override
     public String toString() {
-        return "[DeleteDelta, position: " + getOriginal().getPosition() + ", lines: "
-                + getOriginal().getLines() + "]";
+        return "[DeleteDelta, position: " + getSource().getPosition() + ", lines: "
+                + getSource().getLines() + "]";
     }
 }

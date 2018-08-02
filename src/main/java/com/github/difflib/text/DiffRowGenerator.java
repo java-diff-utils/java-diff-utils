@@ -24,7 +24,7 @@ import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.DeleteDelta;
-import com.github.difflib.patch.Delta;
+import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
@@ -284,11 +284,11 @@ public class DiffRowGenerator {
     public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) throws DiffException {
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
-        final List<Delta<String>> deltaList = patch.getDeltas();
+        final List<AbstractDelta<String>> deltaList = patch.getDeltas();
         for (int i = 0; i < deltaList.size(); i++) {
-            Delta<String> delta = deltaList.get(i);
-            Chunk<String> orig = delta.getOriginal();
-            Chunk<String> rev = delta.getRevised();
+            AbstractDelta<String> delta = deltaList.get(i);
+            Chunk<String> orig = delta.getSource();
+            Chunk<String> rev = delta.getTarget();
 
             for (String line : original.subList(endPos, orig.getPosition())) {
                 diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
@@ -336,9 +336,9 @@ public class DiffRowGenerator {
      *
      * @param delta the given delta
      */
-    private List<DiffRow> generateInlineDiffs(Delta<String> delta) throws DiffException {
-        List<String> orig = StringUtils.normalize(delta.getOriginal().getLines());
-        List<String> rev = StringUtils.normalize(delta.getRevised().getLines());
+    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) throws DiffException {
+        List<String> orig = StringUtils.normalize(delta.getSource().getLines());
+        List<String> rev = StringUtils.normalize(delta.getTarget().getLines());
         List<String> origList;
         List<String> revList;
         String joinedOrig = String.join("\n", orig);
@@ -347,12 +347,12 @@ public class DiffRowGenerator {
         origList = inlineDiffSplitter.apply(joinedOrig);
         revList = inlineDiffSplitter.apply(joinedRev);
 
-        List<Delta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
+        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
 
         Collections.reverse(inlineDeltas);
-        for (Delta<String> inlineDelta : inlineDeltas) {
-            Chunk<String> inlineOrig = inlineDelta.getOriginal();
-            Chunk<String> inlineRev = inlineDelta.getRevised();
+        for (AbstractDelta<String> inlineDelta : inlineDeltas) {
+            Chunk<String> inlineOrig = inlineDelta.getSource();
+            Chunk<String> inlineRev = inlineDelta.getTarget();
             if (inlineDelta instanceof DeleteDelta) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()

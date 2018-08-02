@@ -4,8 +4,6 @@
 [![Build Status](https://travis-ci.org/wumpz/java-diff-utils.svg?branch=master)](https://travis-ci.org/wumpz/java-diff-utils)     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wumpz/java-diff-utils&amp;utm_campaign=Badge_Grade)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.wumpz/diffutils/badge.svg)](http://maven-badges.herokuapp.com/maven-central/com.github.wumpz/diffutils)
 
-**After a while using it, at least for me, this one seems to be feature complete. If someone finds bugs or has improvement ideas, please file an issue. I wonder why that this project is a zero issue project.**
-
 
 ## Intro ##
 Diff Utils library is an OpenSource library for performing the comparison operations between texts: computing diffs, applying patches, generating unified diffs or parsing them, generating diff output for easy future displaying (like side-by-side view) and so on.
@@ -54,7 +52,11 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
+  * Version 3.0-SNAPSHOT
+    * Due to licensing issues Delta.java and DiffAlgorithm.java were removed.
   * Version 2.3-SNAPSHOT
+    * Introduced a process listener to diff algorithms. For long running
+      diffs one could implement some progress information.
     * automatic module name for JDK 9 and higher usage
   * Version 2.2
     * released at maven central

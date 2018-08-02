@@ -19,7 +19,7 @@ import com.github.difflib.patch.DeltaType;
 
 /**
  *
- * @author toben
+ * @author <a href="t.warneke@gmx.net">Tobias Warneke</a>
  */
 public class Change {
 

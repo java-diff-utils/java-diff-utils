@@ -20,35 +20,38 @@ limitations under the License.
 package com.github.difflib.patch;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Describes the change-delta between original and revised texts.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
- * @param T The type of the compared elements in the 'lines'.
+ * @param T The type of the compared elements in the data 'lines'.
  */
-public final class ChangeDelta<T> extends Delta<T> {
+public final class ChangeDelta<T> extends AbstractDelta<T> {
 
     /**
      * Creates a change delta with the two given chunks.
      *
-     * @param original The original chunk. Must not be {@code null}.
-     * @param revised The original chunk. Must not be {@code null}.
+     * @param source The source chunk. Must not be {@code null}.
+     * @param target The target chunk. Must not be {@code null}.
      */
-    public ChangeDelta(Chunk<T> original, Chunk<T> revised) {
-        super(DeltaType.CHANGE, original, revised);
+    public ChangeDelta(Chunk<T> source, Chunk<T> target) {
+        super(DeltaType.CHANGE, source, target);
+        Objects.requireNonNull(source, "source must not be null");
+        Objects.requireNonNull(target, "target must not be null");
     }
 
     @Override
     public void applyTo(List<T> target) throws PatchFailedException {
-        verify(target);
-        int position = getOriginal().getPosition();
-        int size = getOriginal().size();
+        verifyChunk(target);
+        int position = getSource().getPosition();
+        int size = getSource().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
         int i = 0;
-        for (T line : getRevised().getLines()) {
+        for (T line : getTarget().getLines()) {
             target.add(position + i, line);
             i++;
         }
@@ -56,13 +59,13 @@ public final class ChangeDelta<T> extends Delta<T> {
 
     @Override
     public void restore(List<T> target) {
-        int position = getRevised().getPosition();
-        int size = getRevised().size();
+        int position = getTarget().getPosition();
+        int size = getTarget().size();
         for (int i = 0; i < size; i++) {
             target.remove(position);
         }
         int i = 0;
-        for (T line : getOriginal().getLines()) {
+        for (T line : getSource().getLines()) {
             target.add(position + i, line);
             i++;
         }
@@ -70,7 +73,7 @@ public final class ChangeDelta<T> extends Delta<T> {
 
     @Override
     public String toString() {
-        return "[ChangeDelta, position: " + getOriginal().getPosition() + ", lines: "
-                + getOriginal().getLines() + " to " + getRevised().getLines() + "]";
+        return "[ChangeDelta, position: " + getSource().getPosition() + ", lines: "
+                + getSource().getLines() + " to " + getTarget().getLines() + "]";
     }
 }
