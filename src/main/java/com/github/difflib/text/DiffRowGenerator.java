@@ -413,7 +413,7 @@ public class DiffRowGenerator {
      * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
      */
-    public static void wrapInTag(List<String> sequence, int startPosition,
+    private static void wrapInTag(List<String> sequence, int startPosition,
             int endPosition, Function<Boolean, String> generator) {
         sequence.add(startPosition, generator.apply(true));
         sequence.add(endPosition, generator.apply(false));

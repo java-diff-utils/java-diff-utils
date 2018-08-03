@@ -315,4 +315,55 @@ public class DiffRowGeneratorTest {
             }
         }
     }
+
+    @Test
+    public void testGeneratorIssue22() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        String aa = "This is a test senctence.";
+        String bb = "This is a test for diffutils.\nThis is the second line.";
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(aa.split("\n")),
+                Arrays.asList(bb.split("\n")));
+
+        System.out.println(rows);
+    }
+    
+    @Test
+    public void testGeneratorIssue22_2() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        String aa = "This is a test for diffutils.\nThis is the second line.";
+        String bb = "This is a test senctence.";
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(aa.split("\n")),
+                Arrays.asList(bb.split("\n")));
+
+        System.out.println(rows);
+    }
+    
+    @Test
+    public void testGeneratorIssue22_3() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        String aa = "This is a test senctence.";
+        String bb = "This is a test for diffutils.\nThis is the second line.\nAnd one more.";
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(aa.split("\n")),
+                Arrays.asList(bb.split("\n")));
+
+        System.out.println(rows);
+    }
 }
