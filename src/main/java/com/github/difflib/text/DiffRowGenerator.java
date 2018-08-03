@@ -47,13 +47,14 @@ import java.util.regex.Pattern;
  * </code>
  */
 public class DiffRowGenerator {
+
     public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
-    
+
     public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
             -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
-    
+
     public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
-    
+
     /**
      * Splitting lines by word to achieve word by word diff checking.
      */
@@ -69,7 +70,7 @@ public class DiffRowGenerator {
         }
         return list;
     };
-    
+
     private final boolean showInlineDiffs;
     private final boolean ignoreWhiteSpaces;
     private final Function<Boolean, String> oldTag;
@@ -195,11 +196,10 @@ public class DiffRowGenerator {
          * deliver no in word changes.
          */
         public Builder inlineDiffByWord(boolean inlineDiffByWord) {
-            inlineDiffSplitter = inlineDiffByWord?SPLITTER_BY_WORD:SPLITTER_BY_CHARACTER;
+            inlineDiffSplitter = inlineDiffByWord ? SPLITTER_BY_WORD : SPLITTER_BY_CHARACTER;
             return this;
         }
-        
-        
+
         public Builder inlineDiffBySplitter(Function<String, List<String>> inlineDiffSplitter) {
             this.inlineDiffSplitter = inlineDiffSplitter;
             return this;
@@ -220,7 +220,7 @@ public class DiffRowGenerator {
         inlineDiffSplitter = builder.inlineDiffSplitter;
         equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
         reportLinesUnchanged = builder.reportLinesUnchanged;
-        
+
         Objects.requireNonNull(inlineDiffSplitter);
     }
 
@@ -356,17 +356,17 @@ public class DiffRowGenerator {
             if (inlineDelta instanceof DeleteDelta) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size() + 1, oldTag);
+                        + inlineOrig.size(), oldTag);
             } else if (inlineDelta instanceof InsertDelta) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
                             revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
                                     + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition(), inlineOrig.getPosition()
-                            + inlineRev.size() + 1, newTag);
+                            + inlineRev.size(), newTag);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, newTag);
+                            + inlineRev.size(), newTag);
                 }
             } else if (inlineDelta instanceof ChangeDelta) {
                 if (mergeOriginalRevised) {
@@ -374,14 +374,14 @@ public class DiffRowGenerator {
                             revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
                                     + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(), inlineOrig.getPosition() + inlineOrig.size()
-                            + inlineRev.size() + 1, newTag);
+                            + inlineRev.size(), newTag);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size() + 1, newTag);
+                            + inlineRev.size(), newTag);
                 }
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size() + 1, oldTag);
+                        + inlineOrig.size(), oldTag);
             }
         }
         StringBuilder origResult = new StringBuilder();
@@ -413,10 +413,41 @@ public class DiffRowGenerator {
      * @param tag the tag name without angle brackets, just a word
      * @param cssClass the optional css class
      */
-    private static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, Function<Boolean, String> generator) {
-        sequence.add(startPosition, generator.apply(true));
-        sequence.add(endPosition, generator.apply(false));
+    static void wrapInTag(List<String> sequence, int startPosition,
+            int endPosition, Function<Boolean, String> tagGenerator) {
+        int endPos = endPosition;
+
+        while (endPos >= startPosition) {
+
+            //search position for end tag
+            while (endPos > startPosition) {
+                if (!"\n".equals(sequence.get(endPos - 1))) {
+                    break;
+                }
+                endPos--;
+            }
+
+            if (endPos == startPosition) {
+                break;
+            }
+
+            sequence.add(endPos, tagGenerator.apply(false));
+            endPos--;
+
+            //search position for end tag
+            while (endPos > startPosition) {
+                if ("\n".equals(sequence.get(endPos - 1))) {
+                    break;
+                }
+                endPos--;
+            }
+
+            sequence.add(endPos, tagGenerator.apply(true));
+            endPos--;
+        }
+
+//        sequence.add(endPosition, tagGenerator.apply(false));
+//        sequence.add(startPosition, tagGenerator.apply(true));
     }
 
     protected final static List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {

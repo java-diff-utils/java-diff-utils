@@ -148,8 +148,8 @@ public class DiffRowGeneratorTest {
         print(rows);
 
         assertEquals(6, rows.size());
-        assertEquals("[CHANGE,<span class=\"editOldInline\">test,anything]", rows.get(0).toString());
-        assertEquals("[CHANGE,</span>anything<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
+        assertEquals("[CHANGE,<span class=\"editOldInline\">test</span>,anything]", rows.get(0).toString());
+        assertEquals("[CHANGE,anything<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
         assertEquals("[CHANGE,<span class=\"editOldInline\"> </span>,]", rows.get(2).toString());
         assertEquals("[EQUAL,other,other]", rows.get(3).toString());
         assertEquals("[INSERT,<span class=\"editNewInline\">test</span>,test]", rows.get(4).toString());
@@ -330,9 +330,16 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        System.out.println(rows);
+        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [CHANGE,,**This is the second line.**]]",
+                rows.toString());
+
+        System.out.println("|original|new|");
+        System.out.println("|--------|---|");
+        for (DiffRow row : rows) {
+            System.out.println("|" + row.getOldLine() + "|" + row.getNewLine() + "|");
+        }
     }
-    
+
     @Test
     public void testGeneratorIssue22_2() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -347,9 +354,10 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        System.out.println(rows);
+        assertEquals("[[CHANGE,This is a test ~for diffutils~.,This is a test **senctence**.], [CHANGE,~This is the second line.~,]]",
+                rows.toString());
     }
-    
+
     @Test
     public void testGeneratorIssue22_3() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
@@ -364,6 +372,7 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        System.out.println(rows);
+        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [CHANGE,,**This is the second line.**], [CHANGE,,**And one more.**]]",
+                rows.toString());
     }
 }
