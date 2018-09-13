@@ -49,9 +49,10 @@ import java.util.regex.Pattern;
 public class DiffRowGenerator {
 
     public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
     public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
-            -> original.trim().replaceAll("\\s+", " ").equals(revised.trim().replaceAll("\\s+", " "));
+            -> adjustWhitespace(original).equals(adjustWhitespace(revised));
 
     public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
 
@@ -467,5 +468,9 @@ public class DiffRowGenerator {
             }
         }
         return list;
+    }
+
+    private static String adjustWhitespace(String raw) {
+        return WHITESPACE_PATTERN.matcher(raw.trim()).replaceAll(" ");
     }
 }
