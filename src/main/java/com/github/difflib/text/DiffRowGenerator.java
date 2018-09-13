@@ -21,10 +21,10 @@ package com.github.difflib.text;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.DeleteDelta;
-import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
@@ -48,18 +48,10 @@ import java.util.regex.Pattern;
  */
 public class DiffRowGenerator {
 
-    public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
-    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+    public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
 
     public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
             -> adjustWhitespace(original).equals(adjustWhitespace(revised));
-
-    public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
-
-    /**
-     * Splitting lines by word to achieve word by word diff checking.
-     */
-    public static final Function<String, List<String>> SPLITTER_BY_WORD = line -> splitStringPreserveDelimiter(line, SPLIT_BY_WORD_PATTERN);
 
     /**
      * Splitting lines by character to achieve char by char diff checking.
@@ -71,16 +63,289 @@ public class DiffRowGenerator {
         }
         return list;
     };
+    public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+    /**
+     * Splitting lines by word to achieve word by word diff checking.
+     */
+    public static final Function<String, List<String>> SPLITTER_BY_WORD = line -> splitStringPreserveDelimiter(line, SPLIT_BY_WORD_PATTERN);
+    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
-    private final boolean showInlineDiffs;
-    private final boolean ignoreWhiteSpaces;
-    private final Function<Boolean, String> oldTag;
-    private final Function<Boolean, String> newTag;
-    private final Function<String, List<String>> inlineDiffSplitter;
+    public static Builder create() {
+        return new Builder();
+    }
+
+    private static String adjustWhitespace(String raw) {
+        return WHITESPACE_PATTERN.matcher(raw.trim()).replaceAll(" ");
+    }
+
+    protected final static List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {
+        List<String> list = new ArrayList<>();
+        if (str != null) {
+            Matcher matcher = SPLIT_PATTERN.matcher(str);
+            int pos = 0;
+            while (matcher.find()) {
+                if (pos < matcher.start()) {
+                    list.add(str.substring(pos, matcher.start()));
+                }
+                list.add(matcher.group());
+                pos = matcher.end();
+            }
+            if (pos < str.length()) {
+                list.add(str.substring(pos));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Wrap the elements in the sequence with the given tag
+     *
+     * @param startPosition the position from which tag should start. The counting start from a zero.
+     * @param endPosition the position before which tag should should be closed.
+     * @param tag the tag name without angle brackets, just a word
+     * @param cssClass the optional css class
+     */
+    static void wrapInTag(List<String> sequence, int startPosition,
+            int endPosition, Function<Boolean, String> tagGenerator) {
+        int endPos = endPosition;
+
+        while (endPos >= startPosition) {
+
+            //search position for end tag
+            while (endPos > startPosition) {
+                if (!"\n".equals(sequence.get(endPos - 1))) {
+                    break;
+                }
+                endPos--;
+            }
+
+            if (endPos == startPosition) {
+                break;
+            }
+
+            sequence.add(endPos, tagGenerator.apply(false));
+            endPos--;
+
+            //search position for end tag
+            while (endPos > startPosition) {
+                if ("\n".equals(sequence.get(endPos - 1))) {
+                    break;
+                }
+                endPos--;
+            }
+
+            sequence.add(endPos, tagGenerator.apply(true));
+            endPos--;
+        }
+
+//        sequence.add(endPosition, tagGenerator.apply(false));
+//        sequence.add(startPosition, tagGenerator.apply(true));
+    }
     private final int columnWidth;
     private final BiPredicate<String, String> equalizer;
+    private final boolean ignoreWhiteSpaces;
+    private final Function<String, List<String>> inlineDiffSplitter;
     private final boolean mergeOriginalRevised;
+    private final Function<Boolean, String> newTag;
+    private final Function<Boolean, String> oldTag;
     private final boolean reportLinesUnchanged;
+
+    private final boolean showInlineDiffs;
+
+    private DiffRowGenerator(Builder builder) {
+        showInlineDiffs = builder.showInlineDiffs;
+        ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
+        oldTag = builder.oldTag;
+        newTag = builder.newTag;
+        columnWidth = builder.columnWidth;
+        mergeOriginalRevised = builder.mergeOriginalRevised;
+        inlineDiffSplitter = builder.inlineDiffSplitter;
+        equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
+        reportLinesUnchanged = builder.reportLinesUnchanged;
+
+        Objects.requireNonNull(inlineDiffSplitter);
+    }
+
+    /**
+     * Get the DiffRows describing the difference between original and revised texts using the given patch. Useful for
+     * displaying side-by-side diff.
+     *
+     * @param original the original text
+     * @param revised the revised text
+     * @return the DiffRows between original and revised texts
+     */
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) throws DiffException {
+        return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
+    }
+
+    /**
+     * Generates the DiffRows describing the difference between original and revised texts using the given patch. Useful
+     * for displaying side-by-side diff.
+     *
+     * @param original the original text
+     * @param revised the revised text
+     * @param patch the given patch
+     * @return the DiffRows between original and revised texts
+     */
+    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) throws DiffException {
+        List<DiffRow> diffRows = new ArrayList<>();
+        int endPos = 0;
+        final List<AbstractDelta<String>> deltaList = patch.getDeltas();
+        for (int i = 0; i < deltaList.size(); i++) {
+            AbstractDelta<String> delta = deltaList.get(i);
+            Chunk<String> orig = delta.getSource();
+            Chunk<String> rev = delta.getTarget();
+
+            for (String line : original.subList(endPos, orig.getPosition())) {
+                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+            }
+
+            // Inserted DiffRow
+            if (delta instanceof InsertDelta) {
+                endPos = orig.last() + 1;
+                for (String line : (List<String>) rev.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
+                }
+                continue;
+            }
+
+            // Deleted DiffRow
+            if (delta instanceof DeleteDelta) {
+                endPos = orig.last() + 1;
+                for (String line : (List<String>) orig.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
+                }
+                continue;
+            }
+
+            if (showInlineDiffs) {
+                diffRows.addAll(generateInlineDiffs(delta));
+            } else {
+                for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
+                    diffRows.add(buildDiffRow(Tag.CHANGE,
+                            orig.getLines().size() > j ? orig.getLines().get(j) : "",
+                            rev.getLines().size() > j ? rev.getLines().get(j) : ""));
+                }
+            }
+            endPos = orig.last() + 1;
+        }
+
+        // Copy the final matching chunk if any.
+        for (String line : original.subList(endPos, original.size())) {
+            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+        }
+        return diffRows;
+    }
+
+    private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
+        if (reportLinesUnchanged) {
+            return new DiffRow(type, orgline, newline);
+        } else {
+            String wrapOrg = preprocessLine(orgline);
+            if (Tag.DELETE == type) {
+                if (mergeOriginalRevised || showInlineDiffs) {
+                    wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+                }
+            }
+            String wrapNew = preprocessLine(newline);
+            if (Tag.INSERT == type) {
+                if (mergeOriginalRevised) {
+                    wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
+                } else if (showInlineDiffs) {
+                    wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
+                }
+            }
+            return new DiffRow(type, wrapOrg, wrapNew);
+        }
+    }
+
+    private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline) {
+        return new DiffRow(type,
+                StringUtils.wrapText(orgline, columnWidth),
+                StringUtils.wrapText(newline, columnWidth));
+    }
+
+    /**
+     * Add the inline diffs for given delta
+     *
+     * @param delta the given delta
+     */
+    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) throws DiffException {
+        List<String> orig = StringUtils.normalize(delta.getSource().getLines());
+        List<String> rev = StringUtils.normalize(delta.getTarget().getLines());
+        List<String> origList;
+        List<String> revList;
+        String joinedOrig = String.join("\n", orig);
+        String joinedRev = String.join("\n", rev);
+
+        origList = inlineDiffSplitter.apply(joinedOrig);
+        revList = inlineDiffSplitter.apply(joinedRev);
+
+        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
+
+        Collections.reverse(inlineDeltas);
+        for (AbstractDelta<String> inlineDelta : inlineDeltas) {
+            Chunk<String> inlineOrig = inlineDelta.getSource();
+            Chunk<String> inlineRev = inlineDelta.getTarget();
+            if (inlineDelta instanceof DeleteDelta) {
+                wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
+                        .getPosition()
+                        + inlineOrig.size(), oldTag);
+            } else if (inlineDelta instanceof InsertDelta) {
+                if (mergeOriginalRevised) {
+                    origList.addAll(inlineOrig.getPosition(),
+                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
+                                    + inlineRev.size()));
+                    wrapInTag(origList, inlineOrig.getPosition(), inlineOrig.getPosition()
+                            + inlineRev.size(), newTag);
+                } else {
+                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
+                            + inlineRev.size(), newTag);
+                }
+            } else if (inlineDelta instanceof ChangeDelta) {
+                if (mergeOriginalRevised) {
+                    origList.addAll(inlineOrig.getPosition() + inlineOrig.size(),
+                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
+                                    + inlineRev.size()));
+                    wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(), inlineOrig.getPosition() + inlineOrig.size()
+                            + inlineRev.size(), newTag);
+                } else {
+                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
+                            + inlineRev.size(), newTag);
+                }
+                wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
+                        .getPosition()
+                        + inlineOrig.size(), oldTag);
+            }
+        }
+        StringBuilder origResult = new StringBuilder();
+        StringBuilder revResult = new StringBuilder();
+        for (String character : origList) {
+            origResult.append(character);
+        }
+        for (String character : revList) {
+            revResult.append(character);
+        }
+
+        List<String> original = Arrays.asList(origResult.toString().split("\n"));
+        List<String> revised = Arrays.asList(revResult.toString().split("\n"));
+        List<DiffRow> diffRows = new ArrayList<>();
+        for (int j = 0; j < Math.max(original.size(), revised.size()); j++) {
+            diffRows.
+                    add(buildDiffRowWithoutNormalizing(Tag.CHANGE,
+                            original.size() > j ? original.get(j) : "",
+                            revised.size() > j ? revised.get(j) : ""));
+        }
+        return diffRows;
+    }
+
+    private String preprocessLine(String line) {
+        if (columnWidth == 0) {
+            return StringUtils.normalize(line);
+        } else {
+            return StringUtils.wrapText(StringUtils.normalize(line), columnWidth);
+        }
+    }
 
     /**
      * This class used for building the DiffRowGenerator.
@@ -205,272 +470,5 @@ public class DiffRowGenerator {
             this.inlineDiffSplitter = inlineDiffSplitter;
             return this;
         }
-    }
-
-    public static Builder create() {
-        return new Builder();
-    }
-
-    private DiffRowGenerator(Builder builder) {
-        showInlineDiffs = builder.showInlineDiffs;
-        ignoreWhiteSpaces = builder.ignoreWhiteSpaces;
-        oldTag = builder.oldTag;
-        newTag = builder.newTag;
-        columnWidth = builder.columnWidth;
-        mergeOriginalRevised = builder.mergeOriginalRevised;
-        inlineDiffSplitter = builder.inlineDiffSplitter;
-        equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
-        reportLinesUnchanged = builder.reportLinesUnchanged;
-
-        Objects.requireNonNull(inlineDiffSplitter);
-    }
-
-    /**
-     * Get the DiffRows describing the difference between original and revised texts using the given patch. Useful for
-     * displaying side-by-side diff.
-     *
-     * @param original the original text
-     * @param revised the revised text
-     * @return the DiffRows between original and revised texts
-     */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) throws DiffException {
-        return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
-    }
-
-    private String preprocessLine(String line) {
-        if (columnWidth == 0) {
-            return StringUtils.normalize(line);
-        } else {
-            return StringUtils.wrapText(StringUtils.normalize(line), columnWidth);
-        }
-    }
-
-    private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
-        if (reportLinesUnchanged) {
-            return new DiffRow(type, orgline, newline);
-        } else {
-            String wrapOrg = preprocessLine(orgline);
-            if (Tag.DELETE == type) {
-                if (mergeOriginalRevised || showInlineDiffs) {
-                    wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
-                }
-            }
-            String wrapNew = preprocessLine(newline);
-            if (Tag.INSERT == type) {
-                if (mergeOriginalRevised) {
-                    wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
-                } else if (showInlineDiffs) {
-                    wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
-                }
-            }
-            return new DiffRow(type, wrapOrg, wrapNew);
-        }
-    }
-
-    private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline) {
-        return new DiffRow(type,
-                StringUtils.wrapText(orgline, columnWidth),
-                StringUtils.wrapText(newline, columnWidth));
-    }
-
-    /**
-     * Generates the DiffRows describing the difference between original and revised texts using the given patch. Useful
-     * for displaying side-by-side diff.
-     *
-     * @param original the original text
-     * @param revised the revised text
-     * @param patch the given patch
-     * @return the DiffRows between original and revised texts
-     */
-    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) throws DiffException {
-        List<DiffRow> diffRows = new ArrayList<>();
-        int endPos = 0;
-        final List<AbstractDelta<String>> deltaList = patch.getDeltas();
-        for (int i = 0; i < deltaList.size(); i++) {
-            AbstractDelta<String> delta = deltaList.get(i);
-            Chunk<String> orig = delta.getSource();
-            Chunk<String> rev = delta.getTarget();
-
-            for (String line : original.subList(endPos, orig.getPosition())) {
-                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
-            }
-
-            // Inserted DiffRow
-            if (delta instanceof InsertDelta) {
-                endPos = orig.last() + 1;
-                for (String line : (List<String>) rev.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
-                }
-                continue;
-            }
-
-            // Deleted DiffRow
-            if (delta instanceof DeleteDelta) {
-                endPos = orig.last() + 1;
-                for (String line : (List<String>) orig.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
-                }
-                continue;
-            }
-
-            if (showInlineDiffs) {
-                diffRows.addAll(generateInlineDiffs(delta));
-            } else {
-                for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
-                    diffRows.add(buildDiffRow(Tag.CHANGE,
-                            orig.getLines().size() > j ? orig.getLines().get(j) : "",
-                            rev.getLines().size() > j ? rev.getLines().get(j) : ""));
-                }
-            }
-            endPos = orig.last() + 1;
-        }
-
-        // Copy the final matching chunk if any.
-        for (String line : original.subList(endPos, original.size())) {
-            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
-        }
-        return diffRows;
-    }
-
-    /**
-     * Add the inline diffs for given delta
-     *
-     * @param delta the given delta
-     */
-    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) throws DiffException {
-        List<String> orig = StringUtils.normalize(delta.getSource().getLines());
-        List<String> rev = StringUtils.normalize(delta.getTarget().getLines());
-        List<String> origList;
-        List<String> revList;
-        String joinedOrig = String.join("\n", orig);
-        String joinedRev = String.join("\n", rev);
-
-        origList = inlineDiffSplitter.apply(joinedOrig);
-        revList = inlineDiffSplitter.apply(joinedRev);
-
-        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
-
-        Collections.reverse(inlineDeltas);
-        for (AbstractDelta<String> inlineDelta : inlineDeltas) {
-            Chunk<String> inlineOrig = inlineDelta.getSource();
-            Chunk<String> inlineRev = inlineDelta.getTarget();
-            if (inlineDelta instanceof DeleteDelta) {
-                wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
-                        .getPosition()
-                        + inlineOrig.size(), oldTag);
-            } else if (inlineDelta instanceof InsertDelta) {
-                if (mergeOriginalRevised) {
-                    origList.addAll(inlineOrig.getPosition(),
-                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
-                                    + inlineRev.size()));
-                    wrapInTag(origList, inlineOrig.getPosition(), inlineOrig.getPosition()
-                            + inlineRev.size(), newTag);
-                } else {
-                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size(), newTag);
-                }
-            } else if (inlineDelta instanceof ChangeDelta) {
-                if (mergeOriginalRevised) {
-                    origList.addAll(inlineOrig.getPosition() + inlineOrig.size(),
-                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
-                                    + inlineRev.size()));
-                    wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(), inlineOrig.getPosition() + inlineOrig.size()
-                            + inlineRev.size(), newTag);
-                } else {
-                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size(), newTag);
-                }
-                wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
-                        .getPosition()
-                        + inlineOrig.size(), oldTag);
-            }
-        }
-        StringBuilder origResult = new StringBuilder();
-        StringBuilder revResult = new StringBuilder();
-        for (String character : origList) {
-            origResult.append(character);
-        }
-        for (String character : revList) {
-            revResult.append(character);
-        }
-
-        List<String> original = Arrays.asList(origResult.toString().split("\n"));
-        List<String> revised = Arrays.asList(revResult.toString().split("\n"));
-        List<DiffRow> diffRows = new ArrayList<>();
-        for (int j = 0; j < Math.max(original.size(), revised.size()); j++) {
-            diffRows.
-                    add(buildDiffRowWithoutNormalizing(Tag.CHANGE,
-                            original.size() > j ? original.get(j) : "",
-                            revised.size() > j ? revised.get(j) : ""));
-        }
-        return diffRows;
-    }
-
-    /**
-     * Wrap the elements in the sequence with the given tag
-     *
-     * @param startPosition the position from which tag should start. The counting start from a zero.
-     * @param endPosition the position before which tag should should be closed.
-     * @param tag the tag name without angle brackets, just a word
-     * @param cssClass the optional css class
-     */
-    static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, Function<Boolean, String> tagGenerator) {
-        int endPos = endPosition;
-
-        while (endPos >= startPosition) {
-
-            //search position for end tag
-            while (endPos > startPosition) {
-                if (!"\n".equals(sequence.get(endPos - 1))) {
-                    break;
-                }
-                endPos--;
-            }
-
-            if (endPos == startPosition) {
-                break;
-            }
-
-            sequence.add(endPos, tagGenerator.apply(false));
-            endPos--;
-
-            //search position for end tag
-            while (endPos > startPosition) {
-                if ("\n".equals(sequence.get(endPos - 1))) {
-                    break;
-                }
-                endPos--;
-            }
-
-            sequence.add(endPos, tagGenerator.apply(true));
-            endPos--;
-        }
-
-//        sequence.add(endPosition, tagGenerator.apply(false));
-//        sequence.add(startPosition, tagGenerator.apply(true));
-    }
-
-    protected final static List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {
-        List<String> list = new ArrayList<>();
-        if (str != null) {
-            Matcher matcher = SPLIT_PATTERN.matcher(str);
-            int pos = 0;
-            while (matcher.find()) {
-                if (pos < matcher.start()) {
-                    list.add(str.substring(pos, matcher.start()));
-                }
-                list.add(matcher.group());
-                pos = matcher.end();
-            }
-            if (pos < str.length()) {
-                list.add(str.substring(pos));
-            }
-        }
-        return list;
-    }
-
-    private static String adjustWhitespace(String raw) {
-        return WHITESPACE_PATTERN.matcher(raw.trim()).replaceAll(" ");
     }
 }
