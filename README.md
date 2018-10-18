@@ -52,7 +52,7 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
-  * Version 3.0-SNAPSHOT
+  * Version 3.0
     * changed generation of inline diffes, if there are different linefeeds within one diff, then these are excluded 
       from the diff block. 
     * Due to licensing issues Delta.java and DiffAlgorithm.java were removed.
@@ -108,7 +108,7 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>com.github.wumpz</groupId>
     <artifactId>diffutils</artifactId>
-    <version>2.2</version>
+    <version>3.0</version>
 </dependency>
 ```
 or using gradle:
