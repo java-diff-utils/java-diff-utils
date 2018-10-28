@@ -21,6 +21,7 @@ package com.github.difflib.patch;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Holds the information about the part of text involved in the diff process
@@ -108,26 +109,11 @@ public final class Chunk<T> {
         return getPosition() + size() - 1;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((lines == null) ? 0 : lines.hashCode());
-        result = prime * result + position;
-        result = prime * result + size();
-        return result;
+        return Objects.hash(lines, position, size());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
