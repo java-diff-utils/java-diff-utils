@@ -20,6 +20,7 @@ limitations under the License.
 package com.github.difflib.text;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two texts
@@ -70,26 +71,11 @@ public final class DiffRow implements Serializable {
         return newLine;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((newLine == null) ? 0 : newLine.hashCode());
-        result = prime * result + ((oldLine == null) ? 0 : oldLine.hashCode());
-        result = prime * result + ((tag == null) ? 0 : tag.hashCode());
-        return result;
+        return Objects.hash(newLine, oldLine, tag);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

@@ -63,11 +63,7 @@ public abstract class AbstractDelta<T> {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 61 * hash + Objects.hashCode(this.source);
-        hash = 61 * hash + Objects.hashCode(this.target);
-        hash = 61 * hash + Objects.hashCode(this.type);
-        return hash;
+        return Objects.hash(this.source, this.target, this.type);
     }
 
     @Override
