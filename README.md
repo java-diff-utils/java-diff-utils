@@ -52,6 +52,9 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
+  * Version 4.0-SNAPSHOT
+    * moved to organisation **java-diff-utils**
+    * changed groupid to **io.github.java-diff-utils** and artifact id to **java-diff-utils**
   * Version 3.0
     * changed generation of inline diffes, if there are different linefeeds within one diff, then these are excluded 
       from the diff block. 
