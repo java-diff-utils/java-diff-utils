@@ -6,7 +6,7 @@
     <version>4.0-SNAPSHOT</version>
     <name>java-diff-utils</name>
     <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
-    <url>https://github.com/wumpz/java-diff-utils</url>
+    <url>https://github.com/java-diff-utils/java-diff-utils</url>
     <inceptionYear>2009</inceptionYear>
 	
     <distributionManagement>
@@ -21,9 +21,9 @@
     </distributionManagement>
 	
     <scm>
-        <connection>scm:git:https://github.com/wumpz/java-diff-utils.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:wumpz/java-diff-utils.git</developerConnection>
-        <url>https://github.com/wumpz/java-diff-utils.git</url>
+        <connection>scm:git:https://github.com/java-diff-utils/java-diff-utils.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:java-diff-utils/java-diff-utils.git</developerConnection>
+        <url>https://github.com/java-diff-utils/java-diff-utils.git</url>
         <tag>HEAD</tag>
     </scm>
 	
