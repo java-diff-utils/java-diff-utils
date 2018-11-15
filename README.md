@@ -114,6 +114,17 @@ Just add the code below to your maven dependencies:
     <version>3.0</version>
 </dependency>
 ```
+
+Attention. We changed groupid and artifactid. Starting with version 4 you have to use:
+
+```
+<dependency>
+    <groupId>io.github.java-diff-utils</groupId>
+    <artifactId>java-diff-utils</artifactId>
+    <version>4.0-SNAPSHOT</version>
+</dependency>
+```
+
 or using gradle:
 ```
 // https://mvnrepository.com/artifact/com.github.wumpz/diffutils
