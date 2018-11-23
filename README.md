@@ -109,9 +109,9 @@ This is a valid piece of source code:
 Just add the code below to your maven dependencies:
 ```
 <dependency>
-    <groupId>com.github.wumpz</groupId>
-    <artifactId>diffutils</artifactId>
-    <version>3.0</version>
+    <groupId>io.github.java-diff-utils</groupId>
+    <artifactId>java-diff-utils</artifactId>
+    <version>4.0</version>
 </dependency>
 ```
 
