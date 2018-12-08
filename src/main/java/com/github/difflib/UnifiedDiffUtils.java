@@ -83,10 +83,10 @@ public final class UnifiedDiffUtils {
                 new_ln = m.group(3) == null ? 1 : Integer.parseInt(m.group(3));
 
                 if (old_ln == 0) {
-                    old_ln += 1;
+                    old_ln = 1;
                 }
                 if (new_ln == 0) {
-                    new_ln += 1;
+                    new_ln = 1;
                 }
             } else {
                 if (line.length() > 0) {
