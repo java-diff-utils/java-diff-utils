@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
-import static java.util.stream.Collectors.joining;
 
 /**
  * Implements the difference and patching engine
@@ -143,7 +142,7 @@ public final class DiffUtils {
         if (lines.isEmpty()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(lines.stream().collect(joining(delimiter)));
+        return Collections.singletonList(String.join(delimiter, lines));
     }
 
     /**
