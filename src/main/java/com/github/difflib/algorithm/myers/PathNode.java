@@ -102,9 +102,9 @@ public final class PathNode {
         PathNode node = this;
         while (node != null) {
             buf.append("(");
-            buf.append(Integer.toString(node.i));
+            buf.append(node.i);
             buf.append(",");
-            buf.append(Integer.toString(node.j));
+            buf.append(node.j);
             buf.append(")");
             node = node.prev;
         }
