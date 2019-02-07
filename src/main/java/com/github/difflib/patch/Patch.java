@@ -19,12 +19,9 @@ limitations under the License.
  */
 package com.github.difflib.patch;
 
-import com.github.difflib.algorithm.Change;
-import static com.github.difflib.patch.DeltaType.DELETE;
-import static com.github.difflib.patch.DeltaType.INSERT;
-import java.util.ArrayList;
-import java.util.Collections;
 import static java.util.Comparator.comparing;
+import com.github.difflib.algorithm.Change;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -93,7 +90,7 @@ public final class Patch<T> {
      * @return the deltas
      */
     public List<AbstractDelta<T>> getDeltas() {
-        Collections.sort(deltas, comparing(d -> d.getSource().getPosition()));
+        deltas.sort(comparing(d -> d.getSource().getPosition()));
         return deltas;
     }
 
