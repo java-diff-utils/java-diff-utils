@@ -113,7 +113,7 @@ public class GenerateUnifiedDiffTest {
         Patch<String> fromUnifiedPatch = UnifiedDiffUtils.parseUnifiedDiff(unifiedDiff);
         List<String> patchedLines;
         try {
-            patchedLines = (List<String>) fromUnifiedPatch.applyTo(origLines);
+            patchedLines = fromUnifiedPatch.applyTo(origLines);
             assertEquals(revLines.size(), patchedLines.size());
             for (int i = 0; i < revLines.size(); i++) {
                 String l1 = revLines.get(i);

@@ -199,7 +199,7 @@ public class DiffRowGenerator {
             // Inserted DiffRow
             if (delta instanceof InsertDelta) {
                 endPos = orig.last() + 1;
-                for (String line : (List<String>) rev.getLines()) {
+                for (String line : rev.getLines()) {
                     diffRows.add(buildDiffRow(Tag.INSERT, "", line));
                 }
                 continue;
@@ -208,7 +208,7 @@ public class DiffRowGenerator {
             // Deleted DiffRow
             if (delta instanceof DeleteDelta) {
                 endPos = orig.last() + 1;
-                for (String line : (List<String>) orig.getLines()) {
+                for (String line : orig.getLines()) {
                     diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
                 }
                 continue;
