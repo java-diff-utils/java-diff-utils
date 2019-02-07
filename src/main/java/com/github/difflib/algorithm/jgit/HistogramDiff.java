@@ -18,7 +18,6 @@ package com.github.difflib.algorithm.jgit;
 import com.github.difflib.algorithm.Change;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.DeltaType;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import org.eclipse.jgit.diff.SequenceComparator;
 public class HistogramDiff<T> implements DiffAlgorithmI<T> {
 
     @Override
-    public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) throws DiffException {
+    public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
         Objects.requireNonNull(source, "source list must not be null");
         Objects.requireNonNull(target, "target list must not be null");
         if (progress != null) {
