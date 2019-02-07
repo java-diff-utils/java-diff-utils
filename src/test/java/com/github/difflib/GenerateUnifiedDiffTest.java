@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
@@ -114,7 +114,7 @@ public class GenerateUnifiedDiffTest {
         List<String> patchedLines;
         try {
             patchedLines = (List<String>) fromUnifiedPatch.applyTo(origLines);
-            assertTrue(revLines.size() == patchedLines.size());
+            assertEquals(revLines.size(), patchedLines.size());
             for (int i = 0; i < revLines.size(); i++) {
                 String l1 = revLines.get(i);
                 String l2 = patchedLines.get(i);
