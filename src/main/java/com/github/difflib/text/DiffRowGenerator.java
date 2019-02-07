@@ -187,8 +187,7 @@ public class DiffRowGenerator {
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
-        for (int i = 0; i < deltaList.size(); i++) {
-            AbstractDelta<String> delta = deltaList.get(i);
+        for (AbstractDelta<String> delta : deltaList) {
             Chunk<String> orig = delta.getSource();
             Chunk<String> rev = delta.getTarget();
 
