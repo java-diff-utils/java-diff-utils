@@ -16,7 +16,6 @@
 package com.github.difflib.algorithm.jgit;
 
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class HistogramDiffTest {
      * Test of diff method, of class HistogramDiff.
      */
     @Test
-    public void testDiff() throws DiffException, PatchFailedException {
+    public void testDiff() throws PatchFailedException {
         List<String> orgList = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revList = Arrays.asList("C", "B", "A", "B", "A", "C");
         final Patch<String> patch = Patch.generate(orgList, revList, new HistogramDiff().computeDiff(orgList, revList, null));
@@ -72,7 +71,7 @@ public class HistogramDiffTest {
     }
     
     @Test
-    public void testDiffWithListener() throws DiffException, PatchFailedException {
+    public void testDiffWithListener() throws PatchFailedException {
         List<String> orgList = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revList = Arrays.asList("C", "B", "A", "B", "A", "C");
         

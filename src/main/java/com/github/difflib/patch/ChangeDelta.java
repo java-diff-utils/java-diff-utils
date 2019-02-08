@@ -22,7 +22,7 @@ import java.util.Objects;
  * Describes the change-delta between original and revised texts.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
- * @param T The type of the compared elements in the data 'lines'.
+ * @param <T> The type of the compared elements in the data 'lines'.
  */
 public final class ChangeDelta<T> extends AbstractDelta<T> {
 

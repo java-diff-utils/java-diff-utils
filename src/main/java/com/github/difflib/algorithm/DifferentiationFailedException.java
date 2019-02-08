@@ -18,8 +18,8 @@ package com.github.difflib.algorithm;
 /**
  * Thrown whenever the differencing engine cannot produce the differences between two revisions of ta text.
  *
- * @see MyersDiff
- * @see difflib.DiffAlgorithm
+ * @see com.github.difflib.algorithm.myers.MyersDiff
+ * @see DiffAlgorithmI
  */
 public class DifferentiationFailedException extends DiffException {
 

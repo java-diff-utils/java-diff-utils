@@ -18,7 +18,6 @@ package com.github.difflib.algorithm.jgit;
 import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
 import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class LRHistogramDiffTest {
     }
 
     @Test
-    public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException, PatchFailedException {
+    public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, PatchFailedException {
         ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
         List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
