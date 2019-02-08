@@ -21,7 +21,7 @@ import java.util.List;
  * Describes the delete-delta between original and revised texts.
  *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
- * @param T The type of the compared elements in the 'lines'.
+ * @param <T> The type of the compared elements in the 'lines'.
  */
 public final class DeleteDelta<T> extends AbstractDelta<T> {
 

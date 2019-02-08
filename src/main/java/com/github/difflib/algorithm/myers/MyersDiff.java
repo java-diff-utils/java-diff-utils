@@ -138,7 +138,7 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
     /**
      * Constructs a {@link Patch} from a difference path.
      *
-     * @param path The path.
+     * @param actualPath The path.
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.

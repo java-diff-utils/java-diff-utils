@@ -29,7 +29,7 @@ import java.util.Objects;
  * </p>
  *
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
- * @param T The type of the compared elements in the 'lines'.
+ * @param <T> The type of the compared elements in the 'lines'.
  */
 public final class Chunk<T> {
 

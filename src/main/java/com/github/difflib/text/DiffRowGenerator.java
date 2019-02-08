@@ -98,8 +98,7 @@ public class DiffRowGenerator {
      *
      * @param startPosition the position from which tag should start. The counting start from a zero.
      * @param endPosition the position before which tag should should be closed.
-     * @param tag the tag name without angle brackets, just a word
-     * @param cssClass the optional css class
+     * @param tagGenerator the tag generator
      */
     static void wrapInTag(List<String> sequence, int startPosition,
             int endPosition, Function<Boolean, String> tagGenerator) {
@@ -179,7 +178,6 @@ public class DiffRowGenerator {
      * for displaying side-by-side diff.
      *
      * @param original the original text
-     * @param revised the revised text
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
@@ -400,7 +398,7 @@ public class DiffRowGenerator {
         /**
          * Generator for Old-Text-Tags.
          *
-         * @param tag the tag to set. Without angle brackets. Default: span.
+         * @param generator the tag generator
          * @return builder with configured ignoreBlankLines parameter
          */
         public Builder oldTag(Function<Boolean, String> generator) {
