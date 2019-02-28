@@ -1,0 +1,61 @@
+From 3209a16c55c1976d5b772c607fd4b9d5fb9f9483 Mon Sep 17 00:00:00 2001
+From: wumpz <t.warneke@gmx.net>
+Date: Tue, 19 Feb 2019 01:35:14 +0100
+Subject: [PATCH] fixes #753
+
+---
+ src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt  | 5 +++--
+ .../net/sf/jsqlparser/statement/select/SelectTest.java     | 7 +++++++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt b/src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt
+index cd9bcd1..5f4b2b7 100644
+--- a/src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt
++++ b/src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt
+@@ -189,6 +189,7 @@ TOKEN: /* SQL Keywords. prefixed with K_ to avoid name clashes */
+ |   <K_JOIN:"JOIN">
+ |   <K_KEEP:"KEEP">
+ |   <K_KEY:"KEY">
++|   <K_FN:"FN">
+ |   <K_LAST: "LAST">
+ |   <K_LATERAL:"LATERAL">
+ |   <K_LEADING:"LEADING">
+@@ -1039,7 +1040,7 @@ String RelObjectNameWithoutValue() :
+       | tk=<K_INSERT> | tk=<K_INDEX> | tk=<K_PRIMARY> | tk=<K_ENABLE>
+ 	  | tk=<K_UNSIGNED>
+       | tk=<K_TEMP> | tk=<K_TEMPORARY> | tk=<K_TYPE> | tk=<K_ISNULL> 
+-	  | tk=<K_ZONE> | tk=<K_COLUMNS> | tk=<K_DESCRIBE>
++	  | tk=<K_ZONE> | tk=<K_COLUMNS> | tk=<K_DESCRIBE> | tk=<K_FN>
+ /*      | tk=<K_PLACING> | tk=<K_BOTH> | tk=<K_LEADING> | tk=<K_TRAILING> */
+       )
+ 
+@@ -3118,7 +3119,7 @@ Function Function() #Function:
+     Expression expr1 = null;
+ }
+ {
+-    ["{fn" { retval.setEscaped(true); } ]
++    ["{" <K_FN> { retval.setEscaped(true); } ]
+ 
+     funcName=RelObjectNameExt()
+ 
+diff --git a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java
+index 7ee9b38..d39bfd3 100644
+--- a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java
++++ b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java
+@@ -1063,6 +1063,13 @@ public class SelectTest {
+         assertSqlCanBeParsedAndDeparsed("SELECT {fn concat(a, b)} AS COL");
+     }
+ 
++    @Test
++    public void testEscapedFunctionsIssue753() throws JSQLParserException {
++        Statement stmt = CCJSqlParserUtil.parse("SELECT { fn test(0)} AS COL");
++        assertEquals("SELECT {fn test(0)} AS COL", stmt.toString());
++        assertSqlCanBeParsedAndDeparsed("SELECT fn FROM fn");
++    }
++
+     @Test
+     public void testNamedParametersPR702() throws JSQLParserException {
+         assertSqlCanBeParsedAndDeparsed("SELECT substring(id, 2, 3), substring(id from 2 for 3), substring(id from 2), trim(BOTH ' ' from 'foo bar '), trim(LEADING ' ' from 'foo bar '), trim(TRAILING ' ' from 'foo bar '), trim(' ' from 'foo bar '), position('foo' in 'bar'), overlay('foo' placing 'bar' from 1), overlay('foo' placing 'bar' from 1 for 2) FROM my table");
+-- 
+2.17.1.windows.2
+
