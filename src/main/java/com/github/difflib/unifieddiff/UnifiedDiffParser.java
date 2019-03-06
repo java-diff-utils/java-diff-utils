@@ -37,8 +37,8 @@ public final class UnifiedDiffParser {
     private final UnifiedDiff data = new UnifiedDiff();
     private final UnifiedDiffLine[] PARSER_RULES = new UnifiedDiffLine[]{
         new UnifiedDiffLine("^\\s+", (m, l) -> LOG.info("normal " + l)),
-        new UnifiedDiffLine(true, "^diff\\s", UnifiedDiffParser::processDiff),
-        new UnifiedDiffLine(true, "^index\\s[\\da-zA-Z]+\\.\\.[\\da-zA-Z]+(\\s(\\d+))?$", UnifiedDiffParser::processIndex)
+        new UnifiedDiffLine(true, "^diff\\s", this::processDiff),
+        new UnifiedDiffLine(true, "^index\\s[\\da-zA-Z]+\\.\\.[\\da-zA-Z]+(\\s(\\d+))?$", this::processIndex)
     };
     private UnifiedDiffFile actualFile;
 
@@ -101,7 +101,7 @@ public final class UnifiedDiffParser {
         }
     }
 
-    private void processDiff(MatchResult match, String line) {
+    public void processDiff(MatchResult match, String line) {
         initFileIfNecessary();
         LOG.log(Level.INFO, "start {0}", line);
         String[] fromTo = parseFileNames(READER.lastLine());
@@ -109,7 +109,7 @@ public final class UnifiedDiffParser {
         actualFile.setToFile(fromTo[1]);
     }
 
-    private void processIndex(MatchResult match, String line) {
+    public void processIndex(MatchResult match, String line) {
         initFileIfNecessary();
         LOG.log(Level.INFO, "index {0}", line);
         actualFile.setIndex(line.substring(6));
