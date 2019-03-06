@@ -16,6 +16,7 @@
 package com.github.difflib.unifieddiff;
 
 import java.io.IOException;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,9 +27,9 @@ import org.junit.Test;
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public class UnifiedDiffTest {
+public class UnifiedDiffParserTest {
 
-    public UnifiedDiffTest() {
+    public UnifiedDiffParserTest() {
     }
 
     @BeforeClass
@@ -49,9 +50,15 @@ public class UnifiedDiffTest {
 
     @Test
     public void testSimpleParse() throws IOException {
-        UnifiedDiff diff = UnifiedDiff.parse(UnifiedDiffTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
+        UnifiedDiff diff = UnifiedDiffParser.parseUnifiedDiff(UnifiedDiffParserTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
 
         System.out.println(diff);
+    }
+
+    @Test
+    public void testParseDiffBlock() {
+        String[] files = UnifiedDiffParser.parseFileNames("diff --git a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java");
+        assertThat(files).containsExactly("src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java", "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java");
     }
 
 }

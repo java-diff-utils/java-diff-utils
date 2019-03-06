@@ -15,33 +15,46 @@
  */
 package com.github.difflib.unifieddiff;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public class UnifiedDiff {
+public class UnifiedDiffFile {
 
-    private String header;
-    private final List<UnifiedDiffFile> files = new ArrayList<>();
+    private String diffCommand;
+    private String fromFile;
+    private String toFile;
+    private String index;
 
-    public String getHeader() {
-        return header;
+    public String getDiffCommand() {
+        return diffCommand;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public void setDiffCommand(String diffCommand) {
+        this.diffCommand = diffCommand;
     }
 
-    void addFile(UnifiedDiffFile file) {
-        files.add(file);
+    public String getFromFile() {
+        return fromFile;
     }
 
-    public List<UnifiedDiffFile> getFiles() {
-        return Collections.unmodifiableList(files);
+    public void setFromFile(String fromFile) {
+        this.fromFile = fromFile;
     }
 
+    public String getToFile() {
+        return toFile;
+    }
+
+    public void setToFile(String toFile) {
+        this.toFile = toFile;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public String getIndex() {
+        return index;
+    }
 }
