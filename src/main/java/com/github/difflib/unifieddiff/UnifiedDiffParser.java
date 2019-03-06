@@ -98,6 +98,7 @@ public final class UnifiedDiffParser {
     private void initFileIfNecessary() {
         if (actualFile == null) {
             actualFile = new UnifiedDiffFile();
+            data.addFile(actualFile);
         }
     }
 
