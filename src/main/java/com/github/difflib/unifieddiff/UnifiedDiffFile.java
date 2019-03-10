@@ -15,6 +15,8 @@
  */
 package com.github.difflib.unifieddiff;
 
+import com.github.difflib.patch.Patch;
+
 /**
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
@@ -25,6 +27,7 @@ public class UnifiedDiffFile {
     private String fromFile;
     private String toFile;
     private String index;
+    private Patch<String> patch = new Patch<>();
 
     public String getDiffCommand() {
         return diffCommand;
@@ -56,5 +59,9 @@ public class UnifiedDiffFile {
 
     public String getIndex() {
         return index;
+    }
+
+    public Patch<String> getPatch() {
+        return patch;
     }
 }
