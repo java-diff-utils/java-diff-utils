@@ -46,7 +46,10 @@ public final class UnifiedDiffParser {
         new UnifiedDiffLine(true, "^index\\s[\\da-zA-Z]+\\.\\.[\\da-zA-Z]+(\\s(\\d+))?$", this::processIndex),
         new UnifiedDiffLine(true, "^---\\s", this::processFromFile),
         new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile),
-        new UnifiedDiffLine(true, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk)
+        new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk),
+        new UnifiedDiffLine("^\\s+", this::processNormalLine),
+        new UnifiedDiffLine("^-", this::processDelLine),
+        new UnifiedDiffLine("^+", this::processAddLine)
     };
 
     private UnifiedDiffFile actualFile;
@@ -62,20 +65,33 @@ public final class UnifiedDiffParser {
     private UnifiedDiff parse() throws IOException, UnifiedDiffParserException {
         boolean header = true;
         String headerTxt = "";
+        String tailTxt = "";
         while (READER.ready()) {
             String line = READER.readLine();
-            LOG.log(Level.INFO, "parsing line {0}", line);
-            if (processLine(header, line) == false) {
-                if (header) {
-                    headerTxt += line + "\n";
-                } else {
-                    break;
-                }
+            if (line.matches("^\\-\\-\\s+")) {
+                break;
             } else {
-                header = false;
-                data.setHeader(headerTxt);
+                LOG.log(Level.INFO, "parsing line {0}", line);
+                if (processLine(header, line) == false) {
+                    if (header) {
+                        headerTxt += line + "\n";
+                    } else {
+                        break;
+                    }
+                } else {
+                    header = false;
+                    data.setHeader(headerTxt);
+                }
             }
         }
+
+        finalizeChunk();
+
+        while (READER.ready()) {
+            tailTxt += READER.readLine() + "\n";
+        }
+        data.setTailTxt(tailTxt);
+
         return data;
     }
 
@@ -106,6 +122,10 @@ public final class UnifiedDiffParser {
     }
 
     private void initFileIfNecessary() {
+        if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
+            finalizeChunk();
+            actualFile = null;
+        }
         if (actualFile == null) {
             actualFile = new UnifiedDiffFile();
             data.addFile(actualFile);
@@ -121,60 +141,48 @@ public final class UnifiedDiffParser {
         actualFile.setDiffCommand(line);
     }
 
-    public void processChunk(MatchResult _match, String chunkStart) {
-        MatchResult match = _match;
-        try {
+    private List<String> originalTxt = new ArrayList<>();
+    private List<String> revisedTxt = new ArrayList<>();
+    private int old_ln;
+    private int new_ln;
 
-            while (true) {
+    private void finalizeChunk() {
+        if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
+            actualFile.getPatch().addDelta(new ChangeDelta<>(new Chunk<>(
+                    old_ln - 1, originalTxt), new Chunk<>(
+                    new_ln - 1, revisedTxt)));
+            old_ln = 0;
+            new_ln = 0;
+            originalTxt.clear();
+            revisedTxt.clear();
+        }
+    }
 
-                List<String> originalTxt = new ArrayList<>();
-                List<String> revisedTxt = new ArrayList<>();
+    public void processNormalLine(MatchResult match, String line) {
+        String cline = line.substring(1);
+        originalTxt.add(cline);
+        revisedTxt.add(cline);
+    }
 
-                int old_ln = match.group(1) == null ? 1 : Integer.parseInt(match.group(1));
-                int new_ln = match.group(3) == null ? 1 : Integer.parseInt(match.group(3));
-                if (old_ln == 0) {
-                    old_ln = 1;
-                }
-                if (new_ln == 0) {
-                    new_ln = 1;
-                }
+    public void processAddLine(MatchResult match, String line) {
+        String cline = line.substring(1);
+        revisedTxt.add(cline);
+    }
 
-                while (this.READER.ready()) {
-                    String line = READER.readLine();
-                    LOG.log(Level.INFO, "processing chunk line {0}", line);
+    public void processDelLine(MatchResult match, String line) {
+        String cline = line.substring(1);
+        originalTxt.add(cline);
+    }
 
-                    if (line.startsWith(" ") || line.startsWith("+")) {
-                        revisedTxt.add(line.substring(1));
-                    }
-                    if (line.startsWith(" ") || line.startsWith("-")) {
-                        originalTxt.add(line.substring(1));
-                    }
-                    if (line.equals("") || line.startsWith("@@") || line.startsWith("--")) {
-                        break;
-                    }
-                }
-
-                actualFile.getPatch().addDelta(new ChangeDelta<>(new Chunk<>(
-                        old_ln - 1, originalTxt), new Chunk<>(
-                        new_ln - 1, revisedTxt)));
-
-                if (READER.lastLine().equals("")
-                        || READER.lastLine().startsWith("--")
-                        || !READER.lastLine().startsWith("@@")) {
-                    break;
-                } else {
-                    Matcher m = UNIFIED_DIFF_CHUNK_REGEXP.matcher(READER.lastLine());
-                    if (m.find()) {
-                        match = m.toMatchResult();
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(UnifiedDiffParser.class.getName()).log(Level.SEVERE, null, ex);
-            throw new UnifiedDiffParserException(ex);
+    public void processChunk(MatchResult match, String chunkStart) {
+        finalizeChunk();
+        old_ln = match.group(1) == null ? 1 : Integer.parseInt(match.group(1));
+        new_ln = match.group(3) == null ? 1 : Integer.parseInt(match.group(3));
+        if (old_ln == 0) {
+            old_ln = 1;
+        }
+        if (new_ln == 0) {
+            new_ln = 1;
         }
     }
 

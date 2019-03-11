@@ -26,6 +26,7 @@ import java.util.List;
 public class UnifiedDiff {
 
     private String header;
+    private String tail;
     private final List<UnifiedDiffFile> files = new ArrayList<>();
 
     public String getHeader() {
@@ -44,4 +45,11 @@ public class UnifiedDiff {
         return Collections.unmodifiableList(files);
     }
 
+    void setTailTxt(String tailTxt) {
+        this.tail = tailTxt;
+    }
+
+    public String getTail() {
+        return tail;
+    }
 }
