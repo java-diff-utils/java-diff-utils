@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public class UnifiedDiff {
+public final class UnifiedDiff {
 
     private String header;
     private String tail;
@@ -51,5 +51,15 @@ public class UnifiedDiff {
 
     public String getTail() {
         return tail;
+    }
+
+    public static UnifiedDiff from(String header, String tail, UnifiedDiffFile... files) {
+        UnifiedDiff diff = new UnifiedDiff();
+        diff.setHeader(header);
+        diff.setTailTxt(tail);
+        for (UnifiedDiffFile file : files) {
+            diff.addFile(file);
+        }
+        return diff;
     }
 }

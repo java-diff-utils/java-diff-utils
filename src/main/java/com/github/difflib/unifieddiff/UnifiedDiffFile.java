@@ -21,7 +21,7 @@ import com.github.difflib.patch.Patch;
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public class UnifiedDiffFile {
+public final class UnifiedDiffFile {
 
     private String diffCommand;
     private String fromFile;
@@ -63,5 +63,13 @@ public class UnifiedDiffFile {
 
     public Patch<String> getPatch() {
         return patch;
+    }
+
+    public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {
+        UnifiedDiffFile file = new UnifiedDiffFile();
+        file.setFromFile(fromFile);
+        file.setToFile(toFile);
+        file.patch = patch;
+        return file;
     }
 }
