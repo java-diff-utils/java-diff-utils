@@ -31,9 +31,9 @@ import org.junit.Test;
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public class UnifiedDiffParserTest {
+public class UnifiedDiffReaderTest {
 
-    public UnifiedDiffParserTest() {
+    public UnifiedDiffReaderTest() {
     }
 
     @BeforeClass
@@ -54,7 +54,7 @@ public class UnifiedDiffParserTest {
 
     @Test
     public void testSimpleParse() throws IOException {
-        UnifiedDiff diff = UnifiedDiffParser.parseUnifiedDiff(UnifiedDiffParserTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(UnifiedDiffReaderTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
 
         System.out.println(diff);
 
@@ -69,13 +69,13 @@ public class UnifiedDiffParserTest {
 
     @Test
     public void testParseDiffBlock() {
-        String[] files = UnifiedDiffParser.parseFileNames("diff --git a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java");
+        String[] files = UnifiedDiffReader.parseFileNames("diff --git a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java");
         assertThat(files).containsExactly("src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java", "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java");
     }
 
     @Test
     public void testChunkHeaderParsing() {
-        Pattern pattern = UnifiedDiffParser.UNIFIED_DIFF_CHUNK_REGEXP;
+        Pattern pattern = UnifiedDiffReader.UNIFIED_DIFF_CHUNK_REGEXP;
         Matcher matcher = pattern.matcher("@@ -189,6 +189,7 @@ TOKEN: /* SQL Keywords. prefixed with K_ to avoid name clashes */");
 
         assertTrue(matcher.find());
@@ -86,7 +86,7 @@ public class UnifiedDiffParserTest {
     @Test
     public void testChunkHeaderParsing2() {
         //"^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@.*$"
-        Pattern pattern = UnifiedDiffParser.UNIFIED_DIFF_CHUNK_REGEXP;
+        Pattern pattern = UnifiedDiffReader.UNIFIED_DIFF_CHUNK_REGEXP;
         Matcher matcher = pattern.matcher("@@ -189,6 +189,7 @@");
 
         assertTrue(matcher.find());

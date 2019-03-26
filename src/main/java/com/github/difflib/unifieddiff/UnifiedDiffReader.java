@@ -35,11 +35,11 @@ import java.util.regex.Pattern;
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public final class UnifiedDiffParser {
+public final class UnifiedDiffReader {
 
     static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern.compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@");
 
-    private final UnifiedDiffReader READER;
+    private final InternalUnifiedDiffReader READER;
     private final UnifiedDiff data = new UnifiedDiff();
     private final UnifiedDiffLine[] MAIN_PARSER_RULES = new UnifiedDiffLine[]{
         new UnifiedDiffLine(true, "^diff\\s", this::processDiff),
@@ -54,8 +54,8 @@ public final class UnifiedDiffParser {
 
     private UnifiedDiffFile actualFile;
 
-    UnifiedDiffParser(Reader reader) {
-        this.READER = new UnifiedDiffReader(reader);
+    UnifiedDiffReader(Reader reader) {
+        this.READER = new InternalUnifiedDiffReader(reader);
     }
 
     // schema = [[/^\s+/, normal], [/^diff\s/, start], [/^new file mode \d+$/, new_file], 
@@ -103,10 +103,10 @@ public final class UnifiedDiffParser {
         };
     }
 
-    private static final Logger LOG = Logger.getLogger(UnifiedDiffParser.class.getName());
+    private static final Logger LOG = Logger.getLogger(UnifiedDiffReader.class.getName());
 
     public static UnifiedDiff parseUnifiedDiff(InputStream stream) throws IOException, UnifiedDiffParserException {
-        UnifiedDiffParser parser = new UnifiedDiffParser(new BufferedReader(new InputStreamReader(stream)));
+        UnifiedDiffReader parser = new UnifiedDiffReader(new BufferedReader(new InputStreamReader(stream)));
         return parser.parse();
     }
 
@@ -244,11 +244,11 @@ public final class UnifiedDiffParser {
     }
 }
 
-class UnifiedDiffReader extends BufferedReader {
+class InternalUnifiedDiffReader extends BufferedReader {
 
     private String lastLine;
 
-    public UnifiedDiffReader(Reader reader) {
+    public InternalUnifiedDiffReader(Reader reader) {
         super(reader);
     }
 
