@@ -52,39 +52,6 @@ This is a test ~senctence~**for diffutils**.
 
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
-### Changelog ###
-  * Version 4.0-SNAPSHOT
-    * moved to organisation **java-diff-utils**
-    * changed groupid to **io.github.java-diff-utils** and artifact id to **java-diff-utils**
-  * Version 3.0
-    * changed generation of inline diffes, if there are different linefeeds within one diff, then these are excluded 
-      from the diff block. 
-    * Due to licensing issues Delta.java and DiffAlgorithm.java were removed.
-  * Version 2.3-SNAPSHOT
-    * Introduced a process listener to diff algorithms. For long running
-      diffs one could implement some progress information.
-    * automatic module name for JDK 9 and higher usage
-  * Version 2.2
-    * released at maven central
-    * included checkstyle source code conventions
-    * groupid changed to **com.github.wumpz**, due to maven central releasing
-    * allow configurable splitting of lines to define the blocks to compare (words, characters, phrases).
-  * Version 2.0
-    * switch to maven and removed other artifacts
-    * changed groupid to **com.github.java-diff-utils** due to different forks at github
-    * updated maven plugins
-    * JDK 1.8 compatibility, sorry if you have to stick with older versions
-    * support for inline merge
-    * restructured packages heavily
-    * changed API 
-    * changed Algorithm to provide only cursor positions
-    * integrated JGit (Eclipse Licensed) to provide HistogramDiff to gain speed for large datasets 
-    * removed all kinds of helper classes in favour of new JDK 8 function classes like Predicate
-  * Version 1.2
-    * JDK 1.5 compatibility
-    * Ant build script
-    * Generate output in unified diff format (thanks for Bill James)
-
 ## Source Code conventions
 
 Recently a checkstyle process was integrated into the build process. java-diff-utils follows the sun java format convention. There are no TABs allowed. Use spaces.
