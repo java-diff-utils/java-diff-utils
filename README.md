@@ -35,7 +35,7 @@ This is a test ~senctence~**for diffutils**.
 ## Main Features
 
 * computing the difference between two texts.
-* capable to hand more than plain ascci. Arrays or List of any type that implements hashCode() and equals() correctly can be subject to differencing using this library
+* capable to hand more than plain ascii. Arrays or List of any type that implements hashCode() and equals() correctly can be subject to differencing using this library
 * patch and unpatch the text with the given patch
 * parsing the unified diff format
 * producing human-readable differences
@@ -44,7 +44,7 @@ This is a test ~senctence~**for diffutils**.
   * Myer
   * HistogramDiff using JGit Library
 
-### Algoritms
+### Algorithms
 
 * Myer's diff
 * HistogramDiff
