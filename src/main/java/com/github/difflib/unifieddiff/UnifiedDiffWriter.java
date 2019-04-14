@@ -40,8 +40,9 @@ public class UnifiedDiffWriter {
             }
 
         }
-
-        writer.write(diff.getTail());
+        if (diff.getTail() != null) {
+            writer.write("--\n" + diff.getTail());
+        }
     }
 
     private static void writeOrNothing(Writer writer, String str) throws IOException {
