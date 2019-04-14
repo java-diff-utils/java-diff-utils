@@ -15,10 +15,14 @@
  */
 package com.github.difflib.unifieddiff;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.junit.Test;
 
 /**
@@ -30,25 +34,19 @@ public class UnifiedDiffWriterTest {
     public UnifiedDiffWriterTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
-    public void testWrite() {
+    public void testWrite() throws URISyntaxException, IOException {
+        String str = readFile(UnifiedDiffReaderTest.class.getResource("jsqlparser_patch_1.diff").toURI(), Charset.defaultCharset());
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
 
+        StringWriter writer = new StringWriter();
+        UnifiedDiffWriter.write(diff, writer);
+        System.out.println(writer.toString());
     }
 
+    static String readFile(URI path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
 }

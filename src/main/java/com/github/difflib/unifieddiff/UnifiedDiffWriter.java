@@ -15,6 +15,7 @@
  */
 package com.github.difflib.unifieddiff;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -23,7 +24,29 @@ import java.io.Writer;
  */
 public class UnifiedDiffWriter {
 
-    public static void write(UnifiedDiff diff, Writer writer) {
+    public static void write(UnifiedDiff diff, Writer writer) throws IOException {
+        writer.write(diff.getHeader());
 
+        for (UnifiedDiffFile file : diff.getFiles()) {
+            writeOrNothing(writer, file.getDiffCommand());
+            if (file.getIndex() != null) {
+                writer.write("index " + file.getIndex() + "\n");
+            }
+            if (file.getFromFile() != null) {
+                writer.write("--- " + file.getFromFile() + "\n");
+            }
+            if (file.getToFile() != null) {
+                writer.write("+++ " + file.getToFile() + "\n");
+            }
+
+        }
+
+        writer.write(diff.getTail());
+    }
+
+    private static void writeOrNothing(Writer writer, String str) throws IOException {
+        if (str != null) {
+            writer.append(str).append("\n");
+        }
     }
 }

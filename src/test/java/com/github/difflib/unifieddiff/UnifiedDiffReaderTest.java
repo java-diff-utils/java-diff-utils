@@ -19,12 +19,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -32,25 +28,6 @@ import org.junit.Test;
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public class UnifiedDiffReaderTest {
-
-    public UnifiedDiffReaderTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void testSimpleParse() throws IOException {
