@@ -15,6 +15,7 @@
  */
 package com.github.difflib.patch;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -23,9 +24,10 @@ import java.util.Objects;
  * Holds the information about the part of text involved in the diff process
  *
  * <p>
- * Text is represented as <code>Object[]</code> because the diff engine is capable of handling more than plain ascci. In
- * fact, arrays or lists of any type that implements {@link java.lang.Object#hashCode hashCode()} and
- * {@link java.lang.Object#equals equals()} correctly can be subject to differencing using this library.
+ * Text is represented as <code>Object[]</code> because the diff engine is capable of handling more
+ * than plain ascci. In fact, arrays or lists of any type that implements
+ * {@link java.lang.Object#hashCode hashCode()} and {@link java.lang.Object#equals equals()}
+ * correctly can be subject to differencing using this library.
  * </p>
  *
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
@@ -44,7 +46,7 @@ public final class Chunk<T> {
      */
     public Chunk(int position, List<T> lines) {
         this.position = position;
-        this.lines = lines;
+        this.lines = new ArrayList<>(lines);
     }
 
     /**

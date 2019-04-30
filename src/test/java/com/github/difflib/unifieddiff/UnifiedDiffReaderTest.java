@@ -15,6 +15,7 @@
  */
 package com.github.difflib.unifieddiff;
 
+import com.github.difflib.patch.AbstractDelta;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,6 +70,26 @@ public class UnifiedDiffReaderTest {
         assertTrue(matcher.find());
         assertEquals("189", matcher.group(1));
         assertEquals("189", matcher.group(3));
+    }
+
+    @Test
+    public void testSimpleParse2() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(UnifiedDiffReaderTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
+
+        System.out.println(diff);
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(3);
+
+        AbstractDelta<String> first = file1.getPatch().getDeltas().get(0);
+
+        assertThat(first.getSource().size()).isGreaterThan(0);
+        assertThat(first.getTarget().size()).isGreaterThan(0);
+
+        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
     }
 
 }

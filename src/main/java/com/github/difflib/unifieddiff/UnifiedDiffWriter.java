@@ -15,8 +15,14 @@
  */
 package com.github.difflib.unifieddiff;
 
+import com.github.difflib.patch.AbstractDelta;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,30 +30,172 @@ import java.io.Writer;
  */
 public class UnifiedDiffWriter {
 
+    private static final Logger LOG = Logger.getLogger(UnifiedDiffWriter.class.getName());
+
     public static void write(UnifiedDiff diff, Writer writer) throws IOException {
-        writer.write(diff.getHeader());
+        write(diff, line -> {
+            try {
+                writer.append(line).append("\n");
+            } catch (IOException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+
+    public static void write(UnifiedDiff diff, Consumer<String> writer) throws IOException {
+        writer.accept(diff.getHeader());
 
         for (UnifiedDiffFile file : diff.getFiles()) {
             writeOrNothing(writer, file.getDiffCommand());
             if (file.getIndex() != null) {
-                writer.write("index " + file.getIndex() + "\n");
+                writer.accept("index " + file.getIndex());
             }
             if (file.getFromFile() != null) {
-                writer.write("--- " + file.getFromFile() + "\n");
+                writer.accept("--- " + file.getFromFile());
             }
             if (file.getToFile() != null) {
-                writer.write("+++ " + file.getToFile() + "\n");
+                writer.accept("+++ " + file.getToFile());
             }
+
+            List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
+                    file.getPatch().getDeltas());
+
+            List<AbstractDelta<String>> deltas = new ArrayList<>();
+
+            int contextSize = 0;
+            List<String> originalLines = new ArrayList<>();
+
+            AbstractDelta<String> delta = patchDeltas.get(0);
+            deltas.add(delta); // add the first Delta to the current set
+            // if there's more than 1 Delta, we may need to output them together
+            if (patchDeltas.size() > 1) {
+                for (int i = 1; i < patchDeltas.size(); i++) {
+                    int position = delta.getSource().getPosition();
+
+                    // Check if the next Delta is too close to the current
+                    // position.
+                    // And if it is, add it to the current set
+                    AbstractDelta<String> nextDelta = patchDeltas.get(i);
+                    if ((position + delta.getSource().size() + contextSize) >= (nextDelta
+                            .getSource().getPosition() - contextSize)) {
+                        deltas.add(nextDelta);
+                    } else {
+                        // if it isn't, output the current set,
+                        // then create a new set and add the current Delta to
+                        // it.
+                        processDeltas(writer, originalLines, deltas, contextSize);
+                        deltas.clear();
+                        deltas.add(nextDelta);
+                    }
+                    delta = nextDelta;
+                }
+
+            }
+            // don't forget to process the last set of Deltas
+            processDeltas(writer, originalLines, deltas, contextSize);
 
         }
         if (diff.getTail() != null) {
-            writer.write("--\n" + diff.getTail());
+            writer.accept("--");
+            writer.accept(diff.getTail());
         }
     }
 
-    private static void writeOrNothing(Writer writer, String str) throws IOException {
+    private static void processDeltas(Consumer<String> writer,
+            List<String> origLines,
+            List<AbstractDelta<String>> deltas, int contextSize) {
+        List<String> buffer = new ArrayList<>();
+        int origTotal = 0; // counter for total lines output from Original
+        int revTotal = 0; // counter for total lines output from Original
+        int line;
+
+        AbstractDelta<String> curDelta = deltas.get(0);
+
+        // NOTE: +1 to overcome the 0-offset Position
+        int origStart = curDelta.getSource().getPosition() + 1 - contextSize;
+        if (origStart < 1) {
+            origStart = 1;
+        }
+
+        int revStart = curDelta.getTarget().getPosition() + 1 - contextSize;
+        if (revStart < 1) {
+            revStart = 1;
+        }
+
+        // find the start of the wrapper context code
+        int contextStart = curDelta.getSource().getPosition() - contextSize;
+        if (contextStart < 0) {
+            contextStart = 0; // clamp to the start of the file
+        }
+
+        // output the context before the first Delta
+        for (line = contextStart; line < curDelta.getSource().getPosition(); line++) { //
+            buffer.add(" " + origLines.get(line));
+            origTotal++;
+            revTotal++;
+        }
+
+        // output the first Delta
+        getDeltaText(txt -> buffer.add(txt), curDelta);
+        origTotal += curDelta.getSource().getLines().size();
+        revTotal += curDelta.getTarget().getLines().size();
+
+        int deltaIndex = 1;
+        while (deltaIndex < deltas.size()) { // for each of the other Deltas
+            AbstractDelta<String> nextDelta = deltas.get(deltaIndex);
+            int intermediateStart = curDelta.getSource().getPosition()
+                    + curDelta.getSource().getLines().size();
+            for (line = intermediateStart; line < nextDelta.getSource()
+                    .getPosition(); line++) {
+                // output the code between the last Delta and this one
+                buffer.add(" " + origLines.get(line));
+                origTotal++;
+                revTotal++;
+            }
+            getDeltaText(txt -> buffer.add(txt), nextDelta); // output the Delta
+            origTotal += nextDelta.getSource().getLines().size();
+            revTotal += nextDelta.getTarget().getLines().size();
+            curDelta = nextDelta;
+            deltaIndex++;
+        }
+
+        // Now output the post-Delta context code, clamping the end of the file
+        contextStart = curDelta.getSource().getPosition()
+                + curDelta.getSource().getLines().size();
+        for (line = contextStart; (line < (contextStart + contextSize))
+                && (line < origLines.size()); line++) {
+            buffer.add(" " + origLines.get(line));
+            origTotal++;
+            revTotal++;
+        }
+
+        // Create and insert the block header, conforming to the Unified Diff
+        // standard
+        writer.accept("@@ -" + origStart + "," + origTotal + " +" + revStart + "," + revTotal + " @@");
+        buffer.forEach(txt -> {
+            writer.accept(txt);
+        });
+    }
+
+    /**
+     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter
+     *
+     * @param delta - the Delta to output
+     * @return list of String lines of code.
+     * @author Bill James (tankerbay@gmail.com)
+     */
+    private static void getDeltaText(Consumer<String> writer, AbstractDelta<String> delta) {
+        for (String line : delta.getSource().getLines()) {
+            writer.accept("-" + line);
+        }
+        for (String line : delta.getTarget().getLines()) {
+            writer.accept("+" + line);
+        }
+    }
+
+    private static void writeOrNothing(Consumer<String> writer, String str) throws IOException {
         if (str != null) {
-            writer.append(str).append("\n");
+            writer.accept(str);
         }
     }
 }
