@@ -97,6 +97,6 @@ Attention. We changed groupid and artifactid. Starting with version 4 you have t
 or using gradle:
 
 ```groovy
-// https://mvnrepository.com/artifact/com.github.wumpz/diffutils
-compile group: 'com.github.wumpz', name: 'diffutils', version: '2.2'
+// https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
+compile group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.0'
 ```
