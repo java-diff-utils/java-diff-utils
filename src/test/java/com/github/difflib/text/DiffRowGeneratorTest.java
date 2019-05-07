@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
@@ -26,6 +27,16 @@ public class DiffRowGeneratorTest {
         print(rows);
 
         assertEquals(3, rows.size());
+    }
+
+    /**
+     * Test of normalize method, of class StringUtils.
+     */
+    @Test
+    public void testNormalize_List() {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .build();
+        assertEquals(Collections.singletonList("    test"), generator.normalizeLines(Collections.singletonList("\ttest")));
     }
 
     @Test
@@ -374,5 +385,24 @@ public class DiffRowGeneratorTest {
 
         assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [CHANGE,,**This is the second line.**], [CHANGE,,**And one more.**]]",
                 rows.toString());
+    }
+
+    @Test
+    public void testGeneratorIssue41DefaultNormalizer() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<"), Arrays.asList("<"));
+        assertEquals("[[EQUAL,&lt;,&lt;]]", rows.toString());
+    }
+
+    @Test
+    public void testGeneratorIssue41UserNormalizer() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .lineNormalizer(str -> str.replace("\t", "    "))
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<"), Arrays.asList("<"));
+        assertEquals("[[EQUAL,<,<]]", rows.toString());
+        rows = generator.generateDiffRows(Arrays.asList("\t<"), Arrays.asList("<"));
+        assertEquals("[[CHANGE,    <,<]]", rows.toString());
     }
 }

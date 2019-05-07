@@ -29,6 +29,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class for generating DiffRows for side-by-sidy view. You can customize the way of generating. For example, show
@@ -42,12 +43,15 @@ import java.util.regex.Pattern;
  *      ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
  */
-public class DiffRowGenerator {
+public final class DiffRowGenerator {
 
     public static final BiPredicate<String, String> DEFAULT_EQUALIZER = Object::equals;
 
     public static final BiPredicate<String, String> IGNORE_WHITESPACE_EQUALIZER = (original, revised)
             -> adjustWhitespace(original).equals(adjustWhitespace(revised));
+
+    public static final Function<String, String> LINE_NORMALIZER_FOR_HTML = StringUtils::normalize;
+
 
     /**
      * Splitting lines by character to achieve char by char diff checking.
@@ -60,6 +64,7 @@ public class DiffRowGenerator {
         return list;
     };
     public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+
     /**
      * Splitting lines by word to achieve word by word diff checking.
      */
@@ -144,6 +149,7 @@ public class DiffRowGenerator {
     private final Function<Boolean, String> newTag;
     private final Function<Boolean, String> oldTag;
     private final boolean reportLinesUnchanged;
+    private final Function<String, String> lineNormalizer;
 
     private final boolean showInlineDiffs;
 
@@ -157,8 +163,10 @@ public class DiffRowGenerator {
         inlineDiffSplitter = builder.inlineDiffSplitter;
         equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
         reportLinesUnchanged = builder.reportLinesUnchanged;
+        lineNormalizer = builder.lineNormalizer;
 
         Objects.requireNonNull(inlineDiffSplitter);
+        Objects.requireNonNull(lineNormalizer);
     }
 
     /**
@@ -258,14 +266,20 @@ public class DiffRowGenerator {
                 StringUtils.wrapText(newline, columnWidth));
     }
 
+    List<String> normalizeLines(List<String> list) {
+        return list.stream()
+                .map(lineNormalizer::apply)
+                .collect(toList());
+    }
+
     /**
      * Add the inline diffs for given delta
      *
      * @param delta the given delta
      */
     private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) throws DiffException {
-        List<String> orig = StringUtils.normalize(delta.getSource().getLines());
-        List<String> rev = StringUtils.normalize(delta.getTarget().getLines());
+        List<String> orig = normalizeLines(delta.getSource().getLines());
+        List<String> rev = normalizeLines(delta.getTarget().getLines());
         List<String> origList;
         List<String> revList;
         String joinedOrig = String.join("\n", orig);
@@ -334,9 +348,9 @@ public class DiffRowGenerator {
 
     private String preprocessLine(String line) {
         if (columnWidth == 0) {
-            return StringUtils.normalize(line);
+            return lineNormalizer.apply(line);
         } else {
-            return StringUtils.wrapText(StringUtils.normalize(line), columnWidth);
+            return StringUtils.wrapText(lineNormalizer.apply(line), columnWidth);
         }
     }
 
@@ -358,6 +372,7 @@ public class DiffRowGenerator {
         private boolean mergeOriginalRevised = false;
         private boolean reportLinesUnchanged = false;
         private Function<String, List<String>> inlineDiffSplitter = SPLITTER_BY_CHARACTER;
+        private Function<String, String> lineNormalizer = LINE_NORMALIZER_FOR_HTML;
 
         private Builder() {
         }
@@ -461,6 +476,11 @@ public class DiffRowGenerator {
 
         public Builder inlineDiffBySplitter(Function<String, List<String>> inlineDiffSplitter) {
             this.inlineDiffSplitter = inlineDiffSplitter;
+            return this;
+        }
+
+        public Builder lineNormalizer(Function<String, String> lineNormalizer) {
+            this.lineNormalizer = lineNormalizer;
             return this;
         }
     }
