@@ -400,7 +400,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Give the originial old and new text lines to Diffrow without any additional processing.
+         * Give the originial old and new text lines to Diffrow without any additional processing and without any tags to
+         * highlight the change.
          *
          * @param val the value to set. Default: false.
          * @return builder with configured reportLinesUnWrapped parameter
@@ -433,7 +434,7 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Set the column with of generated lines of original and revised texts.
+         * Set the column width of generated lines of original and revised texts.
          *
          * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return builder with config
          * ured ignoreBlankLines parameter
@@ -466,19 +467,38 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Per default each character is separatly processed. This variant introduces processing by word, which should
-         * deliver no in word changes.
+         * Per default each character is separatly processed. This variant introduces processing by word, which does not
+         * deliver in word changes. Therefore the whole word will be tagged as changed:
+         *
+         * <pre>
+         * false:    (aBa : aba) --  changed: a(B)a : a(b)a
+         * true:     (aBa : aba) --  changed: (aBa) : (aba)
+         * </pre>
          */
         public Builder inlineDiffByWord(boolean inlineDiffByWord) {
             inlineDiffSplitter = inlineDiffByWord ? SPLITTER_BY_WORD : SPLITTER_BY_CHARACTER;
             return this;
         }
 
+        /**
+         * To provide some customized splitting a splitter can be provided. Here someone could think about sentence splitter,
+         * comma splitter or stuff like that.
+         *
+         * @param inlineDiffSplitter
+         * @return
+         */
         public Builder inlineDiffBySplitter(Function<String, List<String>> inlineDiffSplitter) {
             this.inlineDiffSplitter = inlineDiffSplitter;
             return this;
         }
 
+        /**
+         * By default DiffRowGenerator preprocesses lines for HTML output. Tabs and special HTML characters like "&lt;"
+         * are replaced with its encoded value. To change this you can provide a customized line normalizer here.
+         *
+         * @param lineNormalizer
+         * @return
+         */
         public Builder lineNormalizer(Function<String, String> lineNormalizer) {
             this.lineNormalizer = lineNormalizer;
             return this;
