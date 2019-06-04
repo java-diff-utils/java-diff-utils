@@ -63,36 +63,38 @@ public class UnifiedDiffWriter {
             List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
                     file.getPatch().getDeltas());
 
-            List<AbstractDelta<String>> deltas = new ArrayList<>();
+            if (!patchDeltas.isEmpty()) {
+                List<AbstractDelta<String>> deltas = new ArrayList<>();
 
-            AbstractDelta<String> delta = patchDeltas.get(0);
-            deltas.add(delta); // add the first Delta to the current set
-            // if there's more than 1 Delta, we may need to output them together
-            if (patchDeltas.size() > 1) {
-                for (int i = 1; i < patchDeltas.size(); i++) {
-                    int position = delta.getSource().getPosition();
+                AbstractDelta<String> delta = patchDeltas.get(0);
+                deltas.add(delta); // add the first Delta to the current set
+                // if there's more than 1 Delta, we may need to output them together
+                if (patchDeltas.size() > 1) {
+                    for (int i = 1; i < patchDeltas.size(); i++) {
+                        int position = delta.getSource().getPosition();
 
-                    // Check if the next Delta is too close to the current
-                    // position.
-                    // And if it is, add it to the current set
-                    AbstractDelta<String> nextDelta = patchDeltas.get(i);
-                    if ((position + delta.getSource().size() + contextSize) >= (nextDelta
-                            .getSource().getPosition() - contextSize)) {
-                        deltas.add(nextDelta);
-                    } else {
-                        // if it isn't, output the current set,
-                        // then create a new set and add the current Delta to
-                        // it.
-                        processDeltas(writer, originalLines, deltas, contextSize);
-                        deltas.clear();
-                        deltas.add(nextDelta);
+                        // Check if the next Delta is too close to the current
+                        // position.
+                        // And if it is, add it to the current set
+                        AbstractDelta<String> nextDelta = patchDeltas.get(i);
+                        if ((position + delta.getSource().size() + contextSize) >= (nextDelta
+                                .getSource().getPosition() - contextSize)) {
+                            deltas.add(nextDelta);
+                        } else {
+                            // if it isn't, output the current set,
+                            // then create a new set and add the current Delta to
+                            // it.
+                            processDeltas(writer, originalLines, deltas, contextSize);
+                            deltas.clear();
+                            deltas.add(nextDelta);
+                        }
+                        delta = nextDelta;
                     }
-                    delta = nextDelta;
-                }
 
+                }
+                // don't forget to process the last set of Deltas
+                processDeltas(writer, originalLines, deltas, contextSize);
             }
-            // don't forget to process the last set of Deltas
-            processDeltas(writer, originalLines, deltas, contextSize);
 
         }
         if (diff.getTail() != null) {
