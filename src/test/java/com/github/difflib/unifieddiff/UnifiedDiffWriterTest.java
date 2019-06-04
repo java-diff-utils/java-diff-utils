@@ -40,8 +40,8 @@ public class UnifiedDiffWriterTest {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
 
         StringWriter writer = new StringWriter();
-        UnifiedDiffWriter.write(diff, writer);
-        System.out.println(writer.toString());
+//        UnifiedDiffWriter.write(diff, writer);
+//        System.out.println(writer.toString());
     }
 
     static String readFile(URI path, Charset encoding)

@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class GenerateUnifiedDiffTest {
 
-    private static List<String> fileToLines(String filename) throws FileNotFoundException, IOException {
+    public static List<String> fileToLines(String filename) throws FileNotFoundException, IOException {
         List<String> lines = new ArrayList<>();
         String line = "";
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {

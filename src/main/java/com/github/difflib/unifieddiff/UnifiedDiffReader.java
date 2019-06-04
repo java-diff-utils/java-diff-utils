@@ -132,7 +132,7 @@ public final class UnifiedDiffReader {
         }
     }
 
-    public void processDiff(MatchResult match, String line) {
+    private void processDiff(MatchResult match, String line) {
         initFileIfNecessary();
         LOG.log(Level.INFO, "start {0}", line);
         String[] fromTo = parseFileNames(READER.lastLine());
@@ -158,23 +158,23 @@ public final class UnifiedDiffReader {
         }
     }
 
-    public void processNormalLine(MatchResult match, String line) {
+    private void processNormalLine(MatchResult match, String line) {
         String cline = line.substring(1);
         originalTxt.add(cline);
         revisedTxt.add(cline);
     }
 
-    public void processAddLine(MatchResult match, String line) {
+    private void processAddLine(MatchResult match, String line) {
         String cline = line.substring(1);
         revisedTxt.add(cline);
     }
 
-    public void processDelLine(MatchResult match, String line) {
+    private void processDelLine(MatchResult match, String line) {
         String cline = line.substring(1);
         originalTxt.add(cline);
     }
 
-    public void processChunk(MatchResult match, String chunkStart) {
+    private void processChunk(MatchResult match, String chunkStart) {
         finalizeChunk();
         old_ln = match.group(1) == null ? 1 : Integer.parseInt(match.group(1));
         new_ln = match.group(3) == null ? 1 : Integer.parseInt(match.group(3));
@@ -186,7 +186,7 @@ public final class UnifiedDiffReader {
         }
     }
 
-    public void processIndex(MatchResult match, String line) {
+    private void processIndex(MatchResult match, String line) {
         initFileIfNecessary();
         LOG.log(Level.INFO, "index {0}", line);
         actualFile.setIndex(line.substring(6));
