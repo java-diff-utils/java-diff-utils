@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -109,6 +110,8 @@ public class GenerateUnifiedDiffTest {
         Patch<String> patch = DiffUtils.diff(origLines, revLines);
         List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(originalFile, revisedFile,
                 origLines, patch, 10);
+
+        System.out.println(unifiedDiff.stream().collect(joining("\n")));
 
         Patch<String> fromUnifiedPatch = UnifiedDiffUtils.parseUnifiedDiff(unifiedDiff);
         List<String> patchedLines;

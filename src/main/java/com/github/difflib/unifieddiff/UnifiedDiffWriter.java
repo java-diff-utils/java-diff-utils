@@ -114,28 +114,28 @@ public class UnifiedDiffWriter {
         AbstractDelta<String> curDelta = deltas.get(0);
 
         // NOTE: +1 to overcome the 0-offset Position
-        int origStart = curDelta.getSource().getPosition() + 1;
+        int origStart = curDelta.getSource().getPosition() + 1 - contextSize;
         if (origStart < 1) {
             origStart = 1;
         }
 
-        int revStart = curDelta.getTarget().getPosition() + 1;
+        int revStart = curDelta.getTarget().getPosition() + 1 - contextSize;
         if (revStart < 1) {
             revStart = 1;
         }
 
         // find the start of the wrapper context code
-        int contextStart = curDelta.getSource().getPosition();
+        int contextStart = curDelta.getSource().getPosition() - contextSize;
         if (contextStart < 0) {
             contextStart = 0; // clamp to the start of the file
         }
 
-//        // output the context before the first Delta
-//        for (line = contextStart; line < curDelta.getSource().getPosition(); line++) { //
-//            buffer.add(" " + curDelta.getSource().getLines().get(line - contextStart));
-//            origTotal++;
-//            revTotal++;
-//        }
+        // output the context before the first Delta
+        for (line = contextStart; line < curDelta.getSource().getPosition(); line++) { //
+            buffer.add(" " + origLines.get(line));
+            origTotal++;
+            revTotal++;
+        }
         // output the first Delta
         getDeltaText(txt -> buffer.add(txt), curDelta);
         origTotal += curDelta.getSource().getLines().size();
