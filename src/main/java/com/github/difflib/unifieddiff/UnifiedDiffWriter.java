@@ -47,23 +47,22 @@ public class UnifiedDiffWriter {
         writer.accept(diff.getHeader());
 
         for (UnifiedDiffFile file : diff.getFiles()) {
-            writeOrNothing(writer, file.getDiffCommand());
-            if (file.getIndex() != null) {
-                writer.accept("index " + file.getIndex());
-            }
-            if (file.getFromFile() != null) {
-                writer.accept("--- " + file.getFromFile());
-            }
-            if (file.getToFile() != null) {
-                writer.accept("+++ " + file.getToFile());
-            }
-
-            List<String> originalLines = originalLinesProvider.apply(file.getFromFile());
-
             List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
                     file.getPatch().getDeltas());
-
             if (!patchDeltas.isEmpty()) {
+                writeOrNothing(writer, file.getDiffCommand());
+                if (file.getIndex() != null) {
+                    writer.accept("index " + file.getIndex());
+                }
+                if (file.getFromFile() != null) {
+                    writer.accept("--- " + file.getFromFile());
+                }
+                if (file.getToFile() != null) {
+                    writer.accept("+++ " + file.getToFile());
+                }
+
+                List<String> originalLines = originalLinesProvider.apply(file.getFromFile());
+
                 List<AbstractDelta<String>> deltas = new ArrayList<>();
 
                 AbstractDelta<String> delta = patchDeltas.get(0);
