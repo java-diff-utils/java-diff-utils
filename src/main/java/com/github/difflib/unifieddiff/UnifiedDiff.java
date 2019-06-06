@@ -15,9 +15,11 @@
  */
 package com.github.difflib.unifieddiff;
 
+import com.github.difflib.patch.PatchFailedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  *
@@ -51,6 +53,17 @@ public final class UnifiedDiff {
 
     public String getTail() {
         return tail;
+    }
+
+    public List<String> spplyPatchTo(Predicate<String> findFile, List<String> originalLines) throws PatchFailedException {
+        UnifiedDiffFile file = files.stream()
+                .filter(diff -> findFile.test(diff.getFromFile()))
+                .findFirst().orElse(null);
+        if (file != null) {
+            return file.getPatch().applyTo(originalLines);
+        } else {
+            return originalLines;
+        }
     }
 
     public static UnifiedDiff from(String header, String tail, UnifiedDiffFile... files) {

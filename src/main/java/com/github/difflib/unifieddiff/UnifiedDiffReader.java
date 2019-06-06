@@ -68,7 +68,7 @@ public final class UnifiedDiffReader {
         String tailTxt = "";
         while (READER.ready()) {
             String line = READER.readLine();
-            if (line.matches("^\\-\\-\\s+")) {
+            if (line.equals("--")) {
                 break;
             } else {
                 LOG.log(Level.INFO, "parsing line {0}", line);
@@ -79,8 +79,10 @@ public final class UnifiedDiffReader {
                         break;
                     }
                 } else {
-                    header = false;
-                    data.setHeader(headerTxt);
+                    if (header) {
+                        header = false;
+                        data.setHeader(headerTxt);
+                    }
                 }
             }
         }
@@ -114,10 +116,12 @@ public final class UnifiedDiffReader {
         for (UnifiedDiffLine rule : MAIN_PARSER_RULES) {
             if (header && rule.isStopsHeaderParsing() || !header) {
                 if (rule.processLine(line)) {
+                    LOG.info("  >>> processed rule " + rule.toString());
                     return true;
                 }
             }
         }
+        LOG.info("  >>> no rule matched " + line);
         return false;
     }
 
@@ -240,6 +244,11 @@ public final class UnifiedDiffReader {
 
         public boolean isStopsHeaderParsing() {
             return stopsHeaderParsing;
+        }
+
+        @Override
+        public String toString() {
+            return "UnifiedDiffLine{" + "pattern=" + pattern + ", stopsHeaderParsing=" + stopsHeaderParsing + '}';
         }
     }
 }

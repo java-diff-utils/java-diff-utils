@@ -73,6 +73,17 @@ public class UnifiedDiffReaderTest {
     }
 
     @Test
+    public void testChunkHeaderParsing3() {
+        //"^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@.*$"
+        Pattern pattern = UnifiedDiffReader.UNIFIED_DIFF_CHUNK_REGEXP;
+        Matcher matcher = pattern.matcher("@@ -1,27 +1,27 @@");
+
+        assertTrue(matcher.find());
+        assertEquals("1", matcher.group(1));
+        assertEquals("1", matcher.group(3));
+    }
+
+    @Test
     public void testSimpleParse2() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(UnifiedDiffReaderTest.class.getResourceAsStream("jsqlparser_patch_1.diff"));
 
@@ -90,6 +101,14 @@ public class UnifiedDiffReaderTest {
         assertThat(first.getTarget().size()).isGreaterThan(0);
 
         assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
+    }
+
+    @Test
+    public void testSimplePattern() {
+        Pattern pattern = Pattern.compile("^\\+\\+\\+\\s");
+
+        Matcher m = pattern.matcher("+++ revised.txt");
+        assertTrue(m.find());
     }
 
 }

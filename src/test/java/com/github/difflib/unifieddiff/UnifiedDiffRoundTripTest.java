@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -38,14 +39,14 @@ public class UnifiedDiffRoundTripTest {
 
         verify(origLines, revLines, "original.txt", "revised.txt");
     }
-//
-//    @Test
-//    public void testGenerateUnifiedWithOneDelta() throws DiffException, IOException {
-//        List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_original.txt");
-//        List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_revised.txt");
-//
-//        verify(origLines, revLines, "one_delta_test_original.txt", "one_delta_test_revised.txt");
-//    }
+
+    @Test
+    public void testGenerateUnifiedWithOneDelta() throws DiffException, IOException {
+        List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_original.txt");
+        List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_revised.txt");
+
+        verify(origLines, revLines, "one_delta_test_original.txt", "one_delta_test_revised.txt");
+    }
 
     @Test
     public void testGenerateUnifiedDiffWithoutAnyDeltas() throws DiffException, IOException {
@@ -61,60 +62,71 @@ public class UnifiedDiffRoundTripTest {
         System.out.println(writer);
     }
 
-//    @Test
-//    public void testDiff_Issue10() throws IOException {
-//        final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
-//        final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
-//        final Patch<String> p = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
-//        try {
-//            DiffUtils.patch(baseLines, p);
-//        } catch (PatchFailedException e) {
-//            fail(e.getMessage());
-//        }
-//    }
-//
-//    /**
-//     * Issue 12
-//     */
-//    @Test
-//    public void testPatchWithNoDeltas() throws DiffException, IOException {
-//        final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_1.txt");
-//        final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_2.txt");
-//        verify(lines1, lines2, "issue11_1.txt", "issue11_2.txt");
-//    }
-//
-//    @Test
-//    public void testDiff5() throws DiffException, IOException {
-//        final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "5A.txt");
-//        final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "5B.txt");
-//        verify(lines1, lines2, "5A.txt", "5B.txt");
-//    }
-//
-//    /**
-//     * Issue 19
-//     */
-//    @Test
-//    public void testDiffWithHeaderLineInText() throws DiffException {
-//        List<String> original = new ArrayList<>();
-//        List<String> revised = new ArrayList<>();
-//
-//        original.add("test line1");
-//        original.add("test line2");
-//        original.add("test line 4");
-//        original.add("test line 5");
-//
-//        revised.add("test line1");
-//        revised.add("test line2");
-//        revised.add("@@ -2,6 +2,7 @@");
-//        revised.add("test line 4");
-//        revised.add("test line 5");
-//
-//        Patch<String> patch = DiffUtils.diff(original, revised);
-//        List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff("original", "revised",
-//                original, patch, 10);
-//        UnifiedDiffUtils.parseUnifiedDiff(udiff);
-//    }
-//
+    @Test
+    public void testDiff_Issue10() throws IOException {
+        final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
+        final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
+
+        UnifiedDiff unifiedDiff = UnifiedDiffReader.parseUnifiedDiff(
+                new ByteArrayInputStream(patchLines.stream().collect(joining("\n")).getBytes())
+        );
+
+        final Patch<String> p = unifiedDiff.getFiles().get(0).getPatch();
+        try {
+            DiffUtils.patch(baseLines, p);
+        } catch (PatchFailedException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Issue 12
+     */
+    @Test
+    public void testPatchWithNoDeltas() throws DiffException, IOException {
+        final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_1.txt");
+        final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_2.txt");
+        verify(lines1, lines2, "issue11_1.txt", "issue11_2.txt");
+    }
+
+    @Test
+    public void testDiff5() throws DiffException, IOException {
+        final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "5A.txt");
+        final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "5B.txt");
+        verify(lines1, lines2, "5A.txt", "5B.txt");
+    }
+
+    /**
+     * Issue 19
+     */
+    @Test
+    public void testDiffWithHeaderLineInText() throws DiffException, IOException {
+        List<String> original = new ArrayList<>();
+        List<String> revised = new ArrayList<>();
+
+        original.add("test line1");
+        original.add("test line2");
+        original.add("test line 4");
+        original.add("test line 5");
+
+        revised.add("test line1");
+        revised.add("test line2");
+        revised.add("@@ -2,6 +2,7 @@");
+        revised.add("test line 4");
+        revised.add("test line 5");
+
+        Patch<String> patch = DiffUtils.diff(original, revised);
+        StringWriter writer = new StringWriter();
+        UnifiedDiffWriter.write(
+                UnifiedDiff.from("header", "tail", UnifiedDiffFile.from("original", "revised", patch)),
+                name -> original,
+                writer, 10);
+
+        System.out.println(writer.toString());
+
+        UnifiedDiff unifiedDiff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(writer.toString().getBytes()));
+    }
+
     private void verify(List<String> origLines, List<String> revLines,
             String originalFile, String revisedFile) throws DiffException, IOException {
         Patch<String> patch = DiffUtils.diff(origLines, revLines);
@@ -129,10 +141,15 @@ public class UnifiedDiffRoundTripTest {
 
         UnifiedDiff unifiedDiff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(writer.toString().getBytes()));
 
-        Patch<String> fromUnifiedPatch = unifiedDiff.getFiles().get(0).getPatch();
         List<String> patchedLines;
         try {
-            patchedLines = fromUnifiedPatch.applyTo(origLines);
+//            if (unifiedDiff.getFiles().isEmpty()) {
+//                patchedLines = new ArrayList<>(origLines);
+//            } else {
+//                Patch<String> fromUnifiedPatch = unifiedDiff.getFiles().get(0).getPatch();
+//                patchedLines = fromUnifiedPatch.applyTo(origLines);
+//            }
+            patchedLines = unifiedDiff.spplyPatchTo(file -> originalFile.equals(file), origLines);
             assertEquals(revLines.size(), patchedLines.size());
             for (int i = 0; i < revLines.size(); i++) {
                 String l1 = revLines.get(i);
