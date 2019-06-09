@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * This is the fiest test version of a multifile diff parser. The Api is still subject
+ * This is the first test version of a multifile diff parser. The Api is still subject
  * of change.
  */
 package com.github.difflib.unifieddiff;
