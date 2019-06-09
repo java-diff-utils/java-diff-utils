@@ -15,7 +15,6 @@
  */
 package com.github.difflib.text;
 
-import java.util.Collections;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -39,14 +38,6 @@ public class StringUtilsTest {
     @Test
     public void testNormalize_String() {
         assertEquals("    test", StringUtils.normalize("\ttest"));
-    }
-
-    /**
-     * Test of normalize method, of class StringUtils.
-     */
-    @Test
-    public void testNormalize_List() {
-        assertEquals(Collections.singletonList("    test"), StringUtils.normalize(Collections.singletonList("\ttest")));
     }
 
     /**

@@ -34,12 +34,6 @@ final class StringUtils {
         return htmlEntites(str).replace("\t", "    ");
     }
 
-    public static List<String> normalize(List<String> list) {
-        return list.stream()
-                .map(StringUtils::normalize)
-                .collect(toList());
-    }
-
     public static List<String> wrapText(List<String> list, int columnWidth) {
         return list.stream()
                 .map(line -> wrapText(line, columnWidth))
