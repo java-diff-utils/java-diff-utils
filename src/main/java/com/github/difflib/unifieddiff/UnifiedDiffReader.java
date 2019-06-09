@@ -68,7 +68,7 @@ public final class UnifiedDiffReader {
         String tailTxt = "";
         while (READER.ready()) {
             String line = READER.readLine();
-            if (line.equals("--")) {
+            if (line.matches("--\\s*")) {
                 break;
             } else {
                 LOG.log(Level.INFO, "parsing line {0}", line);

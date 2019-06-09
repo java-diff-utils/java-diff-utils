@@ -53,6 +53,9 @@ This is a test ~senctence~**for diffutils**.
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
 
 ### Changelog ###
+  * Version 4.1-SNAPSHOT
+    * preview of new Unified Diff Reader / Writer. This is not yet feature complete but passes the
+      tests of the old version.
   * Version 4.0-SNAPSHOT
     * moved to organisation **java-diff-utils**
     * changed groupid to **io.github.java-diff-utils** and artifact id to **java-diff-utils**
