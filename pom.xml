@@ -6,7 +6,7 @@
     <version>4.1-SNAPSHOT</version>
     <name>java-diff-utils</name>
     <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
-    <url>https://github.com/java-diff-utils/java-diff-utils</url>
+    <url>https://github.com/TeamHubApp/kotlin-diff-utils</url>
     <inceptionYear>2009</inceptionYear>
 	
     <distributionManagement>
