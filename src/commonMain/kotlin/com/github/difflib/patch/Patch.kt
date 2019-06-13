@@ -29,7 +29,7 @@ import com.github.difflib.algorithm.Change
 </T> */
 class Patch<T> constructor(estimatedPatchSize: Int = 10) {
 
-    private val deltas: MutableList<AbstractDelta<T>>
+    internal val deltas: MutableList<AbstractDelta<T>>
 
     init {
         deltas = ArrayList(estimatedPatchSize)
