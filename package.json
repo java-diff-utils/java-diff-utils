@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/TeamHubApp/kotlin-diff-utils",
   "dependencies": {
-    "kotlin": "1.3.31"
+    "kotlin": "1.3.40"
   }
 }
 

@@ -5,7 +5,7 @@ version = "4.1-SNAPSHOT"
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.3.21"
+    kotlin("multiplatform") version "1.3.40"
 }
 
 repositories {
