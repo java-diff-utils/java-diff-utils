@@ -80,17 +80,7 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils</artifactId>
-    <version>4.0</version>
-</dependency>
-```
-
-Attention. We changed groupid and artifactid. Starting with version 4 you have to use:
-
-```xml
-<dependency>
-    <groupId>io.github.java-diff-utils</groupId>
-    <artifactId>java-diff-utils</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <version>4.0</version>
 </dependency>
 ```
 
