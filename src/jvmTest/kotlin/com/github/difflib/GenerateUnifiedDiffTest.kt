@@ -108,7 +108,7 @@ class GenerateUnifiedDiffTest {
         val unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(originalFile, revisedFile,
                 origLines, patch, 10)
 
-        println(unifiedDiff.stream().collect<String, *>(joining("\n")))
+        println(unifiedDiff.stream().collect(joining("\n")))
 
         val fromUnifiedPatch = UnifiedDiffUtils.parseUnifiedDiff(unifiedDiff)
         val patchedLines: List<String>
@@ -135,7 +135,7 @@ class GenerateUnifiedDiffTest {
             val lines = ArrayList<String>()
             var line = ""
             BufferedReader(FileReader(filename)).use { `in` ->
-                while ((line = `in`.readLine()) != null) {
+                while (`in`.readLine().also { line = it } != null) {
                     lines.add(line)
                 }
             }

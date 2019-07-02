@@ -50,6 +50,12 @@ kotlin {
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
+        val jvmTest by getting {
+            dependencies {
+                implementation("junit:junit:4.12")
+                implementation("org.assertj:assertj-core:3.11.1")
+            }
+        }
     }
 }
 

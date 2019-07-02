@@ -297,7 +297,7 @@ class DiffRowGeneratorTest {
         val generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
-                .inlineDiffBySplitter { line -> DiffRowGenerator.splitStringPreserveDelimiter(line, Pattern.compile(",")) }
+                .inlineDiffBySplitter { line -> DiffRowGenerator.splitStringPreserveDelimiter(line, Regex(",")) }
                 .oldTag { f -> "~" }
                 .newTag { f -> "**" }
                 .build()
@@ -323,10 +323,10 @@ class DiffRowGeneratorTest {
                 .build()
 
         val listOne = Files.lines(File("target/test-classes/mocks/issue15_1.txt").toPath())
-                .collect<List<String>, Any>(toList())
+                .collect(toList())
 
         val listTwo = Files.lines(File("target/test-classes/mocks/issue15_2.txt").toPath())
-                .collect<List<String>, Any>(toList())
+                .collect(toList())
 
         val rows = generator.generateDiffRows(listOne, listTwo)
 
