@@ -60,9 +60,7 @@ object DiffUtils {
 //    @Throws(DiffException::class)
     fun diff(sourceText: String, targetText: String,
              progress: DiffAlgorithmListener): Patch<String> {
-        return DiffUtils.diff(
-                sourceText.split("\n".toRegex()).dropLastWhile { it.isEmpty() },
-                targetText.split("\n".toRegex()).dropLastWhile { it.isEmpty() }, progress)
+        return DiffUtils.diff(sourceText.lines(), targetText.lines(), progress)
     }
 
     /**
@@ -132,7 +130,7 @@ object DiffUtils {
             revList.add(character.toString())
         }
         val patch = DiffUtils.diff(origList, revList)
-        for (delta in patch.deltas) {
+        for (delta in patch.getDeltas()) {
             delta.source.lines = compressLines(delta.source.lines!!, "")
             delta.target.lines = compressLines(delta.target.lines!!, "")
         }

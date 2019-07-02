@@ -29,7 +29,7 @@ class UnifiedDiff {
         private set
     internal val files = ArrayList<UnifiedDiffFile>()
 
-    internal fun addFile(file: UnifiedDiffFile) {
+    fun addFile(file: UnifiedDiffFile) {
         files.add(file)
     }
 
@@ -37,7 +37,7 @@ class UnifiedDiff {
         return files
     }
 
-    internal fun setTailTxt(tailTxt: String) {
+    fun setTailTxt(tailTxt: String) {
         this.tail = tailTxt
     }
 

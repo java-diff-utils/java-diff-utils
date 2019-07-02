@@ -91,7 +91,7 @@ class DiffRowGenerator private constructor(builder: Builder) {
     fun generateDiffRows(original: List<String>, patch: Patch<String>): List<DiffRow> {
         val diffRows = ArrayList<DiffRow>()
         var endPos = 0
-        val deltaList = patch.deltas
+        val deltaList = patch.getDeltas()
         for (delta in deltaList) {
             val orig = delta.source
             val rev = delta.target
@@ -165,7 +165,7 @@ class DiffRowGenerator private constructor(builder: Builder) {
                 StringUtils.wrapText(newline, columnWidth))
     }
 
-    internal fun normalizeLines(list: List<String>): List<String> {
+    fun normalizeLines(list: List<String>): List<String> {
         return list.map { lineNormalizer(it) }.toList()
     }
 
@@ -186,7 +186,7 @@ class DiffRowGenerator private constructor(builder: Builder) {
         origList = inlineDiffSplitter(joinedOrig)
         revList = inlineDiffSplitter(joinedRev)
 
-        val inlineDeltas = DiffUtils.diff(origList, revList).deltas
+        val inlineDeltas = DiffUtils.diff(origList, revList).getDeltas()
 
         inlineDeltas.reverse()
         for (inlineDelta in inlineDeltas) {
@@ -225,8 +225,8 @@ class DiffRowGenerator private constructor(builder: Builder) {
             revResult.append(character)
         }
 
-        val original = origResult.toString().split("\n".toRegex()).dropLastWhile { it.isEmpty() }
-        val revised = revResult.toString().split("\n".toRegex()).dropLastWhile { it.isEmpty() }
+        val original = origResult.toString().lines()
+        val revised = revResult.toString().lines()
         val diffRows = ArrayList<DiffRow>()
         for (j in 0 until max(original.size, revised.size)) {
             diffRows.add(buildDiffRowWithoutNormalizing(Tag.CHANGE,
@@ -432,11 +432,11 @@ class DiffRowGenerator private constructor(builder: Builder) {
                 val results = SPLIT_PATTERN.findAll(str)
                 var pos = 0
                 for (result in results) {
-                    if (pos < result.range.start) {
-                        list.add(str.substring(pos, result.range.start))
+                    if (pos < result.range.first) {
+                        list.add(str.substring(pos, result.range.first))
                     }
-                    list.add(result.groupValues.single())
-                    pos = result.range.endInclusive
+                    list.add(result.value)
+                    pos = result.range.last + 1
                 }
                 if (pos < str.length) {
                     list.add(str.substring(pos))

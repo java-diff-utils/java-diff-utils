@@ -137,13 +137,13 @@ object UnifiedDiffUtils {
     fun generateUnifiedDiff(originalFileName: String?,
                             revisedFileName: String?, originalLines: List<String>, patch: Patch<String>,
                             contextSize: Int): List<String> {
-        if (!patch.deltas.isEmpty()) {
+        if (patch.getDeltas().isNotEmpty()) {
             val ret = ArrayList<String>()
             ret.add("--- $originalFileName")
             ret.add("+++ $revisedFileName")
 
             val patchDeltas = ArrayList(
-                    patch.deltas)
+                    patch.getDeltas())
 
             // code outside the if block also works for single-delta issues.
             val deltas = ArrayList<AbstractDelta<String>>() // current

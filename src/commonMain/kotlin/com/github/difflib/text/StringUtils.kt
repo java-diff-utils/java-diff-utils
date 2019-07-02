@@ -16,7 +16,7 @@
 package com.github.difflib.text
 
 
-internal object StringUtils {
+object StringUtils {
 
     /**
      * Replaces all opening an closing tags with `<` or `>`.
@@ -51,17 +51,15 @@ internal object StringUtils {
             return line
         }
         val length = line.length
-        val delimiter = "<br/>".length
-        var widthIndex = columnWidth
-
-        val b = StringBuilder(line)
+        val b = StringBuilder()
 
         var count = 0
-        while (length > widthIndex) {
-            b.append(widthIndex + delimiter * count, "<br/>")
-            widthIndex += columnWidth
-            count++
+        while (count * columnWidth + columnWidth < length) {
+            b.append(line.subSequence(columnWidth * count, columnWidth * ++count))
+            b.append("<br/>")
         }
+
+        b.append(line.subSequence(columnWidth * count, length))
 
         return b.toString()
     }

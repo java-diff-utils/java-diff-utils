@@ -82,7 +82,7 @@ class Patch<T> constructor(estimatedPatchSize: Int = 10) {
      *
      * @return the deltas
      */
-    fun getDeltas(): List<AbstractDelta<T>> {
+    fun getDeltas(): MutableList<AbstractDelta<T>> {
         deltas.sortBy { d -> d.source.position }
         return deltas
     }
