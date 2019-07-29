@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 public class DiffRowGeneratorTest {
@@ -416,5 +417,60 @@ public class DiffRowGeneratorTest {
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
         assertEquals("[[CHANGE,<dt>~~T~~o~~ do~~</dt>,<dt>**D**o**ne**</dt>]]", rows.toString());
+    }
+
+    @Test
+    public void testGenerationIssue44noRawValues() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(false)
+                .rawValues(false)
+                .oldTag(f -> "~~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
+        DiffRow row = rows.get(0);
+        assertEquals("&lt;dt&gt;~~T~~o~~ do~~&lt;/dt&gt;", row.getOldLine());
+        assertEquals("&lt;dt&gt;**D**o**ne**&lt;/dt&gt;", row.getNewLine());
+        assertFalse(row.getRawOldLine().isPresent());
+        assertFalse(row.getRawNewLine().isPresent());
+    }
+
+    @Test
+    public void testGenerationIssue44rawValuesInlineDiffs() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(false)
+                .rawValues(true)
+                .oldTag(f -> "~~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
+        DiffRow row = rows.get(0);
+        assertEquals("&lt;dt&gt;~~T~~o~~ do~~&lt;/dt&gt;", row.getOldLine());
+        assertEquals("&lt;dt&gt;**D**o**ne**&lt;/dt&gt;", row.getNewLine());
+        assertTrue(row.getRawOldLine().isPresent());
+        assertTrue(row.getRawNewLine().isPresent());
+        assertEquals("<dt>To do</dt>", row.getRawOldLine().get());
+        assertEquals("<dt>Done</dt>", row.getRawNewLine().get());
+    }
+
+    @Test
+    public void testGenerationIssue44rawValuesNoInlineDiffs() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(false)
+                .reportLinesUnchanged(false)
+                .rawValues(true)
+                .oldTag(f -> "~~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
+        DiffRow row = rows.get(0);
+        assertEquals("&lt;dt&gt;To do&lt;/dt&gt;", row.getOldLine());
+        assertEquals("&lt;dt&gt;Done&lt;/dt&gt;", row.getNewLine());
+        assertTrue(row.getRawOldLine().isPresent());
+        assertTrue(row.getRawNewLine().isPresent());
+        assertEquals("<dt>To do</dt>", row.getRawOldLine().get());
+        assertEquals("<dt>Done</dt>", row.getRawNewLine().get());
     }
 }
