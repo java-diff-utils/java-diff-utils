@@ -152,7 +152,6 @@ public final class DiffRowGenerator {
     private final Function<String, String> lineNormalizer;
 
     private final boolean showInlineDiffs;
-    private final boolean rawValues;
 
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
@@ -165,7 +164,6 @@ public final class DiffRowGenerator {
         equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
-        rawValues = builder.rawValues;
 
         Objects.requireNonNull(inlineDiffSplitter);
         Objects.requireNonNull(lineNormalizer);
@@ -200,14 +198,14 @@ public final class DiffRowGenerator {
             Chunk<String> rev = delta.getTarget();
 
             for (String line : original.subList(endPos, orig.getPosition())) {
-                diffRows.add(buildDiffRow(Tag.EQUAL, line, line, line, line));
+                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
             }
 
             // Inserted DiffRow
             if (delta instanceof InsertDelta) {
                 endPos = orig.last() + 1;
                 for (String line : rev.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.INSERT, "", line, "", line));
+                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
                 }
                 continue;
             }
@@ -216,7 +214,7 @@ public final class DiffRowGenerator {
             if (delta instanceof DeleteDelta) {
                 endPos = orig.last() + 1;
                 for (String line : orig.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.DELETE, line, "", line, ""));
+                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
                 }
                 continue;
             }
@@ -227,9 +225,7 @@ public final class DiffRowGenerator {
                 for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
                     diffRows.add(buildDiffRow(Tag.CHANGE,
                             orig.getLines().size() > j ? orig.getLines().get(j) : "",
-                            rev.getLines().size() > j ? rev.getLines().get(j) : "",
-                            orig.getLines().size() > j ? delta.getSource().getLines().get(j) : "",
-                            rev.getLines().size() > j ? delta.getTarget().getLines().get(j) : ""));
+                            rev.getLines().size() > j ? rev.getLines().get(j) : ""));
                 }
             }
             endPos = orig.last() + 1;
@@ -237,16 +233,14 @@ public final class DiffRowGenerator {
 
         // Copy the final matching chunk if any.
         for (String line : original.subList(endPos, original.size())) {
-            diffRows.add(buildDiffRow(Tag.EQUAL, line, line, line, line));
+            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
         }
         return diffRows;
     }
 
-    private DiffRow buildDiffRow(Tag type, String orgline, String newline, String raworgline, String rawnewline) {
+    private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
         if (reportLinesUnchanged) {
-            return rawValues
-                    ? new DiffRow(type, orgline, newline, raworgline, rawnewline)
-                    : new DiffRow(type, orgline, newline);
+            return new DiffRow(type, orgline, newline);
         } else {
             String wrapOrg = preprocessLine(orgline);
             if (Tag.DELETE == type) {
@@ -262,22 +256,14 @@ public final class DiffRowGenerator {
                     wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
                 }
             }
-            return rawValues
-                    ? new DiffRow(type, wrapOrg, wrapNew, raworgline, rawnewline)
-                    : new DiffRow(type, wrapOrg, wrapNew);
+            return new DiffRow(type, wrapOrg, wrapNew);
         }
     }
 
-    private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline, String raworgline, String rawnewline) {
-        return rawValues
-                ? new DiffRow(type,
-                                StringUtils.wrapText(orgline, columnWidth),
-                                StringUtils.wrapText(newline, columnWidth),
-                                raworgline,
-                                rawnewline)
-                : new DiffRow(type,
-                        StringUtils.wrapText(orgline, columnWidth),
-                        StringUtils.wrapText(newline, columnWidth));
+    private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline) {
+        return new DiffRow(type,
+                StringUtils.wrapText(orgline, columnWidth),
+                StringUtils.wrapText(newline, columnWidth));
     }
 
     List<String> normalizeLines(List<String> list) {
@@ -357,9 +343,7 @@ public final class DiffRowGenerator {
             diffRows.
                     add(buildDiffRowWithoutNormalizing(Tag.CHANGE,
                             original.size() > j ? original.get(j) : "",
-                            revised.size() > j ? revised.get(j) : "",
-                            original.size() > j ? delta.getSource().getLines().get(j) : "",
-                            revised.size() > j ? delta.getTarget().getLines().get(j) : ""));
+                            revised.size() > j ? revised.get(j) : ""));
         }
         return diffRows;
     }
@@ -391,8 +375,6 @@ public final class DiffRowGenerator {
         private boolean reportLinesUnchanged = false;
         private Function<String, List<String>> inlineDiffSplitter = SPLITTER_BY_CHARACTER;
         private Function<String, String> lineNormalizer = LINE_NORMALIZER_FOR_HTML;
-        
-        private boolean rawValues = false;
 
         private Builder() {
         }
@@ -521,19 +503,6 @@ public final class DiffRowGenerator {
          */
         public Builder lineNormalizer(Function<String, String> lineNormalizer) {
             this.lineNormalizer = lineNormalizer;
-            return this;
-        }
-        
-        /**
-         * In some cases the original values of the diffed text are needed as well as the formatted values.
-         * This option can be set to allow {@link DiffRow.getRawOldLine} and {@link DiffRow.getRawNewLine}
-         * to access the original text of the old and new lines.
-         * 
-         * @param rawValues
-         * @return
-         */
-        public Builder rawValues(boolean rawValues) {
-            this.rawValues = rawValues;
             return this;
         }
     }

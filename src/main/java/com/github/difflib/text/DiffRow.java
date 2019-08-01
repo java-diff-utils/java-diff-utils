@@ -17,7 +17,6 @@ package com.github.difflib.text;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Describes the diff row in form [tag, oldLine, newLine) for showing the difference between two texts
@@ -29,19 +28,11 @@ public final class DiffRow implements Serializable {
     private Tag tag;
     private final String oldLine;
     private final String newLine;
-    private final String rawOldLine;
-    private final String rawNewLine;
 
     public DiffRow(Tag tag, String oldLine, String newLine) {
-        this(tag, oldLine, newLine, null, null);
-    }
-
-    public DiffRow(Tag tag, String oldLine, String newLine, String rawOldLine, String rawNewLine) {
         this.tag = tag;
         this.oldLine = oldLine;
         this.newLine = newLine;
-        this.rawOldLine = rawOldLine;
-        this.rawNewLine = rawNewLine;
     }
 
     public enum Tag {
@@ -74,24 +65,6 @@ public final class DiffRow implements Serializable {
      */
     public String getNewLine() {
         return newLine;
-    }
-
-    /**
-     * This accessor will only return a non -null value of {@link DiffRowGenerator.Builder.rawValues}
-     * is <ode>true</code>.
-     * @return the raw value of the old line
-     */
-    public Optional<String> getRawOldLine() {
-        return Optional.ofNullable(rawOldLine);
-    }
-
-    /**
-     * This accessor will only return a non -null value of {@link DiffRowGenerator.Builder.rawValues}
-     * is <ode>true</code>.
-     * @return the raw value of the old line
-     */
-    public Optional<String> getRawNewLine() {
-        return Optional.ofNullable(rawNewLine);
     }
 
     @Override
