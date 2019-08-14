@@ -46,7 +46,7 @@ public final class UnifiedDiffReader {
         new UnifiedDiffLine(true, "^index\\s[\\da-zA-Z]+\\.\\.[\\da-zA-Z]+(\\s(\\d+))?$", this::processIndex),
         new UnifiedDiffLine(true, "^---\\s", this::processFromFile),
         new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile),
-        new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk),
+        new UnifiedDiffLine(true, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk),
         new UnifiedDiffLine("^\\s+", this::processNormalLine),
         new UnifiedDiffLine("^-", this::processDelLine),
         new UnifiedDiffLine("^+", this::processAddLine)

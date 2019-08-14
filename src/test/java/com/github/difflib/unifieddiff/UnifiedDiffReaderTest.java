@@ -111,4 +111,19 @@ public class UnifiedDiffReaderTest {
         assertTrue(m.find());
     }
 
+    @Test
+    public void testParseIssue46() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue46.diff"));
+--- comment
+        System.out.println(diff);
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(3);
+
+        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
+    }
 }
