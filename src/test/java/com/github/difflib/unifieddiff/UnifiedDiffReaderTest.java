@@ -115,7 +115,7 @@ public class UnifiedDiffReaderTest {
     public void testParseIssue46() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue46.diff"));
--- comment
+
         System.out.println(diff);
 
         assertThat(diff.getFiles().size()).isEqualTo(1);
