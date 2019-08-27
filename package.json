@@ -1,5 +1,5 @@
 {
-  "name": "kotlin-diff-utils",
+  "name": "@teamhubapp/kotlin-diff-utils",
   "version": "4.1.1",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
   "main": "index.js",
