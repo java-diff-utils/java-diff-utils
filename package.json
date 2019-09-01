@@ -1,8 +1,8 @@
 {
   "name": "@teamhubapp/kotlin-diff-utils",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
-  "main": "index.js",
+  "main": "kotlin-diff-utils.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
