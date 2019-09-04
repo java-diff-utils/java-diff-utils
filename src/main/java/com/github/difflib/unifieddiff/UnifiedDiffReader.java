@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,13 +81,9 @@ public final class UnifiedDiffReader {
 
         while (line != null) {
             if (!CHUNK.validLine(line)) {
-                if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE) == false) {
-                    throw new UnifiedDiffParserException("parsing error at line " + line);
-                }
+                processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE);
             } else {
-                if (processLine(line, CHUNK) == false) {
-                    throw new UnifiedDiffParserException("parsing error at line " + line);
-                }
+                processLine(line, CHUNK);
             }
             line = READER.readLine();
         }
@@ -117,15 +114,15 @@ public final class UnifiedDiffReader {
         return parser.parse();
     }
 
-    private boolean processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
+    private void processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
         for (UnifiedDiffLine rule : rules) {
             if (rule.processLine(line)) {
                 LOG.info("  >>> processed rule " + rule.toString());
-                return true;
+                return;
             }
         }
         LOG.info("  >>> no rule matched " + line);
-        return false;
+        throw new UnifiedDiffParserException("parsing error at line " + line);
     }
 
     private void initFileIfNecessary() {
@@ -151,7 +148,9 @@ public final class UnifiedDiffReader {
     private List<String> originalTxt = new ArrayList<>();
     private List<String> revisedTxt = new ArrayList<>();
     private int old_ln;
+    private int old_size;
     private int new_ln;
+    private int new_size;
 
     private void finalizeChunk() {
         if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
@@ -183,14 +182,20 @@ public final class UnifiedDiffReader {
 
     private void processChunk(MatchResult match, String chunkStart) {
         finalizeChunk();
-        old_ln = match.group(1) == null ? 1 : Integer.parseInt(match.group(1));
-        new_ln = match.group(3) == null ? 1 : Integer.parseInt(match.group(3));
+        old_ln = toInteger(match, 1, 1);
+        old_size = toInteger(match, 2, 0);
+        new_ln = toInteger(match, 3, 1);
+        new_size = toInteger(match, 4, 0);
         if (old_ln == 0) {
             old_ln = 1;
         }
         if (new_ln == 0) {
             new_ln = 1;
         }
+    }
+
+    private static Integer toInteger(MatchResult match, int group, int defValue) throws NumberFormatException {
+        return Integer.valueOf(Objects.toString( match.group(group) , "" + defValue));
     }
 
     private void processIndex(MatchResult match, String line) {
