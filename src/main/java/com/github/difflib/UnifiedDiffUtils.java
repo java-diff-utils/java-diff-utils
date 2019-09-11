@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public final class UnifiedDiffUtils {
 
     private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
-            .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
+            .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@(\\s.*)?$");
 
     /**
      * Parse the given text in unified format and creates the list of deltas for it.
