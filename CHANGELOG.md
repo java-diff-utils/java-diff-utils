@@ -12,6 +12,7 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 * Exchange `0 += 1` for `0 = 1` in UnifiedDiffUtils
 * preview of new Unified Diff Reader / Writer. This is not yet feature complete but passes the tests of the old version.
   * feel free to issue some change requests for the api.
+* introduces lineNormalizer extension point to e.g. change html code encoding. (issue #41)
 
 ## [4.0] – 2019-01-09
 
