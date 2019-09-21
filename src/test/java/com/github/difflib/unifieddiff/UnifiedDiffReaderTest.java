@@ -121,9 +121,9 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getFiles().size()).isEqualTo(1);
 
         UnifiedDiffFile file1 = diff.getFiles().get(0);
-        assertThat(file1.getFromFile()).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt");
-        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(3);
+        assertThat(file1.getFromFile()).isEqualTo(".vhd");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
 
-        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
+        assertThat(diff.getTail()).isNull();
     }
 }

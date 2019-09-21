@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 public final class UnifiedDiffReader {
 
     static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern.compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@");
+    static final Pattern TIMESTAMP_REGEXP = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}\\.\\d{3,})");
 
     private final InternalUnifiedDiffReader READER;
     private final UnifiedDiff data = new UnifiedDiff();
@@ -49,9 +50,9 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine TO_FILE = new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile);
 
     private final UnifiedDiffLine CHUNK = new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk);
-    private final UnifiedDiffLine LINE_NORMAL = new UnifiedDiffLine("^\\s+", this::processNormalLine);
+    private final UnifiedDiffLine LINE_NORMAL = new UnifiedDiffLine("^\\s", this::processNormalLine);
     private final UnifiedDiffLine LINE_DEL = new UnifiedDiffLine("^-", this::processDelLine);
-    private final UnifiedDiffLine LINE_ADD = new UnifiedDiffLine("^+", this::processAddLine);
+    private final UnifiedDiffLine LINE_ADD = new UnifiedDiffLine("^\\+", this::processAddLine);
 
     private UnifiedDiffFile actualFile;
 
@@ -81,20 +82,37 @@ public final class UnifiedDiffReader {
 
         while (line != null) {
             if (!CHUNK.validLine(line)) {
-                processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE);
-            } else {
-                processLine(line, CHUNK);
+                initFileIfNecessary();
+                while (!CHUNK.validLine(line)) {
+                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE) == false) {
+                        throw new UnifiedDiffParserException("expected file start line not found");
+                    }
+                    line = READER.readLine();
+                }
+            }
+            processLine(line, CHUNK);
+            while ((line = READER.readLine()) != null) {
+                if (processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL) == false) {
+                    throw new UnifiedDiffParserException("expected data line not found");
+                }
+                if (originalTxt.size() == old_size && revisedTxt.size() == new_size) {
+                    finalizeChunk();
+                    break;
+                }
             }
             line = READER.readLine();
+            if (line == null || line.startsWith("--")) {
+                break;
+            }
         }
 
-        finalizeChunk();
-
-        String tailTxt = "";
-        while (READER.ready()) {
-            tailTxt += READER.readLine() + "\n";
+        if (READER.ready()) {
+            String tailTxt = "";
+            while (READER.ready()) {
+                tailTxt += READER.readLine() + "\n";
+            }
+            data.setTailTxt(tailTxt);
         }
-        data.setTailTxt(tailTxt);
 
         return data;
     }
@@ -114,22 +132,23 @@ public final class UnifiedDiffReader {
         return parser.parse();
     }
 
-    private void processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
+    private boolean processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
         for (UnifiedDiffLine rule : rules) {
             if (rule.processLine(line)) {
                 LOG.info("  >>> processed rule " + rule.toString());
-                return;
+                return true;
             }
         }
         LOG.info("  >>> no rule matched " + line);
-        throw new UnifiedDiffParserException("parsing error at line " + line);
+        return false;
+        //throw new UnifiedDiffParserException("parsing error at line " + line);
     }
 
     private void initFileIfNecessary() {
         if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
-            finalizeChunk();
-            actualFile = null;
+            throw new IllegalStateException();
         }
+        actualFile = null;
         if (actualFile == null) {
             actualFile = new UnifiedDiffFile();
             data.addFile(actualFile);
@@ -137,7 +156,7 @@ public final class UnifiedDiffReader {
     }
 
     private void processDiff(MatchResult match, String line) {
-        initFileIfNecessary();
+        //initFileIfNecessary();
         LOG.log(Level.INFO, "start {0}", line);
         String[] fromTo = parseFileNames(READER.lastLine());
         actualFile.setFromFile(fromTo[0]);
@@ -181,7 +200,7 @@ public final class UnifiedDiffReader {
     }
 
     private void processChunk(MatchResult match, String chunkStart) {
-        finalizeChunk();
+        // finalizeChunk();
         old_ln = toInteger(match, 1, 1);
         old_size = toInteger(match, 2, 0);
         new_ln = toInteger(match, 3, 1);
@@ -195,27 +214,43 @@ public final class UnifiedDiffReader {
     }
 
     private static Integer toInteger(MatchResult match, int group, int defValue) throws NumberFormatException {
-        return Integer.valueOf(Objects.toString( match.group(group) , "" + defValue));
+        return Integer.valueOf(Objects.toString(match.group(group), "" + defValue));
     }
 
     private void processIndex(MatchResult match, String line) {
-        initFileIfNecessary();
+        //initFileIfNecessary();
         LOG.log(Level.INFO, "index {0}", line);
         actualFile.setIndex(line.substring(6));
     }
 
     private void processFromFile(MatchResult match, String line) {
-        initFileIfNecessary();
+        //initFileIfNecessary();
         actualFile.setFromFile(extractFileName(line));
+        actualFile.setFromTimestamp(extractTimestamp(line));
     }
 
     private void processToFile(MatchResult match, String line) {
-        initFileIfNecessary();
+        //initFileIfNecessary();
         actualFile.setToFile(extractFileName(line));
+        actualFile.setToTimestamp(extractTimestamp(line));
     }
 
-    private String extractFileName(String line) {
-        return line.substring(4).replaceFirst("^(a|b)\\/", "");
+    private String extractFileName(String _line) {
+        Matcher matcher = TIMESTAMP_REGEXP.matcher(_line);
+        String line = _line;
+        if (matcher.find()) {
+            line = line.substring(1, matcher.start());
+        }
+        return line.substring(4).replaceFirst("^(a|b)\\/", "")
+                .replace(TIMESTAMP_REGEXP.toString(), "").trim();
+    }
+
+    private String extractTimestamp(String line) {
+        Matcher matcher = TIMESTAMP_REGEXP.matcher(line);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
     }
 
     final class UnifiedDiffLine {

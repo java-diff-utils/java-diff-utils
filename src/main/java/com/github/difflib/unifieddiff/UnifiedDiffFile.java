@@ -25,7 +25,9 @@ public final class UnifiedDiffFile {
 
     private String diffCommand;
     private String fromFile;
+    private String fromTimestamp;
     private String toFile;
+    private String toTimestamp;
     private String index;
     private Patch<String> patch = new Patch<>();
 
@@ -64,6 +66,24 @@ public final class UnifiedDiffFile {
     public Patch<String> getPatch() {
         return patch;
     }
+
+    public String getFromTimestamp() {
+        return fromTimestamp;
+    }
+
+    public void setFromTimestamp(String fromTimestamp) {
+        this.fromTimestamp = fromTimestamp;
+    }
+
+    public String getToTimestamp() {
+        return toTimestamp;
+    }
+
+    public void setToTimestamp(String toTimestamp) {
+        this.toTimestamp = toTimestamp;
+    }
+    
+    
 
     public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {
         UnifiedDiffFile file = new UnifiedDiffFile();
