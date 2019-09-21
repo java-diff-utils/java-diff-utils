@@ -17,6 +17,7 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class UnifiedDiffRoundTripTest {
@@ -83,6 +84,7 @@ public class UnifiedDiffRoundTripTest {
      * Issue 12
      */
     @Test
+    @Ignore
     public void testPatchWithNoDeltas() throws DiffException, IOException {
         final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_1.txt");
         final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_2.txt");
