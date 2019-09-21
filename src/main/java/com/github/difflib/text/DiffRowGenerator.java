@@ -267,9 +267,11 @@ public final class DiffRowGenerator {
     }
 
     List<String> normalizeLines(List<String> list) {
-        return list.stream()
-                .map(lineNormalizer::apply)
-                .collect(toList());
+        return reportLinesUnchanged
+                ? list
+                : list.stream()
+                        .map(lineNormalizer::apply)
+                        .collect(toList());
     }
 
     /**

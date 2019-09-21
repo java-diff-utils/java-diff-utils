@@ -405,4 +405,16 @@ public class DiffRowGeneratorTest {
         rows = generator.generateDiffRows(Arrays.asList("\t<"), Arrays.asList("<"));
         assertEquals("[[CHANGE,    <,<]]", rows.toString());
     }
+
+    @Test
+    public void testGenerationIssue44reportLinesUnchangedProblem() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(true)
+                .oldTag(f -> "~~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
+        assertEquals("[[CHANGE,<dt>~~T~~o~~ do~~</dt>,<dt>**D**o**ne**</dt>]]", rows.toString());
+    }
 }
