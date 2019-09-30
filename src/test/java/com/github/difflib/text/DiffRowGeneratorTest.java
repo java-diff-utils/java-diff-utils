@@ -225,8 +225,8 @@ public class DiffRowGeneratorTest {
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList("This is a test senctence."),
@@ -243,8 +243,8 @@ public class DiffRowGeneratorTest {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList("This is a test senctence.", "This is the second line.", "And here is the finish."),
@@ -285,8 +285,8 @@ public class DiffRowGeneratorTest {
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffBySplitter(line -> DiffRowGenerator.splitStringPreserveDelimiter(line, Pattern.compile(",")))
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList("J. G. Feldstein, Chair"),
@@ -304,8 +304,8 @@ public class DiffRowGeneratorTest {
                 .showInlineDiffs(true) //show the ~ ~ and ** ** symbols on each difference
                 .inlineDiffByWord(true) //show the ~ ~ and ** ** around each different word instead of each letter
                 //.reportLinesUnchanged(true) //experiment
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
 
         List<String> listOne = Files.lines(new File("target/test-classes/mocks/issue15_1.txt").toPath())
@@ -332,8 +332,8 @@ public class DiffRowGeneratorTest {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         String aa = "This is a test senctence.";
         String bb = "This is a test for diffutils.\nThis is the second line.";
@@ -356,8 +356,8 @@ public class DiffRowGeneratorTest {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         String aa = "This is a test for diffutils.\nThis is the second line.";
         String bb = "This is a test senctence.";
@@ -374,8 +374,8 @@ public class DiffRowGeneratorTest {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         String aa = "This is a test senctence.";
         String bb = "This is a test for diffutils.\nThis is the second line.\nAnd one more.";
@@ -411,8 +411,8 @@ public class DiffRowGeneratorTest {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .reportLinesUnchanged(true)
-                .oldTag(f -> "~~")
-                .newTag(f -> "**")
+                .oldTag((tag, isStart) -> "~~")
+                .newTag((tag, isStart) -> "**")
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
         assertEquals("[[CHANGE,<dt>~~T~~o~~ do~~</dt>,<dt>**D**o**ne**</dt>]]", rows.toString());
