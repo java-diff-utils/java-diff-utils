@@ -85,7 +85,7 @@ public class LRHistogramDiffTest {
         List<String> created = patch.applyTo(original);
         assertArrayEquals(revised.toArray(), created.toArray());
         
-        assertEquals(50, logdata.size());
+        assertEquals(246579, logdata.size());
     }
 
 }
