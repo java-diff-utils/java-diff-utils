@@ -88,5 +88,5 @@ or using gradle:
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
-compile group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.0'
+implementation "io.github.java-diff-utils:java-diff-utils:4.0"
 ```

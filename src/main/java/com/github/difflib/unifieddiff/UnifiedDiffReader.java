@@ -78,7 +78,9 @@ public final class UnifiedDiffReader {
                 headerTxt += line + "\n";
             }
         }
-        data.setHeader(headerTxt);
+        if (!"".equals(headerTxt)) {
+            data.setHeader(headerTxt);
+        }
 
         while (line != null) {
             if (!CHUNK.validLine(line)) {
