@@ -1,10 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.java-diff-utils</groupId>
-    <artifactId>java-diff-utils</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>java-diff-utils-parent</artifactId>
     <version>4.1-SNAPSHOT</version>
-    <name>java-diff-utils</name>
+    <packaging>pom</packaging>
+    <modules>
+        <module>java-diff-utils</module>
+        <module>java-diff-utils-jgit</module>
+    </modules>
     <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
     <url>https://github.com/java-diff-utils/java-diff-utils</url>
     <inceptionYear>2009</inceptionYear>
@@ -26,7 +30,6 @@
         <url>https://github.com/java-diff-utils/java-diff-utils.git</url>
         <tag>HEAD</tag>
     </scm>
-	
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/java-diff-utils/java-diff-utils/issues</url>
@@ -41,16 +44,6 @@
             <name>Tobias Warneke</name>
             <email>t.warneke@gmx.net</email>
         </developer>
-        <!-- 
-            <developer>
-                <name>Dmitry Naumenko</name>
-                <email>dm.naumenko@gmail.com</email>
-            </developer>
-            <developer>
-                <name>Juanco Anez</name>
-                <email>juanco@suigeneris.org</email>
-            </developer>
-        -->
     </developers>
 	
     <licenses>
@@ -61,87 +54,21 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.4.1.201607150455-r</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.googlecode.javaewah</groupId>
-                    <artifactId>JavaEWAH</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jcraft</groupId>
-                    <artifactId>jsch</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
-			
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-			
-            <!-- Make this JAR OSGi ready -->
-            <!-- We want to keep packaging type as jar. Therefore we need to customize the MANIFEST.MF. 
-            See http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
-            -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        <manifestEntries>
-                            <!-- identical to OSGI name -->
-                            <Automatic-Module-Name>com.github.wumpz.diffutils</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
                 </configuration>
             </plugin>
             <plugin>
@@ -176,26 +103,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/LR*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <localCheckout>true</localCheckout>
-                    <pushChanges>false</pushChanges>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
                 <executions>
@@ -215,12 +122,6 @@
                         <module name="Checker">
                             <module name="SuppressWarningsFilter" />
                             <module name="FileTabCharacter" />
-                            <!-- git checkout may change linefeeds on the fly
-                            <module name="RegexpMultiline">
-                                <property name="format" value="(?s:(\r\n|\r).*)" />
-                                <property name="message" value="CRLF and CR line endings are prohibited, but this file uses them." />
-                            </module>
-                            -->
                             <module name="TreeWalker">
                                 <module name="AvoidNestedBlocks" />
                                 <module name="ConstantName" />
@@ -252,6 +153,16 @@
                         <version>8.18</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/LR*.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -313,4 +224,3 @@
         </profile>
     </profiles>
 </project>
-

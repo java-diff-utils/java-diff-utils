@@ -15,14 +15,18 @@
  */
 package com.github.difflib.algorithm.jgit;
 
-import static com.github.difflib.DiffUtilsTest.readStringListFromInputStream;
-import com.github.difflib.TestConstants;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import java.util.zip.ZipFile;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -58,7 +62,7 @@ public class LRHistogramDiffTest {
 
     @Test
     public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, PatchFailedException {
-        ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
+        ZipFile zip = new ZipFile("target/test-classes/mocks/large_dataset1.zip");
         List<String> original = readStringListFromInputStream(zip.getInputStream(zip.getEntry("ta")));
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
 
@@ -88,4 +92,11 @@ public class LRHistogramDiffTest {
         assertEquals(246579, logdata.size());
     }
 
+    public static List<String> readStringListFromInputStream(InputStream is) throws IOException {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))) {
+
+            return reader.lines().collect(toList());
+        }
+    }
 }
