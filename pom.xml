@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils-parent</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.2</version>
     <name>java-diff-utils</name>
     <packaging>pom</packaging>
     <modules>
@@ -29,7 +29,7 @@
         <connection>scm:git:https://github.com/java-diff-utils/java-diff-utils.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:java-diff-utils/java-diff-utils.git</developerConnection>
         <url>https://github.com/java-diff-utils/java-diff-utils.git</url>
-        <tag>HEAD</tag>
+        <tag>java-diff-utils-parent-4.2</tag>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>
