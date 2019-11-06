@@ -3,6 +3,7 @@
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils</artifactId>
     <packaging>jar</packaging>
+    <name>java-diff-utils</name>
     <parent>
         <groupId>io.github.java-diff-utils</groupId>
         <artifactId>java-diff-utils-parent</artifactId>

@@ -7,6 +7,7 @@
         <version>4.4-SNAPSHOT</version>
     </parent>
     <artifactId>java-diff-utils-jgit</artifactId>
+    <name>java-diff-utils-jgit</name>
     <packaging>jar</packaging>
     <description>This is an extension of java-diff-utils using jgit to use its implementation of
 some difference algorithms.</description>

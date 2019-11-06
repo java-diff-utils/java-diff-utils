@@ -4,7 +4,7 @@
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils-parent</artifactId>
     <version>4.4-SNAPSHOT</version>
-    <name>java-diff-utils</name>
+    <name>java-diff-utils-parent</name>
     <packaging>pom</packaging>
     <modules>
         <module>java-diff-utils</module>
