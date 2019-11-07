@@ -59,25 +59,7 @@ public final class UnifiedDiffUtils {
             Matcher m = UNIFIED_DIFF_CHUNK_REGEXP.matcher(line);
             if (m.find()) {
                 // Process the lines in the previous chunk
-                if (!rawChunk.isEmpty()) {
-                    List<String> oldChunkLines = new ArrayList<>();
-                    List<String> newChunkLines = new ArrayList<>();
-
-                    for (String[] raw_line : rawChunk) {
-                        tag = raw_line[0];
-                        rest = raw_line[1];
-                        if (" ".equals(tag) || "-".equals(tag)) {
-                            oldChunkLines.add(rest);
-                        }
-                        if (" ".equals(tag) || "+".equals(tag)) {
-                            newChunkLines.add(rest);
-                        }
-                    }
-                    patch.addDelta(new ChangeDelta<>(new Chunk<>(
-                            old_ln - 1, oldChunkLines), new Chunk<>(
-                            new_ln - 1, newChunkLines)));
-                    rawChunk.clear();
-                }
+                processTheLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
                 // Parse the @@ header
                 old_ln = m.group(1) == null ? 1 : Integer.parseInt(m.group(1));
                 new_ln = m.group(3) == null ? 1 : Integer.parseInt(m.group(3));
@@ -102,6 +84,14 @@ public final class UnifiedDiffUtils {
         }
 
         // Process the lines in the last chunk
+        processTheLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
+
+        return patch;
+    }
+
+    private static void processTheLinesInPrevChunk(List<String[]> rawChunk, Patch<String> patch, int old_ln, int new_ln) {
+        String tag;
+        String rest;
         if (!rawChunk.isEmpty()) {
             List<String> oldChunkLines = new ArrayList<>();
             List<String> newChunkLines = new ArrayList<>();
@@ -116,14 +106,11 @@ public final class UnifiedDiffUtils {
                     newChunkLines.add(rest);
                 }
             }
-
             patch.addDelta(new ChangeDelta<>(new Chunk<>(
-                    old_ln - 1, oldChunkLines), new Chunk<>(new_ln - 1,
-                    newChunkLines)));
+                    old_ln - 1, oldChunkLines), new Chunk<>(
+                    new_ln - 1, newChunkLines)));
             rawChunk.clear();
         }
-
-        return patch;
     }
 
     /**
