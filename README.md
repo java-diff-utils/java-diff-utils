@@ -80,7 +80,7 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils</artifactId>
-    <version>4.0</version>
+    <version>4.4</version>
 </dependency>
 ```
 
@@ -88,5 +88,5 @@ or using gradle:
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
-implementation "io.github.java-diff-utils:java-diff-utils:4.0"
+implementation "io.github.java-diff-utils:java-diff-utils:4.4"
 ```
