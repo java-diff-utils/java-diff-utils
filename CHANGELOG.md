@@ -7,8 +7,12 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+## [4.4] – 2019-11-06
+
 ### Changed
 
+* java-diff-utils is now a multi module project. The main project java-diff-utils now comes without any dependencies.
+* started reimplementation of unified diff tools
 * Exchange `0 += 1` for `0 = 1` in UnifiedDiffUtils
 * preview of new Unified Diff Reader / Writer. This is not yet feature complete but passes the tests of the old version.
   * feel free to issue some change requests for the api.
