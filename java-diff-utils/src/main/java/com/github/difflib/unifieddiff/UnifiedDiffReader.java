@@ -97,7 +97,9 @@ public final class UnifiedDiffReader {
                 if (processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL) == false) {
                     throw new UnifiedDiffParserException("expected data line not found");
                 }
-                if (originalTxt.size() == old_size && revisedTxt.size() == new_size) {
+                if ((originalTxt.size() == old_size && revisedTxt.size() == new_size) 
+                        || (old_size==0 && new_size==0 && originalTxt.size() == this.old_ln 
+                            && revisedTxt.size() == this.new_ln)) {
                     finalizeChunk();
                     break;
                 }
@@ -241,9 +243,9 @@ public final class UnifiedDiffReader {
         Matcher matcher = TIMESTAMP_REGEXP.matcher(_line);
         String line = _line;
         if (matcher.find()) {
-            line = line.substring(1, matcher.start());
+            line = line.substring(0, matcher.start());
         }
-        return line.substring(4).replaceFirst("^(a|b)\\/", "")
+        return line.substring(4).replaceFirst("^(a|b|old|new)(\\/)?", "")
                 .replace(TIMESTAMP_REGEXP.toString(), "").trim();
     }
 

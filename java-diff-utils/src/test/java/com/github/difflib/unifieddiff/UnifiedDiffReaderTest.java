@@ -141,4 +141,20 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getTail()).isNull();
         assertThat(diff.getHeader()).isNull();
     }
+    
+    @Test
+    public void testParseIssue51() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue51.diff"));
+
+        System.out.println(diff);
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("f1");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+
+        assertThat(diff.getTail()).isNull();
+    }
 }
