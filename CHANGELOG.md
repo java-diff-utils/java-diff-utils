@@ -7,8 +7,12 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+## [4.4] – 2019-11-06
+
 ### Changed
 
+* java-diff-utils is now a multi module project. The main project java-diff-utils now comes without any dependencies.
+* started reimplementation of unified diff tools
 * Exchange `0 += 1` for `0 = 1` in UnifiedDiffUtils
 * preview of new Unified Diff Reader / Writer. This is not yet feature complete but passes the tests of the old version.
   * feel free to issue some change requests for the api.
@@ -78,8 +82,10 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 * Ant build script
 * Generate output in unified diff format (thanks for Bill James)
 
-[Unreleased]: https://github.com/java-diff-utils/java-diff-utils/compare/java-diff-utils-4.0...HEAD
-[4.0]: https://github.com/java-diff-utils/java-diff-utils/compare/diff-utils-3.0...java-diff-utils-4.0
-[3.0]: https://github.com/java-diff-utils/java-diff-utils/compare/diff-utils-2.2...diff-utils-3.0
-[2.2]: https://github.com/java-diff-utils/java-diff-utils/compare/diff-utils-2.0...diff-utils-2.2
+[Unreleased]: https://github.com/java-diff-utils/java-diff-utils/compare/java-diff-utils-parent-4.5...HEAD
+[4.5]: https://github.com/java-diff-utils/java-diff-utils/compare/java-diff-utils-parent-4.4...java-diff-utils-parent-4.5
+[4.4]: https://github.com/java-diff-utils/java-diff-utils/compare/java-diff-utils-4.0...java-diff-utils-parent-4.4
+[4.0]: https://github.com/java-diff-utils/java-diff-utils/compare/diffutils-3.0...java-diff-utils-4.0
+[3.0]: https://github.com/java-diff-utils/java-diff-utils/compare/diffutils-2.2...diffutils-3.0
+[2.2]: https://github.com/java-diff-utils/java-diff-utils/compare/diffutils-2.0...diffutils-2.2
 
