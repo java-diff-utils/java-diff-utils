@@ -59,7 +59,7 @@ public final class UnifiedDiffUtils {
             Matcher m = UNIFIED_DIFF_CHUNK_REGEXP.matcher(line);
             if (m.find()) {
                 // Process the lines in the previous chunk
-                processTheLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
+                processLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
                 // Parse the @@ header
                 old_ln = m.group(1) == null ? 1 : Integer.parseInt(m.group(1));
                 new_ln = m.group(3) == null ? 1 : Integer.parseInt(m.group(3));
@@ -84,12 +84,12 @@ public final class UnifiedDiffUtils {
         }
 
         // Process the lines in the last chunk
-        processTheLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
+        processLinesInPrevChunk(rawChunk, patch, old_ln, new_ln);
 
         return patch;
     }
 
-    private static void processTheLinesInPrevChunk(List<String[]> rawChunk, Patch<String> patch, int old_ln, int new_ln) {
+    private static void processLinesInPrevChunk(List<String[]> rawChunk, Patch<String> patch, int old_ln, int new_ln) {
         String tag;
         String rest;
         if (!rawChunk.isEmpty()) {
