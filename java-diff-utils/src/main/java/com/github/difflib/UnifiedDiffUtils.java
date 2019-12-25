@@ -127,8 +127,8 @@ public final class UnifiedDiffUtils {
     }
 
     /**
-     * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format text representing
-     * the Patch.
+     * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format
+     * text representing the Patch.
      *
      * @param originalFileName - Filename of the original (unrevised file)
      * @param revisedFileName - Filename of the revised file
@@ -179,7 +179,7 @@ public final class UnifiedDiffUtils {
                         // then create a new set and add the current Delta to
                         // it.
                         List<String> curBlock = processDeltas(originalLines,
-                                deltas, contextSize);
+                                deltas, contextSize, false);
                         ret.addAll(curBlock);
                         deltas.clear();
                         deltas.add(nextDelta);
@@ -190,7 +190,7 @@ public final class UnifiedDiffUtils {
             }
             // don't forget to process the last set of Deltas
             List<String> curBlock = processDeltas(originalLines, deltas,
-                    contextSize);
+                    contextSize, patchDeltas.size() == 1 && originalFileName == null);
             ret.addAll(curBlock);
             return ret;
         }
@@ -198,7 +198,8 @@ public final class UnifiedDiffUtils {
     }
 
     /**
-     * processDeltas takes a list of Deltas and outputs them together in a single block of Unified-Diff-format text.
+     * processDeltas takes a list of Deltas and outputs them together in a single block of
+     * Unified-Diff-format text.
      *
      * @param origLines - the lines of the original file
      * @param deltas - the Deltas to be output as a single block
@@ -207,18 +208,22 @@ public final class UnifiedDiffUtils {
      * @author Bill James (tankerbay@gmail.com)
      */
     private static List<String> processDeltas(List<String> origLines,
-            List<AbstractDelta<String>> deltas, int contextSize) {
+            List<AbstractDelta<String>> deltas, int contextSize, boolean newFile) {
         List<String> buffer = new ArrayList<>();
         int origTotal = 0; // counter for total lines output from Original
         int revTotal = 0; // counter for total lines output from Original
         int line;
 
         AbstractDelta<String> curDelta = deltas.get(0);
-
-        // NOTE: +1 to overcome the 0-offset Position
-        int origStart = curDelta.getSource().getPosition() + 1 - contextSize;
-        if (origStart < 1) {
-            origStart = 1;
+        int origStart;
+        if (newFile) {
+            origStart = 0;
+        } else {
+            // NOTE: +1 to overcome the 0-offset Position
+            origStart = curDelta.getSource().getPosition() + 1 - contextSize;
+            if (origStart < 1) {
+                origStart = 1;
+            }
         }
 
         int revStart = curDelta.getTarget().getPosition() + 1 - contextSize;

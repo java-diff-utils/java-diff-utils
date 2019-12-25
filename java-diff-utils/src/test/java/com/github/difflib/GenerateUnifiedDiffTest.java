@@ -104,6 +104,26 @@ public class GenerateUnifiedDiffTest {
                 original, patch, 10);
         UnifiedDiffUtils.parseUnifiedDiff(udiff);
     }
+    
+    /**
+     * Issue 47
+     */
+    @Test
+    public void testNewFileCreation() throws DiffException {
+        List<String> original = new ArrayList<>();
+        List<String> revised = new ArrayList<>();
+
+        revised.add("line1");
+        revised.add("line2");
+
+        Patch<String> patch = DiffUtils.diff(original, revised);
+        List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff(null, "revised",
+                original, patch, 10);
+        
+        assertEquals("@@ -0,0 +1,2 @@", udiff.get(2));
+        
+        UnifiedDiffUtils.parseUnifiedDiff(udiff);
+    }
 
     private void verify(List<String> origLines, List<String> revLines,
             String originalFile, String revisedFile) throws DiffException {
