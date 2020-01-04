@@ -44,7 +44,9 @@ public class UnifiedDiffWriter {
     }
 
     public static void write(UnifiedDiff diff, Function<String, List<String>> originalLinesProvider, Consumer<String> writer, int contextSize) throws IOException {
-        writer.accept(diff.getHeader());
+        if (diff.getHeader() != null) {
+            writer.accept(diff.getHeader());
+        }
 
         for (UnifiedDiffFile file : diff.getFiles()) {
             List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
@@ -54,9 +56,9 @@ public class UnifiedDiffWriter {
                 if (file.getIndex() != null) {
                     writer.accept("index " + file.getIndex());
                 }
-                if (file.getFromFile() != null) {
-                    writer.accept("--- " + file.getFromFile());
-                }
+
+                writer.accept("--- " + file.getFromFile());
+
                 if (file.getToFile() != null) {
                     writer.accept("+++ " + file.getToFile());
                 }
@@ -83,7 +85,7 @@ public class UnifiedDiffWriter {
                             // if it isn't, output the current set,
                             // then create a new set and add the current Delta to
                             // it.
-                            processDeltas(writer, originalLines, deltas, contextSize);
+                            processDeltas(writer, originalLines, deltas, contextSize, false);
                             deltas.clear();
                             deltas.add(nextDelta);
                         }
@@ -92,7 +94,8 @@ public class UnifiedDiffWriter {
 
                 }
                 // don't forget to process the last set of Deltas
-                processDeltas(writer, originalLines, deltas, contextSize);
+                processDeltas(writer, originalLines, deltas, contextSize, 
+                        patchDeltas.size() == 1 && file.getFromFile() == null);
             }
 
         }
@@ -104,7 +107,7 @@ public class UnifiedDiffWriter {
 
     private static void processDeltas(Consumer<String> writer,
             List<String> origLines, List<AbstractDelta<String>> deltas,
-            int contextSize) {
+            int contextSize, boolean newFile) {
         List<String> buffer = new ArrayList<>();
         int origTotal = 0; // counter for total lines output from Original
         int revTotal = 0; // counter for total lines output from Original
@@ -112,10 +115,15 @@ public class UnifiedDiffWriter {
 
         AbstractDelta<String> curDelta = deltas.get(0);
 
-        // NOTE: +1 to overcome the 0-offset Position
-        int origStart = curDelta.getSource().getPosition() + 1 - contextSize;
-        if (origStart < 1) {
-            origStart = 1;
+        int origStart;
+        if (newFile) {
+            origStart = 0;
+        } else {
+            // NOTE: +1 to overcome the 0-offset Position
+            origStart = curDelta.getSource().getPosition() + 1 - contextSize;
+            if (origStart < 1) {
+                origStart = 1;
+            }
         }
 
         int revStart = curDelta.getTarget().getPosition() + 1 - contextSize;
