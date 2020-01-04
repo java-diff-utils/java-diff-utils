@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,13 +42,14 @@ public class UnifiedDiffWriterTest {
     }
 
     @Test
+    @Ignore
     public void testWrite() throws URISyntaxException, IOException {
         String str = readFile(UnifiedDiffReaderTest.class.getResource("jsqlparser_patch_1.diff").toURI(), Charset.defaultCharset());
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
 
         StringWriter writer = new StringWriter();
-//        UnifiedDiffWriter.write(diff, writer);
-//        System.out.println(writer.toString());
+        UnifiedDiffWriter.write(diff, f -> null, writer, 5);
+        System.out.println(writer.toString());
     }
     
     /**
