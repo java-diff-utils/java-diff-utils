@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -34,6 +35,7 @@ public class UnifiedDiffWriter {
     private static final Logger LOG = Logger.getLogger(UnifiedDiffWriter.class.getName());
 
     public static void write(UnifiedDiff diff, Function<String, List<String>> originalLinesProvider, Writer writer, int contextSize) throws IOException {
+        Objects.requireNonNull(originalLinesProvider, "original lines provider needs to be specified");
         write(diff, originalLinesProvider, line -> {
             try {
                 writer.append(line).append("\n");
@@ -138,7 +140,8 @@ public class UnifiedDiffWriter {
         }
 
         // output the context before the first Delta
-        for (line = contextStart; line < curDelta.getSource().getPosition(); line++) { //
+        for (line = contextStart; line < curDelta.getSource().getPosition()
+                && line < origLines.size(); line++) { //
             buffer.add(" " + origLines.get(line));
             origTotal++;
             revTotal++;
@@ -153,8 +156,8 @@ public class UnifiedDiffWriter {
             AbstractDelta<String> nextDelta = deltas.get(deltaIndex);
             int intermediateStart = curDelta.getSource().getPosition()
                     + curDelta.getSource().getLines().size();
-            for (line = intermediateStart; line < nextDelta.getSource()
-                    .getPosition(); line++) {
+            for (line = intermediateStart; line < nextDelta.getSource().getPosition() 
+                    && line < origLines.size(); line++) {
                 // output the code between the last Delta and this one
                 buffer.add(" " + origLines.get(line));
                 origTotal++;
