@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -456,5 +457,27 @@ public class DiffRowGeneratorTest {
                 Arrays.asList("This is a test"));
 
         assertEquals("This  is  a  test~.~", rows.get(0).getOldLine());
+    }
+
+    @Test
+    public void testIgnoreWhitespaceIssue64() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .ignoreWhiteSpaces(true)
+                .mergeOriginalRevised(true)
+                .oldTag(f -> "~") //introduce markdown style for strikethrough
+                .newTag(f -> "**") //introduce markdown style for bold
+                .build();
+
+        //compute the differences for two test texts.
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("test\n\ntestline".split("\n")),
+                Arrays.asList("A new text line\n\nanother one".split("\n")));
+
+        assertThat(rows).extracting(item -> item.getOldLine())
+                .containsExactly("~test~**A new text line**", 
+                                 "",
+                                 "~testline~**another one**");
     }
 }
