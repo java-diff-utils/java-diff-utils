@@ -141,6 +141,7 @@
                             <module name="SuppressWarningsFilter" />
                             <module name="FileTabCharacter" />
                             <module name="TreeWalker">
+                                <module name="SuppressionCommentFilter"/>
                                 <module name="AvoidNestedBlocks" />
                                 <module name="ConstantName" />
                                 <module name="EmptyCatchBlock" />

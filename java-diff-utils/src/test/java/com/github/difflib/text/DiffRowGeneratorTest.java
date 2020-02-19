@@ -417,4 +417,44 @@ public class DiffRowGeneratorTest {
         List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<dt>To do</dt>"), Arrays.asList("<dt>Done</dt>"));
         assertEquals("[[CHANGE,<dt>~~T~~o~~ do~~</dt>,<dt>**D**o**ne**</dt>]]", rows.toString());
     }
+
+    @Test
+    public void testIgnoreWhitespaceIssue66() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .ignoreWhiteSpaces(true)
+                .mergeOriginalRevised(true)
+                .oldTag(f -> "~") //introduce markdown style for strikethrough
+                .newTag(f -> "**") //introduce markdown style for bold
+                .build();
+
+        //compute the differences for two test texts.
+        //CHECKSTYLE:OFF
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("This\tis\ta\ttest."),
+                Arrays.asList("This is a test"));
+        //CHECKSTYLE:ON
+
+        assertEquals("This    is    a    test~.~", rows.get(0).getOldLine());
+    }
+
+    @Test
+    public void testIgnoreWhitespaceIssue66_2() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .ignoreWhiteSpaces(true)
+                .mergeOriginalRevised(true)
+                .oldTag(f -> "~") //introduce markdown style for strikethrough
+                .newTag(f -> "**") //introduce markdown style for bold
+                .build();
+
+        //compute the differences for two test texts.
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("This  is  a  test."),
+                Arrays.asList("This is a test"));
+
+        assertEquals("This  is  a  test~.~", rows.get(0).getOldLine());
+    }
 }

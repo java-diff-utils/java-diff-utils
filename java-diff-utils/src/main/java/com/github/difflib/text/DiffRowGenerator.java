@@ -291,7 +291,7 @@ public final class DiffRowGenerator {
         origList = inlineDiffSplitter.apply(joinedOrig);
         revList = inlineDiffSplitter.apply(joinedRev);
 
-        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList).getDeltas();
+        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList, equalizer).getDeltas();
 
         Collections.reverse(inlineDeltas);
         for (AbstractDelta<String> inlineDelta : inlineDeltas) {
