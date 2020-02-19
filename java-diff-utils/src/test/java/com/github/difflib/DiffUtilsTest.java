@@ -19,11 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import java.util.zip.ZipFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class DiffUtilsTest {
 
@@ -134,7 +134,7 @@ public class DiffUtilsTest {
      * To test this, the greedy meyer algorithm is not suitable.
      */
     @Test
-    @Ignore
+    @Disabled
     public void testPossibleDiffHangOnLargeDatasetDnaumenkoIssue26() throws IOException, DiffException {
         ZipFile zip = new ZipFile(TestConstants.MOCK_FOLDER + "/large_dataset1.zip");
 

@@ -60,6 +60,22 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.6.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.15.0</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>
@@ -89,9 +105,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.1.1</version>
                 <configuration>
                     <additionalparam>${javadoc.opts}</additionalparam>
+                    <doclint>none</doclint>
                 </configuration>
                 <executions>
                     <execution>
@@ -105,7 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>verify-style</id>
@@ -118,7 +135,7 @@
                 <configuration>
                     <logViolationsToConsole>true</logViolationsToConsole>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
                     <checkstyleRules>
                         <module name="Checker">
                             <module name="SuppressWarningsFilter" />
@@ -151,14 +168,14 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.18</version>
+                        <version>8.29</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
+                <version>3.0.0-M4</version>
                 <configuration>
                     <excludes>
                         <exclude>**/LR*.java</exclude>

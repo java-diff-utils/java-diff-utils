@@ -10,13 +10,11 @@
     <name>java-diff-utils-jgit</name>
     <packaging>jar</packaging>
     <description>This is an extension of java-diff-utils using jgit to use its implementation of
-some difference algorithms.</description>
+        some difference algorithms.</description>
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <type>jar</type>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -4,9 +4,9 @@ import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffException;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 public class PatchTest {
 

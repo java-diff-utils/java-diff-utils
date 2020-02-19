@@ -32,9 +32,10 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 
 /**
- * This class for generating DiffRows for side-by-sidy view. You can customize the way of generating. For example, show
- * inline diffs on not, ignoring white spaces or/and blank lines and so on. All parameters for generating are optional.
- * If you do not specify them, the class will use the default values.
+ * This class for generating DiffRows for side-by-sidy view. You can customize the way of
+ * generating. For example, show inline diffs on not, ignoring white spaces or/and blank lines and
+ * so on. All parameters for generating are optional. If you do not specify them, the class will use
+ * the default values.
  *
  * These values are: showInlineDiffs = false; ignoreWhiteSpaces = true; ignoreBlankLines = true; ...
  *
@@ -51,7 +52,6 @@ public final class DiffRowGenerator {
             -> adjustWhitespace(original).equals(adjustWhitespace(revised));
 
     public static final Function<String, String> LINE_NORMALIZER_FOR_HTML = StringUtils::normalize;
-
 
     /**
      * Splitting lines by character to achieve char by char diff checking.
@@ -101,7 +101,8 @@ public final class DiffRowGenerator {
     /**
      * Wrap the elements in the sequence with the given tag
      *
-     * @param startPosition the position from which tag should start. The counting start from a zero.
+     * @param startPosition the position from which tag should start. The counting start from a
+     * zero.
      * @param endPosition the position before which tag should should be closed.
      * @param tagGenerator the tag generator
      */
@@ -170,8 +171,8 @@ public final class DiffRowGenerator {
     }
 
     /**
-     * Get the DiffRows describing the difference between original and revised texts using the given patch. Useful for
-     * displaying side-by-side diff.
+     * Get the DiffRows describing the difference between original and revised texts using the given
+     * patch. Useful for displaying side-by-side diff.
      *
      * @param original the original text
      * @param revised the revised text
@@ -182,8 +183,8 @@ public final class DiffRowGenerator {
     }
 
     /**
-     * Generates the DiffRows describing the difference between original and revised texts using the given patch. Useful
-     * for displaying side-by-side diff.
+     * Generates the DiffRows describing the difference between original and revised texts using the
+     * given patch. Useful for displaying side-by-side diff.
      *
      * @param original the original text
      * @param patch the given patch
@@ -402,8 +403,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Give the originial old and new text lines to Diffrow without any additional processing and without any tags to
-         * highlight the change.
+         * Give the originial old and new text lines to Diffrow without any additional processing
+         * and without any tags to highlight the change.
          *
          * @param val the value to set. Default: false.
          * @return builder with configured reportLinesUnWrapped parameter
@@ -438,8 +439,8 @@ public final class DiffRowGenerator {
         /**
          * Set the column width of generated lines of original and revised texts.
          *
-         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return builder with config
-         * ured ignoreBlankLines parameter
+         * @param width the width to set. Making it < 0 doesn't have any sense. Default 80. @return
+         * builder with config ured ignoreBlankLines parameter
          */
         public Builder columnWidth(int width) {
             if (width >= 0) {
@@ -458,7 +459,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Merge the complete result within the original text. This makes sense for one line display.
+         * Merge the complete result within the original text. This makes sense for one line
+         * display.
          *
          * @param mergeOriginalRevised
          * @return
@@ -469,8 +471,9 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Per default each character is separatly processed. This variant introduces processing by word, which does not
-         * deliver in word changes. Therefore the whole word will be tagged as changed:
+         * Per default each character is separatly processed. This variant introduces processing by
+         * word, which does not deliver in word changes. Therefore the whole word will be tagged as
+         * changed:
          *
          * <pre>
          * false:    (aBa : aba) --  changed: a(B)a : a(b)a
@@ -483,8 +486,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * To provide some customized splitting a splitter can be provided. Here someone could think about sentence splitter,
-         * comma splitter or stuff like that.
+         * To provide some customized splitting a splitter can be provided. Here someone could think
+         * about sentence splitter, comma splitter or stuff like that.
          *
          * @param inlineDiffSplitter
          * @return
@@ -495,8 +498,9 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * By default DiffRowGenerator preprocesses lines for HTML output. Tabs and special HTML characters like "&lt;"
-         * are replaced with its encoded value. To change this you can provide a customized line normalizer here.
+         * By default DiffRowGenerator preprocesses lines for HTML output. Tabs and special HTML
+         * characters like "&lt;" are replaced with its encoded value. To change this you can
+         * provide a customized line normalizer here.
          *
          * @param lineNormalizer
          * @return

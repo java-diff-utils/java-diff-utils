@@ -15,8 +15,9 @@
  */
 package com.github.difflib.text;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -50,9 +51,10 @@ public class StringUtilsTest {
         assertEquals("test", StringUtils.wrapText("test", 10));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWrapText_String_int_zero() {
-        assertEquals("test", StringUtils.wrapText("test", -1));
+        Assertions.assertThrows(IllegalArgumentException.class, 
+                () -> StringUtils.wrapText("test", -1));
     }
 
 }
