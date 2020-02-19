@@ -1,6 +1,6 @@
 {
   "name": "@teamhubapp/kotlin-diff-utils",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
   "main": "kotlin-diff-utils.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/TeamHubApp/kotlin-diff-utils",
   "dependencies": {
-    "kotlin": "1.3.40"
+    "kotlin": "1.3.50"
   }
 }
 
