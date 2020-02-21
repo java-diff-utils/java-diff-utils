@@ -1,11 +1,11 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group = "app.teamhub"
-version = "4.1.3"
+version = "4.1.4"
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.3.50"
+    kotlin("multiplatform") version "1.3.61"
 }
 
 repositories {
@@ -33,6 +33,9 @@ kotlin {
             }
         }
     }
+
+    iosArm64()
+    iosX64()
 
     sourceSets {
         val commonMain by getting {
