@@ -480,4 +480,23 @@ public class DiffRowGeneratorTest {
                                  "",
                                  "~testline~**another one**");
     }
+    
+    @Test
+    public void testIgnoreWhitespaceIssue63() throws DiffException {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .mergeOriginalRevised(true)
+                .oldTag(f -> "~") //introduce markdown style for strikethrough
+                .newTag(f -> "**") //introduce markdown style for bold
+                .processDiffs(str -> str.replace(" ", "/"))
+                .build();
+
+        //compute the differences for two test texts.
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList("This  is  a  test."),
+                Arrays.asList("This is a test"));
+
+        assertEquals("This~//~**/**is~//~**/**a~//~**/**test~.~", rows.get(0).getOldLine());
+    }
 }

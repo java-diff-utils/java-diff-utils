@@ -107,7 +107,8 @@ public final class DiffRowGenerator {
      * @param tagGenerator the tag generator
      */
     static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, Function<Boolean, String> tagGenerator) {
+            int endPosition, Function<Boolean, String> tagGenerator,
+            Function<String, String> processDiffs) {
         int endPos = endPosition;
 
         while (endPos >= startPosition) {
@@ -125,6 +126,10 @@ public final class DiffRowGenerator {
             }
 
             sequence.add(endPos, tagGenerator.apply(false));
+            if (processDiffs != null) {
+                    sequence.set(endPos - 1,
+                            processDiffs.apply(sequence.get(endPos - 1)));
+                }
             endPos--;
 
             //search position for end tag
@@ -132,16 +137,19 @@ public final class DiffRowGenerator {
                 if ("\n".equals(sequence.get(endPos - 1))) {
                     break;
                 }
+                if (processDiffs != null) {
+                    sequence.set(endPos - 1,
+                            processDiffs.apply(sequence.get(endPos - 1)));
+                }
                 endPos--;
             }
 
             sequence.add(endPos, tagGenerator.apply(true));
             endPos--;
         }
-
-//        sequence.add(endPosition, tagGenerator.apply(false));
-//        sequence.add(startPosition, tagGenerator.apply(true));
     }
+    
+    
     private final int columnWidth;
     private final BiPredicate<String, String> equalizer;
     private final boolean ignoreWhiteSpaces;
@@ -151,6 +159,7 @@ public final class DiffRowGenerator {
     private final Function<Boolean, String> oldTag;
     private final boolean reportLinesUnchanged;
     private final Function<String, String> lineNormalizer;
+    private final Function<String, String> processDiffs;
 
     private final boolean showInlineDiffs;
 
@@ -165,6 +174,7 @@ public final class DiffRowGenerator {
         equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
+        processDiffs = builder.processDiffs;
 
         Objects.requireNonNull(inlineDiffSplitter);
         Objects.requireNonNull(lineNormalizer);
@@ -178,7 +188,8 @@ public final class DiffRowGenerator {
      * @param revised the revised text
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) throws DiffException {
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised)
+            throws DiffException {
         return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
     }
 
@@ -190,7 +201,8 @@ public final class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) throws DiffException {
+    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch)
+            throws DiffException {
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
@@ -280,7 +292,8 @@ public final class DiffRowGenerator {
      *
      * @param delta the given delta
      */
-    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) throws DiffException {
+    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta)
+            throws DiffException {
         List<String> orig = normalizeLines(delta.getSource().getLines());
         List<String> rev = normalizeLines(delta.getTarget().getLines());
         List<String> origList;
@@ -300,32 +313,36 @@ public final class DiffRowGenerator {
             if (inlineDelta instanceof DeleteDelta) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size(), oldTag);
+                        + inlineOrig.size(), oldTag, processDiffs);
             } else if (inlineDelta instanceof InsertDelta) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
-                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
-                                    + inlineRev.size()));
-                    wrapInTag(origList, inlineOrig.getPosition(), inlineOrig.getPosition()
-                            + inlineRev.size(), newTag);
+                            revList.subList(inlineRev.getPosition(),
+                                    inlineRev.getPosition() + inlineRev.size()));
+                    wrapInTag(origList, inlineOrig.getPosition(),
+                            inlineOrig.getPosition() + inlineRev.size(),
+                            newTag, processDiffs);
                 } else {
-                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size(), newTag);
+                    wrapInTag(revList, inlineRev.getPosition(),
+                            inlineRev.getPosition() + inlineRev.size(),
+                            newTag, processDiffs);
                 }
             } else if (inlineDelta instanceof ChangeDelta) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition() + inlineOrig.size(),
-                            revList.subList(inlineRev.getPosition(), inlineRev.getPosition()
-                                    + inlineRev.size()));
-                    wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(), inlineOrig.getPosition() + inlineOrig.size()
-                            + inlineRev.size(), newTag);
+                            revList.subList(inlineRev.getPosition(),
+                                    inlineRev.getPosition() + inlineRev.size()));
+                    wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(),
+                            inlineOrig.getPosition() + inlineOrig.size() + inlineRev.size(),
+                            newTag, processDiffs);
                 } else {
-                    wrapInTag(revList, inlineRev.getPosition(), inlineRev.getPosition()
-                            + inlineRev.size(), newTag);
+                    wrapInTag(revList, inlineRev.getPosition(),
+                            inlineRev.getPosition() + inlineRev.size(),
+                            newTag, processDiffs);
                 }
-                wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
-                        .getPosition()
-                        + inlineOrig.size(), oldTag);
+                wrapInTag(origList, inlineOrig.getPosition(),
+                        inlineOrig.getPosition() + inlineOrig.size(),
+                        oldTag, processDiffs);
             }
         }
         StringBuilder origResult = new StringBuilder();
@@ -376,6 +393,7 @@ public final class DiffRowGenerator {
         private boolean reportLinesUnchanged = false;
         private Function<String, List<String>> inlineDiffSplitter = SPLITTER_BY_CHARACTER;
         private Function<String, String> lineNormalizer = LINE_NORMALIZER_FOR_HTML;
+        private Function<String, String> processDiffs = null;
 
         private Builder() {
         }
@@ -433,6 +451,18 @@ public final class DiffRowGenerator {
          */
         public Builder newTag(Function<Boolean, String> generator) {
             this.newTag = generator;
+            return this;
+        }
+
+        /**
+         * Processor for diffed text parts. Here e.g. whitecharacters could be replaced by something
+         * visible.
+         *
+         * @param processDiffs
+         * @return
+         */
+        public Builder processDiffs(Function<String, String> processDiffs) {
+            this.processDiffs = processDiffs;
             return this;
         }
 
