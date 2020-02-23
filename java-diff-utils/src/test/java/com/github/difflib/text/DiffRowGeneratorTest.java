@@ -482,7 +482,7 @@ public class DiffRowGeneratorTest {
     }
     
     @Test
-    public void testIgnoreWhitespaceIssue63() throws DiffException {
+    public void testReplaceDiffsIssue63() throws DiffException {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
