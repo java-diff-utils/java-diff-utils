@@ -127,9 +127,9 @@ public final class DiffRowGenerator {
 
             sequence.add(endPos, tagGenerator.apply(false));
             if (processDiffs != null) {
-                    sequence.set(endPos - 1,
-                            processDiffs.apply(sequence.get(endPos - 1)));
-                }
+                sequence.set(endPos - 1,
+                        processDiffs.apply(sequence.get(endPos - 1)));
+            }
             endPos--;
 
             //search position for end tag
@@ -148,8 +148,7 @@ public final class DiffRowGenerator {
             endPos--;
         }
     }
-    
-    
+
     private final int columnWidth;
     private final BiPredicate<String, String> equalizer;
     private final boolean ignoreWhiteSpaces;
