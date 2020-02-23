@@ -120,7 +120,7 @@ public class GenerateUnifiedDiffTest {
         List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff(null, "revised",
                 original, patch, 10);
         
-        assertEquals("--- null", udiff.get(0));
+        assertEquals("--- ", udiff.get(0));
         assertEquals("+++ revised", udiff.get(1));
         assertEquals("@@ -0,0 +1,2 @@", udiff.get(2));
         

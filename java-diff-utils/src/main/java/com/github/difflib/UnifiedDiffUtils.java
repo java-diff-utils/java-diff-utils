@@ -21,6 +21,7 @@ import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,8 +131,8 @@ public final class UnifiedDiffUtils {
             int contextSize) {
         if (!patch.getDeltas().isEmpty()) {
             List<String> ret = new ArrayList<>();
-            ret.add("--- " + originalFileName);
-            ret.add("+++ " + revisedFileName);
+            ret.add("--- " + Optional.ofNullable(originalFileName).orElse(""));
+            ret.add("+++ " + Optional.ofNullable(revisedFileName).orElse(""));
 
             List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
                     patch.getDeltas());
