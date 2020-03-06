@@ -18,8 +18,6 @@ package com.github.difflib.algorithm.myers;
 import com.github.difflib.algorithm.Change;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
-import com.github.difflib.algorithm.DifferentiationFailedException;
 import com.github.difflib.patch.DeltaType;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
      * Return empty diff if get the error while procession the difference.
      */
     @Override
-    public List<Change> computeDiff(final List<T> source, final List<T> target, DiffAlgorithmListener progress) throws DiffException {
+    public List<Change> computeDiff(final List<T> source, final List<T> target, DiffAlgorithmListener progress) {
         Objects.requireNonNull(source, "source list must not be null");
         Objects.requireNonNull(target, "target list must not be null");
 
@@ -74,8 +72,7 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
      * @return A minimum {@link PathNode Path} accross the differences graph.
      * @throws DifferentiationFailedException if a diff path could not be found.
      */
-    private PathNode buildPath(final List<T> orig, final List<T> rev, DiffAlgorithmListener progress)
-            throws DifferentiationFailedException {
+    private PathNode buildPath(final List<T> orig, final List<T> rev, DiffAlgorithmListener progress) {
         Objects.requireNonNull(orig, "original sequence is null");
         Objects.requireNonNull(rev, "revised sequence is null");
 
@@ -132,7 +129,7 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
             diagonal[middle + d - 1] = null;
         }
         // According to Myers, this cannot happen
-        throw new DifferentiationFailedException("could not find a diff path");
+        throw new IllegalStateException("could not find a diff path");
     }
 
     /**

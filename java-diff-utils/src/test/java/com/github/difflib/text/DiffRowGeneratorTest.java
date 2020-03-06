@@ -1,6 +1,5 @@
 package com.github.difflib.text;
 
-import com.github.difflib.algorithm.DiffException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.Test;
 public class DiffRowGeneratorTest {
 
     @Test
-    public void testGenerator_Default() throws DiffException {
+    public void testGenerator_Default() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -41,7 +40,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerator_Default2() throws DiffException {
+    public void testGenerator_Default2() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -55,7 +54,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerator_InlineDiff() throws DiffException {
+    public void testGenerator_InlineDiff() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -71,7 +70,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerator_IgnoreWhitespaces() throws DiffException {
+    public void testGenerator_IgnoreWhitespaces() {
         String first = "anything \n \nother\nmore lines";
         String second = "anything\n\nother\nsome more lines";
 
@@ -100,7 +99,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithWordWrap() throws DiffException {
+    public void testGeneratorWithWordWrap() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -117,7 +116,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithMerge() throws DiffException {
+    public void testGeneratorWithMerge() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -135,7 +134,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithMerge2() throws DiffException {
+    public void testGeneratorWithMerge2() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -148,7 +147,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithMerge3() throws DiffException {
+    public void testGeneratorWithMerge3() {
         String first = "test\nanything \n \nother";
         String second = "anything\n\nother\ntest\ntest2";
 
@@ -169,7 +168,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithMergeByWord4() throws DiffException {
+    public void testGeneratorWithMergeByWord4() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -183,7 +182,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorWithMergeByWord5() throws DiffException {
+    public void testGeneratorWithMergeByWord5() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -221,7 +220,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorExample1() throws DiffException {
+    public void testGeneratorExample1() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -240,7 +239,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorExample2() throws DiffException {
+    public void testGeneratorExample2() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -263,7 +262,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorUnchanged() throws DiffException {
+    public void testGeneratorUnchanged() {
         String first = "anything \n \nother";
         String second = "anything\n\nother";
 
@@ -281,7 +280,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue14() throws DiffException {
+    public void testGeneratorIssue14() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -300,7 +299,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue15() throws DiffException, IOException {
+    public void testGeneratorIssue15() throws IOException {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true) //show the ~ ~ and ** ** symbols on each difference
                 .inlineDiffByWord(true) //show the ~ ~ and ** ** around each different word instead of each letter
@@ -329,7 +328,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue22() throws DiffException {
+    public void testGeneratorIssue22() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -353,7 +352,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue22_2() throws DiffException {
+    public void testGeneratorIssue22_2() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -371,7 +370,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue22_3() throws DiffException {
+    public void testGeneratorIssue22_3() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -389,7 +388,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue41DefaultNormalizer() throws DiffException {
+    public void testGeneratorIssue41DefaultNormalizer() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .build();
         List<DiffRow> rows = generator.generateDiffRows(Arrays.asList("<"), Arrays.asList("<"));
@@ -397,7 +396,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGeneratorIssue41UserNormalizer() throws DiffException {
+    public void testGeneratorIssue41UserNormalizer() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .lineNormalizer(str -> str.replace("\t", "    "))
                 .build();
@@ -408,7 +407,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testGenerationIssue44reportLinesUnchangedProblem() throws DiffException {
+    public void testGenerationIssue44reportLinesUnchangedProblem() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .reportLinesUnchanged(true)
@@ -420,7 +419,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testIgnoreWhitespaceIssue66() throws DiffException {
+    public void testIgnoreWhitespaceIssue66() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -441,7 +440,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testIgnoreWhitespaceIssue66_2() throws DiffException {
+    public void testIgnoreWhitespaceIssue66_2() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -460,7 +459,7 @@ public class DiffRowGeneratorTest {
     }
 
     @Test
-    public void testIgnoreWhitespaceIssue64() throws DiffException {
+    public void testIgnoreWhitespaceIssue64() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -476,13 +475,13 @@ public class DiffRowGeneratorTest {
                 Arrays.asList("A new text line\n\nanother one".split("\n")));
 
         assertThat(rows).extracting(item -> item.getOldLine())
-                .containsExactly("~test~**A new text line**", 
-                                 "",
-                                 "~testline~**another one**");
+                .containsExactly("~test~**A new text line**",
+                        "",
+                        "~testline~**another one**");
     }
-    
+
     @Test
-    public void testReplaceDiffsIssue63() throws DiffException {
+    public void testReplaceDiffsIssue63() {
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)

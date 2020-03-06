@@ -16,7 +16,6 @@
 package com.github.difflib.unifieddiff;
 
 import com.github.difflib.DiffUtils;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,7 +54,7 @@ public class UnifiedDiffWriterTest {
      * Issue 47
      */
     @Test
-    public void testWriteWithNewFile() throws URISyntaxException, IOException, DiffException {
+    public void testWriteWithNewFile() throws URISyntaxException, IOException {
         
         List<String> original = new ArrayList<>();
         List<String> revised = new ArrayList<>();

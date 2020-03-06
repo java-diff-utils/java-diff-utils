@@ -7,6 +7,7 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+* **API** change: removed DiffException completely
 * added possibility to **process diffs** to for instance show whitespace characters
 
 ## [4.4] – 2019-11-06

@@ -1,6 +1,5 @@
 package com.github.difflib;
 
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.BufferedReader;
@@ -29,7 +28,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     @Test
-    public void testGenerateUnified() throws DiffException, IOException {
+    public void testGenerateUnified() throws IOException {
         List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "original.txt");
         List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "revised.txt");
 
@@ -37,7 +36,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     @Test
-    public void testGenerateUnifiedWithOneDelta() throws DiffException, IOException {
+    public void testGenerateUnifiedWithOneDelta() throws IOException {
         List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_original.txt");
         List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "one_delta_test_revised.txt");
 
@@ -45,7 +44,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     @Test
-    public void testGenerateUnifiedDiffWithoutAnyDeltas() throws DiffException {
+    public void testGenerateUnifiedDiffWithoutAnyDeltas() {
         List<String> test = Arrays.asList("abc");
         Patch<String> patch = DiffUtils.diff(test, test);
         UnifiedDiffUtils.generateUnifiedDiff("abc", "abc", test, patch, 0);
@@ -67,14 +66,14 @@ public class GenerateUnifiedDiffTest {
      * Issue 12
      */
     @Test
-    public void testPatchWithNoDeltas() throws DiffException, IOException {
+    public void testPatchWithNoDeltas() throws IOException {
         final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_1.txt");
         final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "issue11_2.txt");
         verify(lines1, lines2, "issue11_1.txt", "issue11_2.txt");
     }
 
     @Test
-    public void testDiff5() throws DiffException, IOException {
+    public void testDiff5() throws IOException {
         final List<String> lines1 = fileToLines(TestConstants.MOCK_FOLDER + "5A.txt");
         final List<String> lines2 = fileToLines(TestConstants.MOCK_FOLDER + "5B.txt");
         verify(lines1, lines2, "5A.txt", "5B.txt");
@@ -84,7 +83,7 @@ public class GenerateUnifiedDiffTest {
      * Issue 19
      */
     @Test
-    public void testDiffWithHeaderLineInText() throws DiffException {
+    public void testDiffWithHeaderLineInText() {
         List<String> original = new ArrayList<>();
         List<String> revised = new ArrayList<>();
 
@@ -109,7 +108,7 @@ public class GenerateUnifiedDiffTest {
      * Issue 47
      */
     @Test
-    public void testNewFileCreation() throws DiffException {
+    public void testNewFileCreation() {
         List<String> original = new ArrayList<>();
         List<String> revised = new ArrayList<>();
 
@@ -128,7 +127,7 @@ public class GenerateUnifiedDiffTest {
     }
 
     private void verify(List<String> origLines, List<String> revLines,
-            String originalFile, String revisedFile) throws DiffException {
+            String originalFile, String revisedFile) {
         Patch<String> patch = DiffUtils.diff(origLines, revLines);
         List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(originalFile, revisedFile,
                 origLines, patch, 10);

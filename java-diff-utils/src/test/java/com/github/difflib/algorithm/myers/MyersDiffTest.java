@@ -16,7 +16,6 @@
 package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class MyersDiffTest {
 
     @Test
-    public void testDiffMyersExample1Forward() throws DiffException {
+    public void testDiffMyersExample1Forward() {
         List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
         final Patch<String> patch = Patch.generate(original, revised, new MyersDiff<String>().computeDiff(original, revised, null));
@@ -42,7 +41,7 @@ public class MyersDiffTest {
     }
     
     @Test
-    public void testDiffMyersExample1ForwardWithListener() throws DiffException {
+    public void testDiffMyersExample1ForwardWithListener() {
         List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
         

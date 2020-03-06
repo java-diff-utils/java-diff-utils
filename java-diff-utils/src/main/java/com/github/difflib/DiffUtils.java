@@ -17,7 +17,6 @@ package com.github.difflib;
 
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
@@ -43,13 +42,12 @@ public final class DiffUtils {
      * @param revised The revised text. Must not be {@code null}.
      * @param progress progress listener
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
-     * @throws com.github.difflib.algorithm.DiffException
      */
-    public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) throws DiffException {
+    public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) {
         return DiffUtils.diff(original, revised, new MyersDiff<>(), progress);
     }
     
-    public static <T> Patch<T> diff(List<T> original, List<T> revised) throws DiffException {
+    public static <T> Patch<T> diff(List<T> original, List<T> revised) {
         return DiffUtils.diff(original, revised, new MyersDiff<>(), null);
     }
 
@@ -57,7 +55,7 @@ public final class DiffUtils {
      * Computes the difference between the original and revised text.
      */
     public static Patch<String> diff(String sourceText, String targetText,
-            DiffAlgorithmListener progress) throws DiffException {
+            DiffAlgorithmListener progress) {
         return DiffUtils.diff(
                  Arrays.asList(sourceText.split("\n")), 
                  Arrays.asList(targetText.split("\n")), progress);
@@ -74,7 +72,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> source, List<T> target,
-            BiPredicate<T, T> equalizer) throws DiffException {
+            BiPredicate<T, T> equalizer) {
         if (equalizer != null) {
             return DiffUtils.diff(source, target,
                     new MyersDiff<>(equalizer));
@@ -92,7 +90,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress) throws DiffException {
+            DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress) {
         Objects.requireNonNull(original, "original must not be null");
         Objects.requireNonNull(revised, "revised must not be null");
         Objects.requireNonNull(algorithm, "algorithm must not be null");
@@ -109,7 +107,7 @@ public final class DiffUtils {
      * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
      */
      public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithmI<T> algorithm) throws DiffException {
+            DiffAlgorithmI<T> algorithm) {
          return diff(original, revised, algorithm, null);
      }
 
@@ -121,7 +119,7 @@ public final class DiffUtils {
      * @param revised
      * @return
      */
-    public static Patch<String> diffInline(String original, String revised) throws DiffException {
+    public static Patch<String> diffInline(String original, String revised) {
         List<String> origList = new ArrayList<>();
         List<String> revList = new ArrayList<>();
         for (Character character : original.toCharArray()) {

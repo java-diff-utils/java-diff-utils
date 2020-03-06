@@ -22,6 +22,7 @@ import java.util.List;
  * Interface of a diff algorithm.
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
+ * @param <T> type of data that is diffed.
  */
 public interface DiffAlgorithmI<T> {
 
@@ -32,9 +33,8 @@ public interface DiffAlgorithmI<T> {
      * @param target target data
      * @param progress progress listener
      * @return
-     * @throws DiffException
      */
-    List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) throws DiffException;
+    List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress);
 
     /**
      * Simple extension to compute a changeset using arrays.
@@ -43,9 +43,8 @@ public interface DiffAlgorithmI<T> {
      * @param target
      * @param progress
      * @return
-     * @throws com.github.difflib.algorithm.DiffException
      */
-    default List<Change> computeDiff(T[] source, T[] target, DiffAlgorithmListener progress) throws DiffException {
+    default List<Change> computeDiff(T[] source, T[] target, DiffAlgorithmListener progress) {
         return computeDiff(Arrays.asList(source), Arrays.asList(target), progress);
     }
 }

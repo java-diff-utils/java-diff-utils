@@ -16,7 +16,6 @@
 package com.github.difflib.text;
 
 import com.github.difflib.DiffUtils;
-import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
@@ -187,8 +186,7 @@ public final class DiffRowGenerator {
      * @param revised the revised text
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised)
-            throws DiffException {
+    public List<DiffRow> generateDiffRows(List<String> original, List<String> revised) {
         return generateDiffRows(original, DiffUtils.diff(original, revised, equalizer));
     }
 
@@ -200,8 +198,7 @@ public final class DiffRowGenerator {
      * @param patch the given patch
      * @return the DiffRows between original and revised texts
      */
-    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch)
-            throws DiffException {
+    public List<DiffRow> generateDiffRows(final List<String> original, Patch<String> patch) {
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
@@ -291,8 +288,7 @@ public final class DiffRowGenerator {
      *
      * @param delta the given delta
      */
-    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta)
-            throws DiffException {
+    private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) {
         List<String> orig = normalizeLines(delta.getSource().getLines());
         List<String> rev = normalizeLines(delta.getTarget().getLines());
         List<String> origList;
