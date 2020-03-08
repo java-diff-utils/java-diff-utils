@@ -24,6 +24,7 @@ import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -106,7 +107,7 @@ public final class DiffRowGenerator {
      * @param tagGenerator the tag generator
      */
     static void wrapInTag(List<String> sequence, int startPosition,
-            int endPosition, Function<Boolean, String> tagGenerator,
+            int endPosition, Tag tag, BiFunction<Tag, Boolean, String> tagGenerator,
             Function<String, String> processDiffs) {
         int endPos = endPosition;
 
@@ -124,7 +125,7 @@ public final class DiffRowGenerator {
                 break;
             }
 
-            sequence.add(endPos, tagGenerator.apply(false));
+            sequence.add(endPos, tagGenerator.apply(tag, false));
             if (processDiffs != null) {
                 sequence.set(endPos - 1,
                         processDiffs.apply(sequence.get(endPos - 1)));
@@ -143,7 +144,7 @@ public final class DiffRowGenerator {
                 endPos--;
             }
 
-            sequence.add(endPos, tagGenerator.apply(true));
+            sequence.add(endPos, tagGenerator.apply(tag, true));
             endPos--;
         }
     }
@@ -153,8 +154,8 @@ public final class DiffRowGenerator {
     private final boolean ignoreWhiteSpaces;
     private final Function<String, List<String>> inlineDiffSplitter;
     private final boolean mergeOriginalRevised;
-    private final Function<Boolean, String> newTag;
-    private final Function<Boolean, String> oldTag;
+    private final BiFunction<Tag, Boolean, String> newTag;
+    private final BiFunction<Tag, Boolean, String> oldTag;
     private final boolean reportLinesUnchanged;
     private final Function<String, String> lineNormalizer;
     private final Function<String, String> processDiffs;
@@ -169,7 +170,13 @@ public final class DiffRowGenerator {
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
         inlineDiffSplitter = builder.inlineDiffSplitter;
-        equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
+
+        if (builder.equalizer != null) {
+            equalizer = builder.equalizer;
+        } else {
+            equalizer = ignoreWhiteSpaces ? IGNORE_WHITESPACE_EQUALIZER : DEFAULT_EQUALIZER;
+        }
+
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
         processDiffs = builder.processDiffs;
@@ -254,15 +261,15 @@ public final class DiffRowGenerator {
             String wrapOrg = preprocessLine(orgline);
             if (Tag.DELETE == type) {
                 if (mergeOriginalRevised || showInlineDiffs) {
-                    wrapOrg = oldTag.apply(true) + wrapOrg + oldTag.apply(false);
+                    wrapOrg = oldTag.apply(type, true) + wrapOrg + oldTag.apply(type, false);
                 }
             }
             String wrapNew = preprocessLine(newline);
             if (Tag.INSERT == type) {
                 if (mergeOriginalRevised) {
-                    wrapOrg = newTag.apply(true) + wrapNew + newTag.apply(false);
+                    wrapOrg = newTag.apply(type, true) + wrapNew + newTag.apply(type, false);
                 } else if (showInlineDiffs) {
-                    wrapNew = newTag.apply(true) + wrapNew + newTag.apply(false);
+                    wrapNew = newTag.apply(type, true) + wrapNew + newTag.apply(type, false);
                 }
             }
             return new DiffRow(type, wrapOrg, wrapNew);
@@ -308,7 +315,7 @@ public final class DiffRowGenerator {
             if (inlineDelta instanceof DeleteDelta) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size(), oldTag, processDiffs);
+                        + inlineOrig.size(), Tag.DELETE, oldTag, processDiffs);
             } else if (inlineDelta instanceof InsertDelta) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
@@ -316,11 +323,11 @@ public final class DiffRowGenerator {
                                     inlineRev.getPosition() + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition(),
                             inlineOrig.getPosition() + inlineRev.size(),
-                            newTag, processDiffs);
+                            Tag.INSERT, newTag, processDiffs);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(),
                             inlineRev.getPosition() + inlineRev.size(),
-                            newTag, processDiffs);
+                            Tag.INSERT, newTag, processDiffs);
                 }
             } else if (inlineDelta instanceof ChangeDelta) {
                 if (mergeOriginalRevised) {
@@ -329,15 +336,15 @@ public final class DiffRowGenerator {
                                     inlineRev.getPosition() + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(),
                             inlineOrig.getPosition() + inlineOrig.size() + inlineRev.size(),
-                            newTag, processDiffs);
+                            Tag.CHANGE, newTag, processDiffs);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(),
                             inlineRev.getPosition() + inlineRev.size(),
-                            newTag, processDiffs);
+                            Tag.CHANGE, newTag, processDiffs);
                 }
                 wrapInTag(origList, inlineOrig.getPosition(),
                         inlineOrig.getPosition() + inlineOrig.size(),
-                        oldTag, processDiffs);
+                        Tag.CHANGE, oldTag, processDiffs);
             }
         }
         StringBuilder origResult = new StringBuilder();
@@ -380,8 +387,10 @@ public final class DiffRowGenerator {
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
 
-        private Function<Boolean, String> oldTag = f -> f ? "<span class=\"editOldInline\">" : "</span>";
-        private Function<Boolean, String> newTag = f -> f ? "<span class=\"editNewInline\">" : "</span>";
+        private BiFunction<Tag, Boolean, String> oldTag = 
+                (tag, f) -> f ? "<span class=\"editOldInline\">" : "</span>";
+        private BiFunction<Tag, Boolean, String> newTag = 
+                (tag, f) -> f ? "<span class=\"editNewInline\">" : "</span>";
 
         private int columnWidth = 0;
         private boolean mergeOriginalRevised = false;
@@ -389,6 +398,7 @@ public final class DiffRowGenerator {
         private Function<String, List<String>> inlineDiffSplitter = SPLITTER_BY_CHARACTER;
         private Function<String, String> lineNormalizer = LINE_NORMALIZER_FOR_HTML;
         private Function<String, String> processDiffs = null;
+        private BiPredicate<String, String> equalizer = null;
 
         private Builder() {
         }
@@ -433,8 +443,19 @@ public final class DiffRowGenerator {
          * @param generator the tag generator
          * @return builder with configured ignoreBlankLines parameter
          */
-        public Builder oldTag(Function<Boolean, String> generator) {
+        public Builder oldTag(BiFunction<Tag, Boolean, String> generator) {
             this.oldTag = generator;
+            return this;
+        }
+        
+        /**
+         * Generator for Old-Text-Tags.
+         *
+         * @param generator the tag generator
+         * @return builder with configured ignoreBlankLines parameter
+         */
+        public Builder oldTag(Function<Boolean, String> generator) {
+            this.oldTag = (tag, f) -> generator.apply(f);
             return this;
         }
 
@@ -444,8 +465,19 @@ public final class DiffRowGenerator {
          * @param generator
          * @return
          */
-        public Builder newTag(Function<Boolean, String> generator) {
+        public Builder newTag(BiFunction<Tag, Boolean, String> generator) {
             this.newTag = generator;
+            return this;
+        }
+        
+        /**
+         * Generator for New-Text-Tags.
+         *
+         * @param generator
+         * @return
+         */
+        public Builder newTag(Function<Boolean, String> generator) {
+            this.newTag = (tag, f) -> generator.apply(f);
             return this;
         }
 
@@ -532,6 +564,17 @@ public final class DiffRowGenerator {
          */
         public Builder lineNormalizer(Function<String, String> lineNormalizer) {
             this.lineNormalizer = lineNormalizer;
+            return this;
+        }
+
+        /**
+         * Provide an equalizer for diff processing.
+         *
+         * @param equalizer equalizer for diff processing.
+         * @return builder with configured equalizer parameter
+         */
+        public Builder equalizer(BiPredicate<String, String> equalizer) {
+            this.equalizer = equalizer;
             return this;
         }
     }

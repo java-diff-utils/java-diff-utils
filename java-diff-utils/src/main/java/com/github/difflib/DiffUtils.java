@@ -30,14 +30,13 @@ import java.util.function.BiPredicate;
 
 /**
  * Implements the difference and patching engine
- *
- * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  */
 public final class DiffUtils {
 
     /**
      * Computes the difference between the original and revised list of elements with default diff algorithm
      *
+     * @param <T> types to be diffed
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param progress progress listener
