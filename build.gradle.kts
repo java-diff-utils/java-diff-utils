@@ -1,6 +1,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-group = "live.git"
+group = "dev.livegit"
 version = "4.1.4"
 
 plugins {
