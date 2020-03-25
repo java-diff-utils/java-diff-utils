@@ -3,4 +3,5 @@ build/
 nbproject/
 target/
 .gradle/
-
+/node_modules
+.DS_Store

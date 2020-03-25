@@ -1,6 +1,4 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
-group = "app.teamhub"
+group = "dev.gitlive"
 version = "4.1.4"
 
 plugins {
@@ -78,18 +76,18 @@ tasks {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
         into(file("$buildDir/node_module"))
     }
-    
+
+    val copyReadMe by registering(Copy::class) {
+        from(file("$buildDir/README.md"))
+        into(file("$buildDir/node_module"))
+    }
+
     val publishToNpm by registering(Exec::class) {
         doFirst {
             mkdir("$buildDir/node_module")
         }
-        dependsOn(copyPackageJson, copyJS, copySourceMap)
+        dependsOn(copyPackageJson, copyJS, copySourceMap, copyReadMe)
         workingDir("$buildDir/node_module")
-        if(Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine("cmd", "/c", "npm publish --registry http://localhost:4873 & npm publish --registry https://npm.pkg.github.com/")
-        } else {
-            commandLine("npm", "publish", "--registry http://localhost:4873")
-            commandLine("npm", "publish", "--registry https://npm.pkg.github.com/")
-        }
+        commandLine("npm", "publish")
     }
 }

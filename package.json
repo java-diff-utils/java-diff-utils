@@ -1,5 +1,5 @@
 {
-  "name": "@teamhubapp/kotlin-diff-utils",
+  "name": "kotlin-diff-utils",
   "version": "4.1.4",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
   "main": "kotlin-diff-utils.js",
@@ -8,22 +8,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TeamHubApp/kotlin-diff-utils"
+    "url": "git+https://github.com/GitLiveApp/kotlin-diff-utils"
   },
   "keywords": [
+    "diffs",
     "kotlin",
     "mutliplatform",
     "kotlin-js"
-
   ],
-  "author": "TeamHub",
-  "license": "Apache 2.0",
+  "author": "GitLiveApp",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/TeamHubApp/kotlin-diff-utils/issues"
+    "url": "https://github.com/GitLiveApp/kotlin-diff-utils/issues"
   },
-  "homepage": "https://github.com/TeamHubApp/kotlin-diff-utils",
+  "homepage": "https://github.com/GitLiveApp/kotlin-diff-utils#readme",
   "dependencies": {
     "kotlin": "1.3.70"
   }
 }
-
