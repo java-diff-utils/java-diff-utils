@@ -1,6 +1,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-group = "app.teamhub"
+group = "live.git"
 version = "4.1.4"
 
 plugins {
