@@ -1,4 +1,4 @@
-# java-diff-utils
+# kotlin-diff-utils
 
 ## Status
 
