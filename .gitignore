@@ -4,3 +4,5 @@ nbproject/
 target/
 .gradle/
 
+/node_modules
+/src/commonMain/kotlin/.DS_Store
