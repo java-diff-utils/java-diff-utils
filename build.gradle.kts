@@ -3,7 +3,9 @@ version = "4.1.4"
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.3.70"
+    `signing`
+    kotlin("native.cocoapods")
+    kotlin("multiplatform")
 }
 
 repositories {
@@ -90,4 +92,73 @@ tasks {
         workingDir("$buildDir/node_module")
         commandLine("npm", "publish")
     }
+}
+
+val javadocJar by tasks.creating(Jar::class) {
+    archiveClassifier.value("javadoc")
+}
+
+signing {
+    sign(publishing.publications)
+}
+
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+            credentials {
+                username = project.property("sonatypeUsername") as String
+                password = project.property("sonatypePassword") as String
+            }
+        }
+    }
+
+    publications.all {
+        this as MavenPublication
+
+        artifact(javadocJar)
+
+        pom {
+            artifactId = "kotlin-diff-utils"
+            groupId = "$group"
+            packaging = "jar"
+
+            name.set("kotlin-diff-utils")
+            description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
+            url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+            inceptionYear.set("2009")
+
+            scm {
+                url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+                connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                tag.set("HEAD")
+            }
+
+            issueManagement {
+                system.set("GitHub Issues")
+                url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
+            }
+
+            developers {
+                developer {
+                    name.set("Tobias Warneke")
+                    email.set("t.warneke@gmx.net")
+                }
+            }
+
+            licenses {
+                license {
+                    name.set("The Apache Software License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    distribution.set("repo")
+                    comments.set("A business-friendly OSS license")
+                }
+            }
+
+        }
+
+    }
+
 }
