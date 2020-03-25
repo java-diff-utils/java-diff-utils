@@ -78,19 +78,9 @@ Just add the code below to your maven dependencies:
 
 ```xml
 <dependency>
-    <groupId>io.github.java-diff-utils</groupId>
-    <artifactId>java-diff-utils</artifactId>
-    <version>4.0</version>
-</dependency>
-```
-
-Attention. We changed groupid and artifactid. Starting with version 4 you have to use:
-
-```xml
-<dependency>
-    <groupId>io.github.java-diff-utils</groupId>
-    <artifactId>java-diff-utils</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <groupId>dev.gitlive</groupId>
+    <artifactId>kotlin-diff-utils</artifactId>
+    <version>4.1.4</version>
 </dependency>
 ```
 
@@ -98,5 +88,5 @@ or using gradle:
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
-compile group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.0'
+compile group: 'dev.gitlive', name: 'kotlin-diff-utils', version: '4.1.4'
 ```
