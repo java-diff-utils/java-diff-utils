@@ -76,12 +76,17 @@ tasks {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
         into(file("$buildDir/node_module"))
     }
-    
+
+    val copyReadMe by registering(Copy::class) {
+        from(file("$buildDir/README.md"))
+        into(file("$buildDir/node_module"))
+    }
+
     val publishToNpm by registering(Exec::class) {
         doFirst {
             mkdir("$buildDir/node_module")
         }
-        dependsOn(copyPackageJson, copyJS, copySourceMap)
+        dependsOn(copyPackageJson, copyJS, copySourceMap, copyReadMe)
         workingDir("$buildDir/node_module")
         commandLine("npm", "publish")
     }
