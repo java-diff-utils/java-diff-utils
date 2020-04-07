@@ -102,7 +102,6 @@ signing {
     sign(publishing.publications)
 }
 
-
 publishing {
     repositories {
         maven {
@@ -114,51 +113,49 @@ publishing {
         }
     }
 
-    publications.all {
-        this as MavenPublication
+    publications {
 
-        artifact(javadocJar)
+        register("gpr", MavenPublication::class) {
+            from(components["kotlin"])
+            artifact(javadocJar)
 
-        pom {
-            artifactId = "kotlin-diff-utils"
-            groupId = "$group"
-            packaging = "jar"
+            pom {
+                artifactId = "kotlin-diff-utils"
 
-            name.set("kotlin-diff-utils")
-            description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
-            url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
-            inceptionYear.set("2009")
-
-            scm {
+                name.set("kotlin-diff-utils")
+                description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
                 url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
-                connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
-                developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
-                tag.set("HEAD")
-            }
+                inceptionYear.set("2009")
 
-            issueManagement {
-                system.set("GitHub Issues")
-                url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
-            }
-
-            developers {
-                developer {
-                    name.set("Tobias Warneke")
-                    email.set("t.warneke@gmx.net")
+                scm {
+                    url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+                    connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                    developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                    tag.set("HEAD")
                 }
-            }
 
-            licenses {
-                license {
-                    name.set("The Apache Software License, Version 2.0")
-                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    distribution.set("repo")
-                    comments.set("A business-friendly OSS license")
+                issueManagement {
+                    system.set("GitHub Issues")
+                    url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
                 }
-            }
 
+                developers {
+                    developer {
+                        name.set("Tobias Warneke")
+                        email.set("t.warneke@gmx.net")
+                    }
+                }
+
+                licenses {
+                    license {
+                        name.set("The Apache Software License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                        comments.set("A business-friendly OSS license")
+                    }
+                }
+
+            }
         }
-
     }
-
 }
