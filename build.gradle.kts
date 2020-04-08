@@ -19,8 +19,9 @@ kotlin {
     jvm {
         val main by compilations.getting {
             kotlinOptions {
-                jvmTarget ="1.8"
+                jvmTarget = "1.8"
             }
+
         }
     }
 
@@ -63,6 +64,10 @@ kotlin {
 }
 
 
+fun SigningExtension.whenRequired(block: () -> Boolean) {
+    setRequired(block)
+}
+
 tasks {
     val copyPackageJson by registering(Copy::class) {
         from(file("package.json"))
@@ -73,7 +78,7 @@ tasks {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js"))
         into(file("$buildDir/node_module"))
     }
-    
+
     val copySourceMap by registering(Copy::class) {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
         into(file("$buildDir/node_module"))
@@ -99,8 +104,10 @@ val javadocJar by tasks.creating(Jar::class) {
 }
 
 signing {
+    whenRequired { gradle.taskGraph.hasTask("publish") }
     sign(publishing.publications)
 }
+
 
 publishing {
     repositories {
@@ -113,49 +120,45 @@ publishing {
         }
     }
 
-    publications {
+    publications.all {
+        this as MavenPublication
 
-        register("gpr", MavenPublication::class) {
-            from(components["kotlin"])
-            artifact(javadocJar)
+        artifact(javadocJar)
 
-            pom {
-                artifactId = "kotlin-diff-utils"
+        pom {
+            name.set("kotlin-diff-utils")
+            description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
+            url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+            inceptionYear.set("2009")
 
-                name.set("kotlin-diff-utils")
-                description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
+            scm {
                 url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
-                inceptionYear.set("2009")
-
-                scm {
-                    url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
-                    connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
-                    developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
-                    tag.set("HEAD")
-                }
-
-                issueManagement {
-                    system.set("GitHub Issues")
-                    url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
-                }
-
-                developers {
-                    developer {
-                        name.set("Tobias Warneke")
-                        email.set("t.warneke@gmx.net")
-                    }
-                }
-
-                licenses {
-                    license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
-                        comments.set("A business-friendly OSS license")
-                    }
-                }
-
+                connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                tag.set("HEAD")
             }
+
+            issueManagement {
+                system.set("GitHub Issues")
+                url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
+            }
+
+            developers {
+                developer {
+                    name.set("Tobias Warneke")
+                    email.set("t.warneke@gmx.net")
+                }
+            }
+
+            licenses {
+                license {
+                    name.set("The Apache Software License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    distribution.set("repo")
+                    comments.set("A business-friendly OSS license")
+                }
+            }
+
         }
     }
 }
