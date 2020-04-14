@@ -103,8 +103,17 @@ val javadocJar by tasks.creating(Jar::class) {
     archiveClassifier.value("javadoc")
 }
 
+var shouldSign = true
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { shouldSign }
+}
+
+tasks.named("publishToMavenLocal").configure {
+    shouldSign = false
+}
+
 signing {
-    whenRequired { gradle.taskGraph.hasTask("publish") }
     sign(publishing.publications)
 }
 
