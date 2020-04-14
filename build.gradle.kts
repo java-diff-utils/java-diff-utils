@@ -1,9 +1,11 @@
 group = "dev.gitlive"
-version = "4.1.4"
+version = "4.1.5"
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.3.70"
+    `signing`
+    kotlin("native.cocoapods")
+    kotlin("multiplatform")
 }
 
 repositories {
@@ -17,8 +19,9 @@ kotlin {
     jvm {
         val main by compilations.getting {
             kotlinOptions {
-                jvmTarget ="1.8"
+                jvmTarget = "1.8"
             }
+
         }
     }
 
@@ -61,6 +64,10 @@ kotlin {
 }
 
 
+fun SigningExtension.whenRequired(block: () -> Boolean) {
+    setRequired(block)
+}
+
 tasks {
     val copyPackageJson by registering(Copy::class) {
         from(file("package.json"))
@@ -71,7 +78,7 @@ tasks {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js"))
         into(file("$buildDir/node_module"))
     }
-    
+
     val copySourceMap by registering(Copy::class) {
         from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
         into(file("$buildDir/node_module"))
@@ -89,5 +96,78 @@ tasks {
         dependsOn(copyPackageJson, copyJS, copySourceMap, copyReadMe)
         workingDir("$buildDir/node_module")
         commandLine("npm", "publish")
+    }
+}
+
+val javadocJar by tasks.creating(Jar::class) {
+    archiveClassifier.value("javadoc")
+}
+
+var shouldSign = true
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { shouldSign }
+}
+
+tasks.named("publishToMavenLocal").configure {
+    shouldSign = false
+}
+
+signing {
+    sign(publishing.publications)
+}
+
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+            credentials {
+                username = project.property("sonatypeUsername") as String
+                password = project.property("sonatypePassword") as String
+            }
+        }
+    }
+
+    publications.all {
+        this as MavenPublication
+
+        artifact(javadocJar)
+
+        pom {
+            name.set("kotlin-diff-utils")
+            description.set("The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.")
+            url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+            inceptionYear.set("2009")
+
+            scm {
+                url.set("https://github.com/GitLiveApp/kotlin-diff-utils")
+                connection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                developerConnection.set("scm:git:https://github.com/GitLiveApp/kotlin-diff-utils.git")
+                tag.set("HEAD")
+            }
+
+            issueManagement {
+                system.set("GitHub Issues")
+                url.set("https://github.com/GitLiveApp/kotlin-diff-utils/issues")
+            }
+
+            developers {
+                developer {
+                    name.set("Tobias Warneke")
+                    email.set("t.warneke@gmx.net")
+                }
+            }
+
+            licenses {
+                license {
+                    name.set("The Apache Software License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    distribution.set("repo")
+                    comments.set("A business-friendly OSS license")
+                }
+            }
+
+        }
     }
 }
