@@ -4,6 +4,7 @@ import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.DeleteDelta;
 import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.EqualDelta;
 import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import java.io.BufferedReader;
@@ -158,5 +159,36 @@ public class DiffUtilsTest {
         assertNotNull(patch);
         assertEquals(4, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
+    }
+    
+    @Test
+    public void testDiff_Equal() {
+        final Patch<String> patch = DiffUtils.diff(
+                Arrays.asList("hhh", "jjj", "kkk"), 
+                Arrays.asList("hhh", "jjj", "kkk"), true);
+        assertNotNull(patch);
+        assertEquals(1, patch.getDeltas().size());
+        final AbstractDelta<String> delta = patch.getDeltas().get(0);
+        assertTrue(delta instanceof EqualDelta);
+        assertEquals(new Chunk<>(0, Arrays.asList("hhh", "jjj", "kkk")), delta.getSource());
+        assertEquals(new Chunk<>(0, Arrays.asList("hhh", "jjj", "kkk")), delta.getTarget());
+    }
+    
+     @Test
+    public void testDiff_InsertWithEqual() {
+        final Patch<String> patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.
+                asList("hhh", "jjj", "kkk"), true);
+        assertNotNull(patch);
+        assertEquals(2, patch.getDeltas().size());
+        
+        AbstractDelta<String> delta = patch.getDeltas().get(0);
+        assertTrue(delta instanceof EqualDelta);
+        assertEquals(new Chunk<>(0, Arrays.asList("hhh")), delta.getSource());
+        assertEquals(new Chunk<>(0, Arrays.asList("hhh")), delta.getTarget());
+        
+        delta = patch.getDeltas().get(1);
+        assertTrue(delta instanceof InsertDelta);
+        assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getSource());
+        assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getTarget());
     }
 }

@@ -100,10 +100,27 @@ public final class Patch<T> {
     }
 
     public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes) {
+        return generate(original, revised, changes, false);
+    }
+
+    private static <T> Chunk<T> buildChunk(int start, int end, List<T> data) {
+        return new Chunk<>(start, new ArrayList<>(data.subList(start, end)));
+    }
+
+    public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes, boolean includeEquals) {
         Patch<T> patch = new Patch<>(changes.size());
+        int startOriginal = 0;
+        int startRevised = 0;
         for (Change change : changes) {
-            Chunk<T> orgChunk = new Chunk<>(change.startOriginal, new ArrayList<>(original.subList(change.startOriginal, change.endOriginal)));
-            Chunk<T> revChunk = new Chunk<>(change.startRevised, new ArrayList<>(revised.subList(change.startRevised, change.endRevised)));
+
+            if (includeEquals && startOriginal < change.startOriginal) {
+                patch.addDelta(new EqualDelta(
+                        buildChunk(startOriginal, change.startOriginal, original),
+                        buildChunk(startRevised, change.startRevised, revised)));
+            }
+
+            Chunk<T> orgChunk = buildChunk(change.startOriginal, change.endOriginal, original);
+            Chunk<T> revChunk = buildChunk(change.startRevised, change.endRevised, revised);
             switch (change.deltaType) {
                 case DELETE:
                     patch.addDelta(new DeleteDelta<>(orgChunk, revChunk));
@@ -115,7 +132,17 @@ public final class Patch<T> {
                     patch.addDelta(new ChangeDelta<>(orgChunk, revChunk));
                     break;
             }
+
+            startOriginal = change.endOriginal + 1;
+            startRevised = change.endRevised + 1;
         }
+
+        if (includeEquals && startOriginal < original.size()) {
+            patch.addDelta(new EqualDelta(
+                    buildChunk(startOriginal, original.size(), original),
+                    buildChunk(startRevised, revised.size(), revised)));
+        }
+
         return patch;
     }
 }
