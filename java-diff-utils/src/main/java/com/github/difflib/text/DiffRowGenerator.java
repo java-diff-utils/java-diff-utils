@@ -17,10 +17,8 @@ package com.github.difflib.text;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
-import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
-import com.github.difflib.patch.DeleteDelta;
-import com.github.difflib.patch.InsertDelta;
+import com.github.difflib.patch.DeltaType;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
 import java.util.*;
@@ -218,7 +216,7 @@ public final class DiffRowGenerator {
             }
 
             // Inserted DiffRow
-            if (delta instanceof InsertDelta) {
+            if (delta.getType() == DeltaType.INSERT) {
                 endPos = orig.last() + 1;
                 for (String line : rev.getLines()) {
                     diffRows.add(buildDiffRow(Tag.INSERT, "", line));
@@ -227,7 +225,7 @@ public final class DiffRowGenerator {
             }
 
             // Deleted DiffRow
-            if (delta instanceof DeleteDelta) {
+            if (delta.getType() == DeltaType.DELETE) {
                 endPos = orig.last() + 1;
                 for (String line : orig.getLines()) {
                     diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
@@ -312,11 +310,11 @@ public final class DiffRowGenerator {
         for (AbstractDelta<String> inlineDelta : inlineDeltas) {
             Chunk<String> inlineOrig = inlineDelta.getSource();
             Chunk<String> inlineRev = inlineDelta.getTarget();
-            if (inlineDelta instanceof DeleteDelta) {
+            if (inlineDelta.getType() == DeltaType.DELETE) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
                         + inlineOrig.size(), Tag.DELETE, oldTag, processDiffs);
-            } else if (inlineDelta instanceof InsertDelta) {
+            } else if (inlineDelta.getType() == DeltaType.INSERT) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
                             revList.subList(inlineRev.getPosition(),
@@ -329,7 +327,7 @@ public final class DiffRowGenerator {
                             inlineRev.getPosition() + inlineRev.size(),
                             Tag.INSERT, newTag, processDiffs);
                 }
-            } else if (inlineDelta instanceof ChangeDelta) {
+            } else if (inlineDelta.getType() == DeltaType.CHANGE) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition() + inlineOrig.size(),
                             revList.subList(inlineRev.getPosition(),
