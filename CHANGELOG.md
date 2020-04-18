@@ -7,6 +7,8 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+* minor bug fixes
+* optional include equal parts of original and revised data
 * **API** change: removed DiffException completely
 * added possibility to **process diffs** to for instance show whitespace characters
 
