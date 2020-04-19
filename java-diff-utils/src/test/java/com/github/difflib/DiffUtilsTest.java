@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import java.util.zip.ZipFile;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -160,11 +161,11 @@ public class DiffUtilsTest {
         assertEquals(4, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
     }
-    
+
     @Test
     public void testDiff_Equal() {
         final Patch<String> patch = DiffUtils.diff(
-                Arrays.asList("hhh", "jjj", "kkk"), 
+                Arrays.asList("hhh", "jjj", "kkk"),
                 Arrays.asList("hhh", "jjj", "kkk"), true);
         assertNotNull(patch);
         assertEquals(1, patch.getDeltas().size());
@@ -173,22 +174,57 @@ public class DiffUtilsTest {
         assertEquals(new Chunk<>(0, Arrays.asList("hhh", "jjj", "kkk")), delta.getSource());
         assertEquals(new Chunk<>(0, Arrays.asList("hhh", "jjj", "kkk")), delta.getTarget());
     }
-    
-     @Test
+
+    @Test
     public void testDiff_InsertWithEqual() {
         final Patch<String> patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.
                 asList("hhh", "jjj", "kkk"), true);
         assertNotNull(patch);
         assertEquals(2, patch.getDeltas().size());
-        
+
         AbstractDelta<String> delta = patch.getDeltas().get(0);
         assertTrue(delta instanceof EqualDelta);
         assertEquals(new Chunk<>(0, Arrays.asList("hhh")), delta.getSource());
         assertEquals(new Chunk<>(0, Arrays.asList("hhh")), delta.getTarget());
-        
+
         delta = patch.getDeltas().get(1);
         assertTrue(delta instanceof InsertDelta);
         assertEquals(new Chunk<>(1, Collections.<String>emptyList()), delta.getSource());
         assertEquals(new Chunk<>(1, Arrays.asList("jjj", "kkk")), delta.getTarget());
+    }
+
+    @Test
+    public void testDiff_ProblemIssue42() {
+        final Patch<String> patch = DiffUtils.diff(
+                Arrays.asList("The", "dog", "is", "brown"),
+                Arrays.asList("The", "fox", "is", "down"), true);
+
+        System.out.println(patch);
+        assertNotNull(patch);
+        assertEquals(4, patch.getDeltas().size());
+
+        
+        assertThat(patch.getDeltas()).extracting(d -> d.getType().name())
+                .containsExactly("EQUAL", "CHANGE", "EQUAL", "CHANGE");
+        
+        AbstractDelta<String> delta = patch.getDeltas().get(0);
+        assertTrue(delta instanceof EqualDelta);
+        assertEquals(new Chunk<>(0, Arrays.asList("The")), delta.getSource());
+        assertEquals(new Chunk<>(0, Arrays.asList("The")), delta.getTarget());
+
+        delta = patch.getDeltas().get(1);
+        assertTrue(delta instanceof ChangeDelta);
+        assertEquals(new Chunk<>(1, Arrays.asList("dog")), delta.getSource());
+        assertEquals(new Chunk<>(1, Arrays.asList("fox")), delta.getTarget());
+        
+        delta = patch.getDeltas().get(2);
+        assertTrue(delta instanceof EqualDelta);
+        assertEquals(new Chunk<>(2, Arrays.asList("is")), delta.getSource());
+        assertEquals(new Chunk<>(2, Arrays.asList("is")), delta.getTarget());
+        
+        delta = patch.getDeltas().get(3);
+        assertTrue(delta instanceof ChangeDelta);
+        assertEquals(new Chunk<>(3, Arrays.asList("brown")), delta.getSource());
+        assertEquals(new Chunk<>(3, Arrays.asList("down")), delta.getTarget());
     }
 }

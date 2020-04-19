@@ -22,6 +22,7 @@ package com.github.difflib.patch;
 import static java.util.Comparator.comparing;
 import com.github.difflib.algorithm.Change;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -107,10 +108,18 @@ public final class Patch<T> {
         return new Chunk<>(start, new ArrayList<>(data.subList(start, end)));
     }
 
-    public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> changes, boolean includeEquals) {
-        Patch<T> patch = new Patch<>(changes.size());
+    public static <T> Patch<T> generate(List<T> original, List<T> revised, List<Change> _changes, boolean includeEquals) {
+        Patch<T> patch = new Patch<>(_changes.size());
         int startOriginal = 0;
         int startRevised = 0;
+        
+        List<Change> changes = _changes;
+        
+        if (includeEquals) {
+            changes = new ArrayList<Change>(_changes);
+            Collections.sort(changes, comparing(d -> d.startOriginal));
+        }
+        
         for (Change change : changes) {
 
             if (includeEquals && startOriginal < change.startOriginal) {
@@ -133,8 +142,8 @@ public final class Patch<T> {
                     break;
             }
 
-            startOriginal = change.endOriginal + 1;
-            startRevised = change.endRevised + 1;
+            startOriginal = change.endOriginal;
+            startRevised = change.endRevised;
         }
 
         if (includeEquals && startOriginal < original.size()) {
