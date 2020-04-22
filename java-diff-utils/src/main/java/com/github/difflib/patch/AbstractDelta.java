@@ -61,6 +61,9 @@ public abstract class AbstractDelta<T> {
     
     public abstract void restore(List<T> target);
     
+    /**
+     * Create a new delta of the actual instance with customized chunk data.
+     */
     public abstract AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised);
 
     @Override
