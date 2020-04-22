@@ -41,4 +41,9 @@ public class EqualDelta<T> extends AbstractDelta<T> {
         return "[EqualDelta, position: " + getSource().getPosition() + ", lines: "
                 + getSource().getLines() + "]";
     }
+    
+    @Override
+    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+        return new EqualDelta(original, revised);
+    }
 }

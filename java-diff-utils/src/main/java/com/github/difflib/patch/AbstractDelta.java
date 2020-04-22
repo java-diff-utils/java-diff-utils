@@ -60,6 +60,8 @@ public abstract class AbstractDelta<T> {
     public abstract void applyTo(List<T> target) throws PatchFailedException;
     
     public abstract void restore(List<T> target);
+    
+    public abstract AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised);
 
     @Override
     public int hashCode() {

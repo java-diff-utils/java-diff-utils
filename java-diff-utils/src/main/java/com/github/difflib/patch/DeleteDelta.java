@@ -59,4 +59,9 @@ public final class DeleteDelta<T> extends AbstractDelta<T> {
         return "[DeleteDelta, position: " + getSource().getPosition() + ", lines: "
                 + getSource().getLines() + "]";
     }
+    
+    @Override
+    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+        return new DeleteDelta(original, revised);
+    }
 }

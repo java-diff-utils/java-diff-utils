@@ -59,4 +59,9 @@ public final class InsertDelta<T> extends AbstractDelta<T> {
         return "[InsertDelta, position: " + getSource().getPosition()
                 + ", lines: " + getTarget().getLines() + "]";
     }
+    
+    @Override
+    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+        return new InsertDelta(original, revised);
+    }
 }

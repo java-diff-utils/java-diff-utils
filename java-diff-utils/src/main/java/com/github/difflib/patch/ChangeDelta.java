@@ -72,4 +72,9 @@ public final class ChangeDelta<T> extends AbstractDelta<T> {
         return "[ChangeDelta, position: " + getSource().getPosition() + ", lines: "
                 + getSource().getLines() + " to " + getTarget().getLines() + "]";
     }
+
+    @Override
+    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+        return new ChangeDelta(original, revised);
+    }
 }
