@@ -16,7 +16,7 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 ## API
 
-Javadocs of the actual release version: [![JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.7/docs/api/)]
+Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.7/docs/api/)
 
 ## Examples
 
