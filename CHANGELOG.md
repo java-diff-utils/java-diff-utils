@@ -7,6 +7,10 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+## [4.7]
+
+### Changed 
+
 * minor bug fixes
 * optional include equal parts of original and revised data
 * **API** change: removed DiffException completely
