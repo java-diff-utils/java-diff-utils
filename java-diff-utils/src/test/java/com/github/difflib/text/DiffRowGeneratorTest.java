@@ -498,4 +498,85 @@ public class DiffRowGeneratorTest {
 
         assertEquals("This~//~**/**is~//~**/**a~//~**/**test~.~", rows.get(0).getOldLine());
     }
+
+    @Test
+    public void testProblemTooManyDiffRowsIssue65() {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(false)
+                .replaceOriginalLinefeedInChangesWithSpaces(true)
+                .build();
+
+        List<DiffRow> diffRows = generator.generateDiffRows(
+                Arrays.asList("Ich möchte nicht mit einem Bot sprechen.", "Ich soll das schon wieder wiederholen?"),
+                Arrays.asList("Ich möchte nicht mehr mit dir sprechen. Leite mich weiter.", "Kannst du mich zum Kundendienst weiterleiten?"));
+
+        print(diffRows);
+
+        assertThat(diffRows).hasSize(2);
+    }
+
+    @Test
+    public void testProblemTooManyDiffRowsIssue65_NoMerge() {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .mergeOriginalRevised(false)
+                .inlineDiffByWord(false)
+                .build();
+
+        List<DiffRow> diffRows = generator.generateDiffRows(
+                Arrays.asList("Ich möchte nicht mit einem Bot sprechen.", "Ich soll das schon wieder wiederholen?"),
+                Arrays.asList("Ich möchte nicht mehr mit dir sprechen. Leite mich weiter.", "Kannst du mich zum Kundendienst weiterleiten?"));
+
+        System.out.println(diffRows);
+
+        assertThat(diffRows).hasSize(2);
+    }
+
+    @Test
+    public void testProblemTooManyDiffRowsIssue65_DiffByWord() {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .reportLinesUnchanged(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .build();
+
+        List<DiffRow> diffRows = generator.generateDiffRows(
+                Arrays.asList("Ich möchte nicht mit einem Bot sprechen.", "Ich soll das schon wieder wiederholen?"),
+                Arrays.asList("Ich möchte nicht mehr mit dir sprechen. Leite mich weiter.", "Kannst du mich zum Kundendienst weiterleiten?"));
+
+        System.out.println(diffRows);
+
+        assertThat(diffRows).hasSize(2);
+    }
+
+    @Test
+    public void testProblemTooManyDiffRowsIssue65_NoInlineDiff() {
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(false)
+                .reportLinesUnchanged(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(false)
+                .build();
+
+        List<DiffRow> diffRows = generator.generateDiffRows(
+                Arrays.asList("Ich möchte nicht mit einem Bot sprechen.", "Ich soll das schon wieder wiederholen?"),
+                Arrays.asList("Ich möchte nicht mehr mit dir sprechen. Leite mich weiter.", "Kannst du mich zum Kundendienst weiterleiten?"));
+
+        System.out.println(diffRows);
+
+        assertThat(diffRows).hasSize(2);
+    }
 }

@@ -61,6 +61,7 @@ public final class DiffRowGenerator {
         }
         return list;
     };
+
     public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
 
     /**
@@ -106,7 +107,7 @@ public final class DiffRowGenerator {
      */
     static void wrapInTag(List<String> sequence, int startPosition,
             int endPosition, Tag tag, BiFunction<Tag, Boolean, String> tagGenerator,
-            Function<String, String> processDiffs) {
+            Function<String, String> processDiffs, boolean replaceLinefeedWithSpace) {
         int endPos = endPosition;
 
         while (endPos >= startPosition) {
@@ -114,6 +115,9 @@ public final class DiffRowGenerator {
             //search position for end tag
             while (endPos > startPosition) {
                 if (!"\n".equals(sequence.get(endPos - 1))) {
+                    break;
+                } else if (replaceLinefeedWithSpace) {
+                    sequence.set(endPos - 1, " ");
                     break;
                 }
                 endPos--;
@@ -133,7 +137,11 @@ public final class DiffRowGenerator {
             //search position for end tag
             while (endPos > startPosition) {
                 if ("\n".equals(sequence.get(endPos - 1))) {
-                    break;
+                    if (replaceLinefeedWithSpace) {
+                        sequence.set(endPos - 1, " ");
+                    } else {
+                        break;
+                    }
                 }
                 if (processDiffs != null) {
                     sequence.set(endPos - 1,
@@ -159,6 +167,7 @@ public final class DiffRowGenerator {
     private final Function<String, String> processDiffs;
 
     private final boolean showInlineDiffs;
+    private final boolean replaceOriginalLinefeedInChangesWithSpaces;
 
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
@@ -178,6 +187,8 @@ public final class DiffRowGenerator {
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
         processDiffs = builder.processDiffs;
+        
+        replaceOriginalLinefeedInChangesWithSpaces = builder.replaceOriginalLinefeedInChangesWithSpaces;
 
         Objects.requireNonNull(inlineDiffSplitter);
         Objects.requireNonNull(lineNormalizer);
@@ -313,7 +324,7 @@ public final class DiffRowGenerator {
             if (inlineDelta.getType() == DeltaType.DELETE) {
                 wrapInTag(origList, inlineOrig.getPosition(), inlineOrig
                         .getPosition()
-                        + inlineOrig.size(), Tag.DELETE, oldTag, processDiffs);
+                        + inlineOrig.size(), Tag.DELETE, oldTag, processDiffs, replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised);
             } else if (inlineDelta.getType() == DeltaType.INSERT) {
                 if (mergeOriginalRevised) {
                     origList.addAll(inlineOrig.getPosition(),
@@ -321,11 +332,11 @@ public final class DiffRowGenerator {
                                     inlineRev.getPosition() + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition(),
                             inlineOrig.getPosition() + inlineRev.size(),
-                            Tag.INSERT, newTag, processDiffs);
+                            Tag.INSERT, newTag, processDiffs, false);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(),
                             inlineRev.getPosition() + inlineRev.size(),
-                            Tag.INSERT, newTag, processDiffs);
+                            Tag.INSERT, newTag, processDiffs, false);
                 }
             } else if (inlineDelta.getType() == DeltaType.CHANGE) {
                 if (mergeOriginalRevised) {
@@ -334,15 +345,15 @@ public final class DiffRowGenerator {
                                     inlineRev.getPosition() + inlineRev.size()));
                     wrapInTag(origList, inlineOrig.getPosition() + inlineOrig.size(),
                             inlineOrig.getPosition() + inlineOrig.size() + inlineRev.size(),
-                            Tag.CHANGE, newTag, processDiffs);
+                            Tag.CHANGE, newTag, processDiffs, false);
                 } else {
                     wrapInTag(revList, inlineRev.getPosition(),
                             inlineRev.getPosition() + inlineRev.size(),
-                            Tag.CHANGE, newTag, processDiffs);
+                            Tag.CHANGE, newTag, processDiffs, false);
                 }
                 wrapInTag(origList, inlineOrig.getPosition(),
                         inlineOrig.getPosition() + inlineOrig.size(),
-                        Tag.CHANGE, oldTag, processDiffs);
+                        Tag.CHANGE, oldTag, processDiffs, replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised);
             }
         }
         StringBuilder origResult = new StringBuilder();
@@ -385,10 +396,10 @@ public final class DiffRowGenerator {
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
 
-        private BiFunction<Tag, Boolean, String> oldTag = 
-                (tag, f) -> f ? "<span class=\"editOldInline\">" : "</span>";
-        private BiFunction<Tag, Boolean, String> newTag = 
-                (tag, f) -> f ? "<span class=\"editNewInline\">" : "</span>";
+        private BiFunction<Tag, Boolean, String> oldTag
+                = (tag, f) -> f ? "<span class=\"editOldInline\">" : "</span>";
+        private BiFunction<Tag, Boolean, String> newTag
+                = (tag, f) -> f ? "<span class=\"editNewInline\">" : "</span>";
 
         private int columnWidth = 0;
         private boolean mergeOriginalRevised = false;
@@ -397,6 +408,7 @@ public final class DiffRowGenerator {
         private Function<String, String> lineNormalizer = LINE_NORMALIZER_FOR_HTML;
         private Function<String, String> processDiffs = null;
         private BiPredicate<String, String> equalizer = null;
+        private boolean replaceOriginalLinefeedInChangesWithSpaces = false;
 
         private Builder() {
         }
@@ -445,7 +457,7 @@ public final class DiffRowGenerator {
             this.oldTag = generator;
             return this;
         }
-        
+
         /**
          * Generator for Old-Text-Tags.
          *
@@ -467,7 +479,7 @@ public final class DiffRowGenerator {
             this.newTag = generator;
             return this;
         }
-        
+
         /**
          * Generator for New-Text-Tags.
          *
@@ -573,6 +585,18 @@ public final class DiffRowGenerator {
          */
         public Builder equalizer(BiPredicate<String, String> equalizer) {
             this.equalizer = equalizer;
+            return this;
+        }
+        
+        /**
+         * Sometimes it happens that a change contains multiple lines. If there is no correspondence
+         * in old and new. To keep the merged line more readable the linefeeds could be replaced
+         * by spaces.
+         * @param replace
+         * @return 
+         */
+        public Builder replaceOriginalLinefeedInChangesWithSpaces(boolean replace) {
+            this.replaceOriginalLinefeedInChangesWithSpaces = replace;
             return this;
         }
     }
