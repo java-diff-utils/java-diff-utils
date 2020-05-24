@@ -66,11 +66,11 @@ public final class UnifiedDiffReader {
     // [/^-/, del], [/^\+/, add], [/^\\ No newline at end of file$/, eof]];
     private UnifiedDiff parse() throws IOException, UnifiedDiffParserException {
         String headerTxt = "";
-        LOG.log(Level.INFO, "header parsing");
+        LOG.log(Level.FINE, "header parsing");
         String line = null;
         while (READER.ready()) {
             line = READER.readLine();
-            LOG.log(Level.INFO, "parsing line {0}", line);
+            LOG.log(Level.FINE, "parsing line {0}", line);
             if (DIFF_COMMAND.validLine(line) || INDEX.validLine(line)
                     || FROM_FILE.validLine(line) || TO_FILE.validLine(line)) {
                 break;
@@ -139,11 +139,11 @@ public final class UnifiedDiffReader {
     private boolean processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
         for (UnifiedDiffLine rule : rules) {
             if (rule.processLine(line)) {
-                LOG.info("  >>> processed rule " + rule.toString());
+                LOG.fine("  >>> processed rule " + rule.toString());
                 return true;
             }
         }
-        LOG.info("  >>> no rule matched " + line);
+        LOG.warning("  >>> no rule matched " + line);
         return false;
         //throw new UnifiedDiffParserException("parsing error at line " + line);
     }
@@ -161,7 +161,7 @@ public final class UnifiedDiffReader {
 
     private void processDiff(MatchResult match, String line) {
         //initFileIfNecessary();
-        LOG.log(Level.INFO, "start {0}", line);
+        LOG.log(Level.FINE, "start {0}", line);
         String[] fromTo = parseFileNames(READER.lastLine());
         actualFile.setFromFile(fromTo[0]);
         actualFile.setToFile(fromTo[1]);
@@ -223,7 +223,7 @@ public final class UnifiedDiffReader {
 
     private void processIndex(MatchResult match, String line) {
         //initFileIfNecessary();
-        LOG.log(Level.INFO, "index {0}", line);
+        LOG.log(Level.FINE, "index {0}", line);
         actualFile.setIndex(line.substring(6));
     }
 
