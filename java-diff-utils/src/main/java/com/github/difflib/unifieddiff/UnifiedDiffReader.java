@@ -49,6 +49,8 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine FROM_FILE = new UnifiedDiffLine(true, "^---\\s", this::processFromFile);
     private final UnifiedDiffLine TO_FILE = new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile);
 
+    private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
+
     private final UnifiedDiffLine CHUNK = new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk);
     private final UnifiedDiffLine LINE_NORMAL = new UnifiedDiffLine("^\\s", this::processNormalLine);
     private final UnifiedDiffLine LINE_DEL = new UnifiedDiffLine("^-", this::processDelLine);
@@ -72,7 +74,8 @@ public final class UnifiedDiffReader {
             line = READER.readLine();
             LOG.log(Level.FINE, "parsing line {0}", line);
             if (DIFF_COMMAND.validLine(line) || INDEX.validLine(line)
-                    || FROM_FILE.validLine(line) || TO_FILE.validLine(line)) {
+                    || FROM_FILE.validLine(line) || TO_FILE.validLine(line)
+                    || NEW_FILE_MODE.validLine(line)) {
                 break;
             } else {
                 headerTxt += line + "\n";
@@ -85,26 +88,28 @@ public final class UnifiedDiffReader {
         while (line != null) {
             if (!CHUNK.validLine(line)) {
                 initFileIfNecessary();
-                while (!CHUNK.validLine(line)) {
-                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE) == false) {
+                while (line != null && !CHUNK.validLine(line)) {
+                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE) == false) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
                     line = READER.readLine();
                 }
             }
-            processLine(line, CHUNK);
-            while ((line = READER.readLine()) != null) {
-                if (processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL) == false) {
-                    throw new UnifiedDiffParserException("expected data line not found");
-                }
-                if ((originalTxt.size() == old_size && revisedTxt.size() == new_size) 
-                        || (old_size==0 && new_size==0 && originalTxt.size() == this.old_ln 
+            if (line != null) {
+                processLine(line, CHUNK);
+                while ((line = READER.readLine()) != null) {
+                    if (processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL) == false) {
+                        throw new UnifiedDiffParserException("expected data line not found");
+                    }
+                    if ((originalTxt.size() == old_size && revisedTxt.size() == new_size)
+                            || (old_size == 0 && new_size == 0 && originalTxt.size() == this.old_ln
                             && revisedTxt.size() == this.new_ln)) {
-                    finalizeChunk();
-                    break;
+                        finalizeChunk();
+                        break;
+                    }
                 }
+                line = READER.readLine();
             }
-            line = READER.readLine();
             if (line == null || line.startsWith("--")) {
                 break;
             }
@@ -137,6 +142,9 @@ public final class UnifiedDiffReader {
     }
 
     private boolean processLine(String line, UnifiedDiffLine... rules) throws UnifiedDiffParserException {
+        if (line == null) {
+            return false;
+        }
         for (UnifiedDiffLine rule : rules) {
             if (rule.processLine(line)) {
                 LOG.fine("  >>> processed rule " + rule.toString());
@@ -237,6 +245,11 @@ public final class UnifiedDiffReader {
         //initFileIfNecessary();
         actualFile.setToFile(extractFileName(line));
         actualFile.setToTimestamp(extractTimestamp(line));
+    }
+
+    private void processNewFileMode(MatchResult match, String line) {
+        //initFileIfNecessary();
+        actualFile.setNewFileMode(match.group(1));
     }
 
     private String extractFileName(String _line) {

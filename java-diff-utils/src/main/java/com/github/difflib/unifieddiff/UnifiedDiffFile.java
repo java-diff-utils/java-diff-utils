@@ -29,6 +29,7 @@ public final class UnifiedDiffFile {
     private String toFile;
     private String toTimestamp;
     private String index;
+    private String newFileMode;
     private Patch<String> patch = new Patch<>();
 
     public String getDiffCommand() {
@@ -91,5 +92,13 @@ public final class UnifiedDiffFile {
         file.setToFile(toFile);
         file.patch = patch;
         return file;
+    }
+
+    public void setNewFileMode(String newFileMode) {
+        this.newFileMode = newFileMode;
+    }
+    
+    public String getNewFileMode() {
+        return newFileMode;
     }
 }

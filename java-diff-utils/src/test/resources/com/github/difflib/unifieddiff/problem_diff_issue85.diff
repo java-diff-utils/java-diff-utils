@@ -1,0 +1,31 @@
+# HG changeset patch
+# User Anton Shestakov <av6@dwimlabs.net>
+# Date 1591442367 -28800
+# Node ID a4438263b228dd3e2983d59095c6180b1411f0e8
+# Parent  83e41b73d115e3717943c2e5a83d36d05670384c
+tests: skip pyflakes for mercurial/thirdparty/
+
+The current version of pyflakes (2.2.0) correctly detects one issue:
+
+  mercurial/thirdparty/selectors2.py:335:40 '...'.format(...) has unused arguments at position(s): 1
+
+But we're not interested in fixing lint errors in third-party code, so we need
+to exclude at least selectors2.py. And in the discussion for this patch it was
+decided to just skip the entire thirdparty directory.
+
+Differential Revision: https://phab.mercurial-scm.org/D8619
+
+diff -r 83e41b73d115 -r a4438263b228 tests/test-check-pyflakes.t
+--- a/tests/test-check-pyflakes.t	Tue Jun 09 17:13:26 2020 -0400
++++ b/tests/test-check-pyflakes.t	Sat Jun 06 19:19:27 2020 +0800
+@@ -16,9 +16,7 @@
+   $ testrepohg locate 'set:**.py or grep("^#!.*python")' \
+   > -X hgext/fsmonitor/pywatchman \
+   > -X mercurial/pycompat.py -X contrib/python-zstandard \
+-  > -X mercurial/thirdparty/cbor \
+-  > -X mercurial/thirdparty/concurrent \
+-  > -X mercurial/thirdparty/zope \
++  > -X mercurial/thirdparty \
+   > 2>/dev/null \
+   > | xargs $PYTHON -m pyflakes 2>/dev/null | "$TESTDIR/filterpyflakes.py"
+   contrib/perf.py:*:* undefined name 'xrange' (glob) (?)

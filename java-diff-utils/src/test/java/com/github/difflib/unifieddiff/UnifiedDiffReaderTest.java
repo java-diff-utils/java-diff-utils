@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -166,10 +167,29 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getFiles().size()).isEqualTo(1);
 
         UnifiedDiffFile file1 = diff.getFiles().get(0);
-        assertThat(file1.getFromFile()).isEqualTo("Main.java");
-        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+        assertThat(file1.getFromFile()).isEqualTo("test/Issue.java");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(0);
 
         assertThat(diff.getTail()).isNull();
         assertThat(diff.getHeader()).isNull();
+    }
+    
+    @Test
+    public void testParseIssue85() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue85.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        assertEquals(1, diff.getFiles().size());
+
+        final UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertEquals("diff -r 83e41b73d115 -r a4438263b228 tests/test-check-pyflakes.t",
+                file1.getDiffCommand());
+        assertEquals("tests/test-check-pyflakes.t", file1.getFromFile());
+        assertEquals("tests/test-check-pyflakes.t", file1.getToFile());
+        assertEquals(1, file1.getPatch().getDeltas().size());
+
+        assertNull(diff.getTail());
     }
 }

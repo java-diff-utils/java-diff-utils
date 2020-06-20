@@ -579,4 +579,23 @@ public class DiffRowGeneratorTest {
 
         assertThat(diffRows).hasSize(2);
     }
+
+    @Test
+    public void testLinefeedInStandardTagsWithLineWidthIssue81() {
+        List<String> original = Arrays.asList(("American bobtail jaguar. American bobtail bombay but turkish angora and tomcat.\n"
+                + "Russian blue leopard. Lion. Tabby scottish fold for russian blue, so savannah yet lynx. Tomcat singapura, cheetah.\n"
+                + "Bengal tiger panther but singapura but bombay munchkin for cougar.").split("\n"));
+        List<String> revised = Arrays.asList(("bobtail jaguar. American bobtail turkish angora and tomcat.\n"
+                + "Russian blue leopard. Lion. Tabby scottish folded for russian blue, so savannah yettie? lynx. Tomcat singapura, cheetah.\n"
+                + "Bengal tiger panther but singapura but bombay munchkin for cougar. And more.").split("\n"));
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .ignoreWhiteSpaces(true)
+                .columnWidth(100)
+                .build();
+        List<DiffRow> deltas = generator.generateDiffRows(original, revised);
+
+        System.out.println(deltas);
+    }
 }
