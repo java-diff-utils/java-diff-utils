@@ -7,6 +7,10 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ## [Unreleased]
 
+### Changed
+
+* UnifiedDiffReader improved for **new file mode** and better timestamp recognition
+
 ## [4.7]
 
 ### Changed 
