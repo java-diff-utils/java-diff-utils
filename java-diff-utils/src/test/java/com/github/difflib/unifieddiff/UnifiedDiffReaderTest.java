@@ -192,4 +192,9 @@ public class UnifiedDiffReaderTest {
 
         assertNull(diff.getTail());
     }
+    
+    @Test
+    public void testTimeStampRegexp() {
+        assertThat("2019-04-18 13:49:39.516149751 +0200").matches(UnifiedDiffReader.TIMESTAMP_REGEXP);
+    }
 }

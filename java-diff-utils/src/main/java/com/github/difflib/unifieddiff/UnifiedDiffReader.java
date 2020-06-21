@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 public final class UnifiedDiffReader {
 
     static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern.compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@");
-    static final Pattern TIMESTAMP_REGEXP = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}\\.\\d{3,})");
+    static final Pattern TIMESTAMP_REGEXP = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}\\.\\d{3,})(?: [+-]\\d+)?");
 
     private final InternalUnifiedDiffReader READER;
     private final UnifiedDiff data = new UnifiedDiff();
@@ -258,8 +258,9 @@ public final class UnifiedDiffReader {
         if (matcher.find()) {
             line = line.substring(0, matcher.start());
         }
+        line = line.split("\t")[0];
         return line.substring(4).replaceFirst("^(a|b|old|new)(\\/)?", "")
-                .replace(TIMESTAMP_REGEXP.toString(), "").trim();
+                .trim();
     }
 
     private String extractTimestamp(String line) {
