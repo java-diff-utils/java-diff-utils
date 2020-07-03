@@ -1,5 +1,6 @@
 package com.github.difflib;
 
+import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
 import java.io.BufferedReader;
@@ -8,9 +9,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
@@ -124,6 +127,44 @@ public class GenerateUnifiedDiffTest {
         assertEquals("@@ -0,0 +1,2 @@", udiff.get(2));
         
         UnifiedDiffUtils.parseUnifiedDiff(udiff);
+    }
+
+    /**
+     * Issue 89
+     */
+    @Test
+    public void testChagngePosition() throws IOException {
+        final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue89_patch.txt");
+        final Patch<String> patch = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
+        List<Integer> realRemoveListOne = Collections.singletonList(3);
+        List<Integer> realAddListOne = Arrays.asList(3, 7, 8, 9, 10, 11, 12, 13, 14);
+        validateChangePosition(patch, 0, realRemoveListOne, realAddListOne);
+        List<Integer> realRemoveListTwo = new ArrayList<>();
+        List<Integer> realAddListTwo = Arrays.asList(27, 28);
+        validateChangePosition(patch, 1, realRemoveListTwo, realAddListTwo);
+
+    }
+
+    private void validateChangePosition(Patch<String> patch, int index, List<Integer> realRemoveList,
+                                        List<Integer> realAddList ) {
+        final Chunk originChunk = patch.getDeltas().get(index).getSource();
+        List<Integer> removeList = originChunk.getChangePosition();
+        assertEquals(realRemoveList.size(), removeList.size());
+        for (Integer ele: realRemoveList) {
+            assertTrue(realRemoveList.contains(ele));
+        }
+        for (Integer ele: removeList) {
+            assertTrue(realAddList.contains(ele));
+        }
+        final Chunk targetChunk = patch.getDeltas().get(index).getTarget();
+        List<Integer> addList = targetChunk.getChangePosition();
+        assertEquals(realAddList.size(), addList.size());
+        for (Integer ele: realAddList) {
+            assertTrue(addList.contains(ele));
+        }
+        for (Integer ele: addList) {
+            assertTrue(realAddList.contains(ele));
+        }
     }
 
     private void verify(List<String> origLines, List<String> revLines,

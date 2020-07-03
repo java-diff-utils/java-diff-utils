@@ -97,19 +97,31 @@ public final class UnifiedDiffUtils {
             List<String> oldChunkLines = new ArrayList<>();
             List<String> newChunkLines = new ArrayList<>();
 
+            List<Integer> removePosition = new ArrayList<>();
+            List<Integer> addPosition = new ArrayList<>();
+            int removeNum = 0;
+            int addNum = 0;
             for (String[] raw_line : rawChunk) {
                 tag = raw_line[0];
                 rest = raw_line[1];
                 if (" ".equals(tag) || "-".equals(tag)) {
+                    removeNum++;
                     oldChunkLines.add(rest);
+                    if ("-".equals(tag)) {
+                        removePosition.add(old_ln - 1 + removeNum);
+                    }
                 }
                 if (" ".equals(tag) || "+".equals(tag)) {
+                    addNum++;
                     newChunkLines.add(rest);
+                    if ("+".equals(tag)) {
+                        addPosition.add(new_ln - 1 + addNum);
+                    }
                 }
             }
             patch.addDelta(new ChangeDelta<>(new Chunk<>(
-                    old_ln - 1, oldChunkLines), new Chunk<>(
-                    new_ln - 1, newChunkLines)));
+                    old_ln - 1, oldChunkLines, removePosition), new Chunk<>(
+                    new_ln - 1, newChunkLines, addPosition)));
             rawChunk.clear();
         }
     }
