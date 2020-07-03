@@ -118,7 +118,10 @@ public final class UnifiedDiffReader {
         if (READER.ready()) {
             String tailTxt = "";
             while (READER.ready()) {
-                tailTxt += READER.readLine() + "\n";
+                if (tailTxt.length() > 0) {
+                    tailTxt += "\n";
+                }
+                tailTxt += READER.readLine();
             }
             data.setTailTxt(tailTxt);
         }

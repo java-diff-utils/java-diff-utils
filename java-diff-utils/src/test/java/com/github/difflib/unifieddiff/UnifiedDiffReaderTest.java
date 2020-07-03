@@ -43,7 +43,7 @@ public class UnifiedDiffReaderTest {
         assertThat(file1.getFromFile()).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt");
         assertThat(file1.getPatch().getDeltas().size()).isEqualTo(3);
 
-        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
+        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n");
     }
 
     @Test
@@ -101,7 +101,7 @@ public class UnifiedDiffReaderTest {
         assertThat(first.getSource().size()).isGreaterThan(0);
         assertThat(first.getTarget().size()).isGreaterThan(0);
 
-        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n\n");
+        assertThat(diff.getTail()).isEqualTo("2.17.1.windows.2\n");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getTail()).isNull();
         assertThat(diff.getHeader()).isNull();
     }
-    
+
     @Test
     public void testParseIssue51() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
@@ -158,7 +158,7 @@ public class UnifiedDiffReaderTest {
 
         assertThat(diff.getTail()).isNull();
     }
-    
+
     @Test
     public void testParseIssue79() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
@@ -173,7 +173,26 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getTail()).isNull();
         assertThat(diff.getHeader()).isNull();
     }
-    
+
+    @Test
+    public void testParseIssue84() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue84.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("config/ant-phase-verify.xml");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+
+        UnifiedDiffFile file2 = diff.getFiles().get(1);
+        assertThat(file2.getFromFile()).isEqualTo("/dev/null");
+        assertThat(file2.getPatch().getDeltas().size()).isEqualTo(1);
+
+        assertThat(diff.getTail()).isEqualTo("2.7.4");
+        assertThat(diff.getHeader()).startsWith("From b53e612a2ab5ff15d14860e252f84c0f343fe93a Mon Sep 17 00:00:00 2001");
+    }
+
     @Test
     public void testParseIssue85() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
@@ -192,7 +211,7 @@ public class UnifiedDiffReaderTest {
 
         assertNull(diff.getTail());
     }
-    
+
     @Test
     public void testTimeStampRegexp() {
         assertThat("2019-04-18 13:49:39.516149751 +0200").matches(UnifiedDiffReader.TIMESTAMP_REGEXP);
