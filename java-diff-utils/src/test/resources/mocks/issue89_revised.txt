@@ -1,0 +1,30 @@
+package checkstyle_demo.PatchSuppression.MultiChangeInOneFile;
+
+public class issue89_revised {
+    public void test1() {
+
+    }
+
+    public void test2() {
+
+    }
+
+    public void test3() {
+
+    }
+}
+
+class Test {
+    private int i;
+    void foo() {
+        i++;
+    }
+}
+
+class Test2 {
+    public void test1() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+    }
+}

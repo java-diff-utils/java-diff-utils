@@ -37,6 +37,20 @@ public final class Chunk<T> {
 
     private final int position;
     private List<T> lines;
+    private final List<Integer> changePosition;
+
+    /**
+     * Creates a chunk and saves a copy of affected lines
+     *
+     * @param position the start position
+     * @param lines the affected lines
+     * @param changePosition the positions of changed lines
+     */
+    public Chunk(int position, List<T> lines, List<Integer> changePosition) {
+        this.position = position;
+        this.lines = new ArrayList<>(lines);
+        this.changePosition = changePosition;
+    }
 
     /**
      * Creates a chunk and saves a copy of affected lines
@@ -45,8 +59,20 @@ public final class Chunk<T> {
      * @param lines the affected lines
      */
     public Chunk(int position, List<T> lines) {
+        this(position, lines, null);
+    }
+
+    /**
+     * Creates a chunk and saves a copy of affected lines
+     *
+     * @param position the start position
+     * @param lines the affected lines
+     * @param changePosition the positions of changed lines
+     */
+    public Chunk(int position, T[] lines, List<Integer> changePosition) {
         this.position = position;
-        this.lines = new ArrayList<>(lines);
+        this.lines = Arrays.asList(lines);
+        this.changePosition = changePosition;
     }
 
     /**
@@ -56,8 +82,7 @@ public final class Chunk<T> {
      * @param lines the affected lines
      */
     public Chunk(int position, T[] lines) {
-        this.position = position;
-        this.lines = Arrays.asList(lines);
+        this(position, lines, null);
     }
 
     /**
@@ -94,6 +119,13 @@ public final class Chunk<T> {
      */
     public List<T> getLines() {
         return lines;
+    }
+
+    /**
+     * @return the positions of changed lines of chunk in the text
+     */
+    public List<Integer> getChangePosition() {
+        return changePosition;
     }
 
     public int size() {
