@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/GitLiveApp/kotlin-diff-utils#readme",
   "dependencies": {
-    "kotlin": "1.3.70"
+    "kotlin": "1.3.72"
   }
 }
