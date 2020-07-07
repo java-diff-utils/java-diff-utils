@@ -1,7 +1,8 @@
 name: Publish Master
 
 on:
-  push:
+#  push:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -27,10 +28,12 @@ jobs:
         env:
           TOKEN: ${{ secrets.AUTO_TOKEN }}
           USERNAME: ${{ secrets.AUTO_USERNAME }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PASSPHRASE }}
       - name: Setup NPM
-        run: npm config set //npm.pkg.github.com/:_authToken=$token
+        run: npm config set //registry.npmjs.org/:_authToken=$token
         env:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.NPM_TOKEN }}
       - name: Publish npm
         uses: eskatos/gradle-command-action@v1
         with:
