@@ -1,9 +1,11 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 group = "dev.gitlive"
 version = "4.1.6"
 
 plugins {
     `maven-publish`
-    `signing`
+    signing
     kotlin("native.cocoapods")
     kotlin("multiplatform")
 }
@@ -95,7 +97,11 @@ tasks {
         }
         dependsOn(copyPackageJson, copyJS, copySourceMap, copyReadMe)
         workingDir("$buildDir/node_module")
-        commandLine("npm", "publish")
+        if(Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine("cmd", "/c", "npm publish")
+        } else {
+            commandLine("npm", "publish")
+        }
     }
 }
 
@@ -113,18 +119,13 @@ tasks.named("publishToMavenLocal").configure {
     shouldSign = false
 }
 
-signing {
-    sign(publishing.publications)
-}
-
-
 publishing {
     repositories {
         maven {
             url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
             credentials {
-                username = project.property("sonatypeUsername") as String
-                password = project.property("sonatypePassword") as String
+                username = project.findProperty("sonatypeUsername") as String? ?: System.getenv("sonatypeUsername")
+                password = project.findProperty("sonatypePassword") as String? ?: System.getenv("sonatypePassword")
             }
         }
     }
@@ -170,4 +171,11 @@ publishing {
 
         }
     }
+}
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications)
 }
