@@ -29,43 +29,43 @@ import org.junit.Test
  */
 class MyersDiffTest {
 
-    @Test
-    @Throws(DiffException::class)
-    fun testDiffMyersExample1Forward() {
-        val original = Arrays.asList("A", "B", "C", "A", "B", "B", "A")
-        val revised = Arrays.asList("C", "B", "A", "B", "A", "C")
-        val patch = Patch.generate(original, revised, MyersDiff<String>().computeDiff(original, revised, null))
-        assertNotNull(patch)
-        assertEquals(4, patch.deltas.size.toLong())
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString())
-    }
-
-    @Test
-    @Throws(DiffException::class)
-    fun testDiffMyersExample1ForwardWithListener() {
-        val original = Arrays.asList("A", "B", "C", "A", "B", "B", "A")
-        val revised = Arrays.asList("C", "B", "A", "B", "A", "C")
-
-        val logdata = ArrayList<String>()
-        val patch = Patch.generate(original, revised,
-                MyersDiff<String>().computeDiff(original, revised, object : DiffAlgorithmListener {
-                    override fun diffStart() {
-                        logdata.add("start")
-                    }
-
-                    override fun diffStep(value: Int, max: Int) {
-                        logdata.add("$value - $max")
-                    }
-
-                    override fun diffEnd() {
-                        logdata.add("end")
-                    }
-                }))
-        assertNotNull(patch)
-        assertEquals(4, patch.deltas.size.toLong())
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString())
-        println(logdata)
-        assertEquals(8, logdata.size.toLong())
-    }
+//    @Test
+//    @Throws(DiffException::class)
+//    fun testDiffMyersExample1Forward() {
+//        val original = Arrays.asList("A", "B", "C", "A", "B", "B", "A")
+//        val revised = Arrays.asList("C", "B", "A", "B", "A", "C")
+//        val patch = Patch.generate(original, revised, MyersDiff<String>().computeDiff(original, revised, null))
+//        assertNotNull(patch)
+//        assertEquals(4, patch.deltas.size.toLong())
+//        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString())
+//    }
+//
+//    @Test
+//    @Throws(DiffException::class)
+//    fun testDiffMyersExample1ForwardWithListener() {
+//        val original = Arrays.asList("A", "B", "C", "A", "B", "B", "A")
+//        val revised = Arrays.asList("C", "B", "A", "B", "A", "C")
+//
+//        val logdata = ArrayList<String>()
+//        val patch = Patch.generate(original, revised,
+//                MyersDiff<String>().computeDiff(original, revised, object : DiffAlgorithmListener {
+//                    override fun diffStart() {
+//                        logdata.add("start")
+//                    }
+//
+//                    override fun diffStep(value: Int, max: Int) {
+//                        logdata.add("$value - $max")
+//                    }
+//
+//                    override fun diffEnd() {
+//                        logdata.add("end")
+//                    }
+//                }))
+//        assertNotNull(patch)
+//        assertEquals(4, patch.deltas.size.toLong())
+//        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString())
+//        println(logdata)
+//        assertEquals(8, logdata.size.toLong())
+//    }
 
 }
