@@ -18,16 +18,13 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: assemble
-        env:
-          TOKEN: ${{ secrets.AUTO_TOKEN }}
-          USERNAME: ${{ secrets.AUTO_USERNAME }}
       - name: Publish
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: publish
         env:
-          TOKEN: ${{ secrets.AUTO_TOKEN }}
-          USERNAME: ${{ secrets.AUTO_USERNAME }}
+          sonatypeUsername: ${{ secrets.SONATYPEUSERNAME }}
+          sonatypePassword: ${{ secrets.SONATYPEPASSWORD }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PASSPHRASE }}
       - name: Setup NPM

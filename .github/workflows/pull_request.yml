@@ -17,9 +17,6 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: build
-        env:
-          TOKEN: ${{ secrets.AUTO_TOKEN }}
-          USERNAME: ${{ secrets.AUTO_USERNAME }}
       - name: Test
         uses: eskatos/gradle-command-action@v1
         with:
