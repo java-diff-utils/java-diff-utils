@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/GitLiveApp/kotlin-diff-utils"
   },
+  "publishConfig": {
+    "registry":"https://registry.npmjs.org/"
+  },
   "keywords": [
     "diffs",
     "kotlin",
