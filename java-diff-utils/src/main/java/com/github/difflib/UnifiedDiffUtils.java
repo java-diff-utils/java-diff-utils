@@ -33,6 +33,7 @@ public final class UnifiedDiffUtils {
 
     private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
             .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
+    private static final String NULL_FILE_INDICATOR = "/dev/null";
 
     /**
      * Parse the given text in unified format and creates the list of deltas for it.
@@ -143,8 +144,8 @@ public final class UnifiedDiffUtils {
             int contextSize) {
         if (!patch.getDeltas().isEmpty()) {
             List<String> ret = new ArrayList<>();
-            ret.add("--- " + Optional.ofNullable(originalFileName).orElse(""));
-            ret.add("+++ " + Optional.ofNullable(revisedFileName).orElse(""));
+            ret.add("--- " + Optional.ofNullable(originalFileName).orElse(NULL_FILE_INDICATOR));
+            ret.add("+++ " + Optional.ofNullable(revisedFileName).orElse(NULL_FILE_INDICATOR));
 
             List<AbstractDelta<String>> patchDeltas = new ArrayList<>(
                     patch.getDeltas());
