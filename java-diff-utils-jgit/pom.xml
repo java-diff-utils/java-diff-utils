@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.4.1.201607150455-r</version>
+            <version>5.8.1.202007141445-r</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.googlecode.javaewah</groupId>

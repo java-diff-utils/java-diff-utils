@@ -1,0 +1,8 @@
+MessageTime,MessageType,Instrument,InstrumentState,TradePrice,TradeVolume,TradeCond,TradeId,AskPrice1,AskVol1,BidPrice1,BidVol1,AskPrice2,AskVol2,BidPrice2,BidVol2,AskPrice3,AskVol3,BidPrice3,BidVol3,AskPrice4,AskVol4,BidPrice4,BidVol4,AskPrice5,AskVol5,BidPrice5,BidVol5
+2020-04-02T08:00:00.000Z,S,HHD_MAY20,Open,,,,,,,,,,,,,,,,,,,,,,,,
+2020-04-02T08:00:00.000Z,S,FHK_C23.5_MAY20,Open,,,,,,,,,,,,,,,,,,,,,,,,
+2020-04-04T13:49:11.522Z,Q,HHD_MAY20,,,,,,2.6,10,2.6,10,,,,,,,,,,,,,,,,
+2020-04xs-04T17dw:00:00.000Z,Sdwdw,HHD_MAY20dwdw,Closdwde,,,,,,,,,,,,,,,,,,,,,,,,
+2020-04-04T13:49:18.210Z,T,HHD_MAY20,,2.6,2,Screen,0,,,,,,,,,,,,,,,,,,,,
+2020-04-04T17:00:00.000Z,S,HHD_MAY20,Close,,,,,,,,,,,,,,,,,,,,,,,,
+2020-04-04T17:00:00.000Z,S,FHK_C23.5_MAY20,Close,,,,,,,,,,,,,,,,,,,,,,,,

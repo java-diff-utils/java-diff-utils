@@ -3,10 +3,12 @@ package com.github.difflib.text;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -597,5 +599,26 @@ public class DiffRowGeneratorTest {
         List<DiffRow> deltas = generator.generateDiffRows(original, revised);
 
         System.out.println(deltas);
+    }
+    
+    @Test
+    public void testIssue86WrongInlineDiff() throws IOException {      
+        String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_original.txt")).collect(joining("\n"));
+        String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_revised.txt")).collect(joining("\n"));
+        
+        DiffRowGenerator generator = DiffRowGenerator.create()
+            .showInlineDiffs(true)
+            .mergeOriginalRevised(false)
+            .inlineDiffByWord(true)
+            .oldTag( f -> "~" )
+            .newTag( f -> "**" )
+            .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(original.split("\n")),
+                Arrays.asList(revised.split("\n")));
+        
+        for (DiffRow diff : rows) {
+            System.out.println(diff);
+        }
     }
 }

@@ -82,6 +82,6 @@ public class HistogramDiffTest {
         assertEquals(revList, patched);
         
         System.out.println(logdata);
-        assertEquals(17, logdata.size());
+        assertEquals(19, logdata.size());
     }
 }
