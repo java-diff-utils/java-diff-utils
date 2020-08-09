@@ -59,7 +59,7 @@ public class UnifiedDiffWriter {
                     writer.accept("index " + file.getIndex());
                 }
 
-                writer.accept("--- " + file.getFromFile());
+                writer.accept("--- " + (file.getFromFile() == null ? "/dev/null" : file.getFromFile()));
 
                 if (file.getToFile() != null) {
                     writer.accept("+++ " + file.getToFile());
@@ -96,7 +96,7 @@ public class UnifiedDiffWriter {
 
                 }
                 // don't forget to process the last set of Deltas
-                processDeltas(writer, originalLines, deltas, contextSize, 
+                processDeltas(writer, originalLines, deltas, contextSize,
                         patchDeltas.size() == 1 && file.getFromFile() == null);
             }
 
@@ -156,7 +156,7 @@ public class UnifiedDiffWriter {
             AbstractDelta<String> nextDelta = deltas.get(deltaIndex);
             int intermediateStart = curDelta.getSource().getPosition()
                     + curDelta.getSource().getLines().size();
-            for (line = intermediateStart; line < nextDelta.getSource().getPosition() 
+            for (line = intermediateStart; line < nextDelta.getSource().getPosition()
                     && line < origLines.size(); line++) {
                 // output the code between the last Delta and this one
                 buffer.add(" " + origLines.get(line));
