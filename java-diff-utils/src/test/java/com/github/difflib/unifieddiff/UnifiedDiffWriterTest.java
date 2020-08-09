@@ -72,7 +72,7 @@ public class UnifiedDiffWriterTest {
         
         String[] lines = writer.toString().split("\\n");
         
-        assertEquals("--- null", lines[0]);
+        assertEquals("--- /dev/null", lines[0]);
         assertEquals("+++ revised", lines[1]);
         assertEquals("@@ -0,0 +1,2 @@", lines[2]);
     }
