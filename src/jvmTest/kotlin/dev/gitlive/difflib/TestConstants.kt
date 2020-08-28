@@ -7,7 +7,7 @@ package dev.gitlive.difflib
  */
 object TestConstants {
 
-    val BASE_FOLDER_RESOURCES = "target/test-classes/"
+    val BASE_FOLDER_RESOURCES = "src/jvmTest/resources/"
     /**
      * The base folder containing the test files.
      */
