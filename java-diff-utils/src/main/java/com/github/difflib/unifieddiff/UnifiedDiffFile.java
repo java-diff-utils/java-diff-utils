@@ -30,6 +30,7 @@ public final class UnifiedDiffFile {
     private String toTimestamp;
     private String index;
     private String newFileMode;
+    private String deletedFileMode;
     private Patch<String> patch = new Patch<>();
 
     public String getDiffCommand() {
@@ -100,5 +101,13 @@ public final class UnifiedDiffFile {
     
     public String getNewFileMode() {
         return newFileMode;
+    }
+
+    public String getDeletedFileMode() {
+        return deletedFileMode;
+    }
+
+    public void setDeletedFileMode(String deletedFileMode) {
+        this.deletedFileMode = deletedFileMode;
     }
 }

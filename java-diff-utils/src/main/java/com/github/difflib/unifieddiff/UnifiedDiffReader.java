@@ -50,6 +50,8 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine TO_FILE = new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile);
 
     private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
+    
+    private final UnifiedDiffLine DELETED_FILE_MODE = new UnifiedDiffLine(true, "^deleted\\sfile\\smode\\s(\\d+)", this::processDeletedFileMode);
 
     private final UnifiedDiffLine CHUNK = new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk);
     private final UnifiedDiffLine LINE_NORMAL = new UnifiedDiffLine("^\\s", this::processNormalLine);
@@ -89,7 +91,7 @@ public final class UnifiedDiffReader {
             if (!CHUNK.validLine(line)) {
                 initFileIfNecessary();
                 while (line != null && !CHUNK.validLine(line)) {
-                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE) == false) {
+                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE, DELETED_FILE_MODE) == false) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
                     line = READER.readLine();
@@ -253,6 +255,11 @@ public final class UnifiedDiffReader {
     private void processNewFileMode(MatchResult match, String line) {
         //initFileIfNecessary();
         actualFile.setNewFileMode(match.group(1));
+    }
+    
+    private void processDeletedFileMode(MatchResult match, String line) {
+        //initFileIfNecessary();
+        actualFile.setDeletedFileMode(match.group(1));
     }
 
     private String extractFileName(String _line) {

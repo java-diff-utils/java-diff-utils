@@ -220,4 +220,20 @@ public class UnifiedDiffReaderTest {
     public void testTimeStampRegexp() {
         assertThat("2019-04-18 13:49:39.516149751 +0200").matches(UnifiedDiffReader.TIMESTAMP_REGEXP);
     }
+    
+    @Test
+    public void testParseIssue98() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue98.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        assertEquals(1, diff.getFiles().size());
+
+        final UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertEquals("100644",
+                file1.getDeletedFileMode());
+        assertEquals("src/test/java/se/bjurr/violations/lib/model/ViolationTest.java", file1.getFromFile());
+        assertThat(diff.getTail()).isEqualTo("2.25.1");
+    }
 }
