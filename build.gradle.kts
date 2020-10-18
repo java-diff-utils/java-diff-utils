@@ -1,13 +1,13 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group = "dev.gitlive"
-version = "4.1.6"
+version = "4.2.0"
 
 plugins {
     `maven-publish`
     signing
-    kotlin("native.cocoapods")
-    kotlin("multiplatform")
+    kotlin("native.cocoapods") version "1.4.10"
+    kotlin("multiplatform") version "1.4.10"
 }
 
 repositories {
