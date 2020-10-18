@@ -1,7 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group = "dev.gitlive"
-version = "4.2.0"
+version = "5.0.0"
 
 plugins {
     `maven-publish`
