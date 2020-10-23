@@ -15,6 +15,7 @@
  */
 package com.github.difflib.patch;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.Objects;
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
  * @param <T> The type of the compared elements in the 'lines'.
  */
-public final class Chunk<T> {
+public final class Chunk<T> implements Serializable {
 
     private final int position;
     private List<T> lines;

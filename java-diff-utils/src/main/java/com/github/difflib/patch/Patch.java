@@ -21,6 +21,8 @@ package com.github.difflib.patch;
 
 import static java.util.Comparator.comparing;
 import com.github.difflib.algorithm.Change;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.ListIterator;
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param <T> The type of the compared elements in the 'lines'.
  */
-public final class Patch<T> {
+public final class Patch<T> implements Serializable {
 
     private final List<AbstractDelta<T>> deltas;
 
