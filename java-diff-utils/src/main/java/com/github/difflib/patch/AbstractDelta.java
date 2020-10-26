@@ -15,6 +15,7 @@
  */
 package com.github.difflib.patch;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ import java.util.Objects;
  * Abstract delta between a source and a target. 
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-public abstract class AbstractDelta<T> {
+public abstract class AbstractDelta<T> implements Serializable {
     private final Chunk<T> source;
     private final Chunk<T> target;
     private final DeltaType type;
