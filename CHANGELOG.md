@@ -9,6 +9,8 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ### Changed
 
+* make patch serializable
+
 ## [4.8]
 
 ### Changed
