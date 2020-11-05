@@ -49,6 +49,8 @@ public class StringUtilsTest {
         assertEquals("te<br/>st", StringUtils.wrapText("test", 2));
         assertEquals("tes<br/>t", StringUtils.wrapText("test", 3));
         assertEquals("test", StringUtils.wrapText("test", 10));
+        assertEquals(".\uD800\uDC01<br/>.", StringUtils.wrapText(".\uD800\uDC01.", 2));
+        assertEquals("..<br/>\uD800\uDC01", StringUtils.wrapText("..\uD800\uDC01", 3));
     }
 
     @Test

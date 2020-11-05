@@ -21,10 +21,10 @@ import static java.util.stream.Collectors.toList;
 final class StringUtils {
 
     /**
-     * Replaces all opening an closing tags with <code>&lt;</code> or <code>&gt;</code>.
+     * Replaces all opening and closing tags with <code>&lt;</code> or <code>&gt;</code>.
      *
      * @param str
-     * @return
+     * @return str with some HTML meta characters escaped.
      */
     public static String htmlEntites(String str) {
         return str.replace("<", "&lt;").replace(">", "&gt;");
@@ -61,7 +61,17 @@ final class StringUtils {
         StringBuilder b = new StringBuilder(line);
 
         for (int count = 0; length > widthIndex; count++) {
-            b.insert(widthIndex + delimiter * count, "<br/>");
+            int breakPoint = widthIndex + delimiter * count;
+            if (Character.isHighSurrogate(b.charAt(breakPoint - 1)) &&
+                Character.isLowSurrogate(b.charAt(breakPoint))) {
+              // Shift a breakpoint that would split a supplemental code-point.
+              breakPoint += 1;
+              if (breakPoint == b.length()) {
+                // Break before instead of after if this is the last code-point.
+                breakPoint -= 2;
+              }
+            }
+            b.insert(breakPoint, "<br/>");
             widthIndex += columnWidth;
         }
 
