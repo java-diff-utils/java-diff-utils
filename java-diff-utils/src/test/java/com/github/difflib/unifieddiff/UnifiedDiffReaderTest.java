@@ -236,4 +236,20 @@ public class UnifiedDiffReaderTest {
         assertEquals("src/test/java/se/bjurr/violations/lib/model/ViolationTest.java", file1.getFromFile());
         assertThat(diff.getTail()).isEqualTo("2.25.1");
     }
+    
+    @Test
+    public void testParseIssue104() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_parsing_issue104.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(6);
+
+        final UnifiedDiffFile file = diff.getFiles().get(2);
+        assertThat(file.getFromFile()).isEqualTo("/dev/null");
+        assertThat(file.getToFile()).isEqualTo("doc/samba_data_tool_path.xml.in");
+                
+        assertThat(file.getPatch().toString()).isEqualTo("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}");
+
+        assertThat(diff.getTail()).isEqualTo("2.14.4");
+    }
 }

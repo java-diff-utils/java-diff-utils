@@ -219,9 +219,9 @@ public final class UnifiedDiffReader {
     private void processChunk(MatchResult match, String chunkStart) {
         // finalizeChunk();
         old_ln = toInteger(match, 1, 1);
-        old_size = toInteger(match, 2, 0);
+        old_size = toInteger(match, 2, 1);
         new_ln = toInteger(match, 3, 1);
-        new_size = toInteger(match, 4, 0);
+        new_size = toInteger(match, 4, 1);
         if (old_ln == 0) {
             old_ln = 1;
         }

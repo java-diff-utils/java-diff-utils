@@ -1,0 +1,291 @@
+From 9b73f79a2436760b8278377014bf78a144a427ae Mon Sep 17 00:00:00 2001
+From: Sumit Bose <sbose@redhat.com>
+Date: Thu, 1 Feb 2018 14:26:22 +0100
+Subject: [PATCH 15/23] make Samba data tool configurable
+
+Allow to specify an alternative path to Samba's net utility at configure
+time and at run time.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=100118
+
+Reviewed-by: Jakub Hrozek <jhrozek@redhat.com>
+---
+ configure.ac                    | 13 ++++++++++++
+ doc/adcli.xml                   | 21 ++++++++++++++++++-
+ doc/samba_data_tool_path.xml.in |  1 +
+ library/adenroll.c              | 46 ++++++++++++++++++++++++++++++++++-------
+ library/adenroll.h              |  5 +++++
+ tools/computer.c                | 16 ++++++++++++++
+ 7 files changed, 95 insertions(+), 8 deletions(-)
+ create mode 100644 doc/samba_data_tool_path.xml.in
+
+diff --git a/configure.ac b/configure.ac
+index fe86638..68877c7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -291,6 +291,18 @@ else
+ 	AC_DEFINE_UNQUOTED(BIN_ECHO, "$BIN_ECHO", [path to echo, used in unit test])
+ fi
+ 
++AC_MSG_CHECKING([where is Samba's net utility])
++AC_ARG_WITH([samba_data_tool],
++              AC_HELP_STRING([--with-samba-data-tool=/path],
++              [Path to Samba's net utility]),
++              [],
++              [with_samba_data_tool=/usr/bin/net])
++AC_MSG_RESULT([$with_samba_data_tool])
++
++AC_DEFINE_UNQUOTED(SAMBA_DATA_TOOL, "$with_samba_data_tool",
++                   [Path to Samba's net utility])
++
++AC_SUBST(SAMBA_DATA_TOOL, [$with_samba_data_tool])
+ # ---------------------------------------------------------------------
+ 
+ ADCLI_LT_RELEASE=$ADCLI_CURRENT:$ADCLI_REVISION:$ADCLI_AGE
+@@ -300,6 +312,7 @@ AC_CONFIG_FILES([Makefile
+ 	build/Makefile
+ 	doc/Makefile
+ 	doc/version.xml
++	doc/samba_data_tool_path.xml
+ 	library/Makefile
+ 	tools/Makefile
+ ])
+diff --git a/doc/adcli.xml b/doc/adcli.xml
+index fbc6c63..c2b7760 100644
+--- a/doc/adcli.xml
++++ b/doc/adcli.xml
+@@ -1,6 +1,9 @@
+ <?xml version='1.0'?>
+ <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+-	"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
++	"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
++[
++	<!ENTITY samba_data_tool SYSTEM "samba_data_tool_path.xml">
++]>
+ 
+ <refentry id="adcli">
+ 
+@@ -307,6 +310,14 @@ Password for Administrator:
+ 			<citerefentry><refentrytitle>smb.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+ 			for details.</para></listitem>
+ 		</varlistentry>
++		<varlistentry>
++			<term><option>--samba-data-tool=<parameter>/path/to/net</parameter></option></term>
++			<listitem><para>If Samba's <command>net</command>
++			cannot be found at
++			<filename>&samba_data_tool;</filename> this option can
++			be used to specific an alternative location with the
++			help of an absolute path.</para></listitem>
++		</varlistentry>
+ 	</variablelist>
+ 
+ </refsect1>
+@@ -412,6 +423,14 @@ $ adcli update --login-ccache=/tmp/krbcc_123
+ 			<citerefentry><refentrytitle>smb.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+ 			for details.</para></listitem>
+ 		</varlistentry>
++		<varlistentry>
++			<term><option>--samba-data-tool=<parameter>/path/to/net</parameter></option></term>
++			<listitem><para>If Samba's <command>net</command>
++			cannot be found at
++			<filename>&samba_data_tool;</filename> this option can
++			be used to specific an alternative location with the
++			help of an absolute path.</para></listitem>
++		</varlistentry>
+ 	</variablelist>
+ 
+ </refsect1>
+diff --git a/doc/samba_data_tool_path.xml.in b/doc/samba_data_tool_path.xml.in
+new file mode 100644
+index 0000000..a667c57
+--- /dev/null
++++ b/doc/samba_data_tool_path.xml.in
+@@ -0,0 +1 @@
++@SAMBA_DATA_TOOL@
+diff --git a/library/adenroll.c b/library/adenroll.c
+index 20731cd..a693049 100644
+--- a/library/adenroll.c
++++ b/library/adenroll.c
+@@ -42,6 +42,10 @@
+ #include <stdio.h>
+ #include <unistd.h>
+ 
++#ifndef SAMBA_DATA_TOOL
++#define SAMBA_DATA_TOOL "/usr/bin/net"
++#endif
++
+ static krb5_enctype v60_later_enctypes[] = {
+ 	ENCTYPE_AES256_CTS_HMAC_SHA1_96,
+ 	ENCTYPE_AES128_CTS_HMAC_SHA1_96,
+@@ -100,6 +104,7 @@ struct _adcli_enroll {
+ 	int keytab_enctypes_explicit;
+ 	unsigned int computer_password_lifetime;
+ 	int computer_password_lifetime_explicit;
++	char *samba_data_tool;
+ };
+ 
+ static adcli_result
+@@ -1537,26 +1542,33 @@ static adcli_result
+ update_samba_data (adcli_enroll *enroll)
+ {
+ 	int ret;
+-	char *argv_pw[] = { "/usr/bin/net", "changesecretpw", "-i", "-f", NULL };
+-	char *argv_sid[] = { "/usr/bin/net", "setdomainsid", NULL, NULL };
++	char *argv_pw[] = { NULL, "changesecretpw", "-i", "-f", NULL };
++	char *argv_sid[] = { NULL, "setdomainsid", NULL, NULL };
++
++	argv_pw[0] = (char *) adcli_enroll_get_samba_data_tool (enroll);
++	if (argv_pw[0] ==NULL) {
++		_adcli_err ("Samba data tool not available.");
++		return ADCLI_ERR_FAIL;
++	}
++	argv_sid[0] = argv_pw[0];
+ 
+-	_adcli_info ("Trying to set Samba secret.\n");
++	_adcli_info ("Trying to set Samba secret.");
+ 	ret = _adcli_call_external_program (argv_pw[0], argv_pw,
+ 	                                    enroll->computer_password, NULL, NULL);
+ 	if (ret != ADCLI_SUCCESS) {
+-		_adcli_err ("Failed to set Samba computer account password.\n");
++		_adcli_err ("Failed to set Samba computer account password.");
+ 	}
+ 
+ 	argv_sid[2] = (char *) adcli_conn_get_domain_sid (enroll->conn);
+ 	if (argv_sid[2] == NULL) {
+-		_adcli_err ("Domain SID not available.\n");
++		_adcli_err ("Domain SID not available.");
+ 	} else {
+-		_adcli_info ("Trying to set domain SID %s for Samba.\n",
++		_adcli_info ("Trying to set domain SID %s for Samba.",
+ 		             argv_sid[2]);
+ 		ret = _adcli_call_external_program (argv_sid[0], argv_sid,
+ 		                                    NULL, NULL, NULL);
+ 		if (ret != ADCLI_SUCCESS) {
+-			_adcli_err ("Failed to set Samba domain SID.\n");
++			_adcli_err ("Failed to set Samba domain SID.");
+ 		}
+ 	}
+ 
+@@ -1951,6 +1963,9 @@ adcli_enroll_new (adcli_conn *conn)
+ 	enroll->os_name = strdup (value);
+ 	return_val_if_fail (enroll->os_name != NULL, NULL);
+ 
++	enroll->samba_data_tool = strdup (SAMBA_DATA_TOOL);
++	return_val_if_fail (enroll->samba_data_tool != NULL, NULL);
++
+ 	return enroll;
+ }
+ 
+@@ -1978,6 +1993,7 @@ enroll_free (adcli_enroll *enroll)
+ 	free (enroll->os_name);
+ 	free (enroll->os_version);
+ 	free (enroll->os_service_pack);
++	free (enroll->samba_data_tool);
+ 
+ 	free (enroll->user_principal);
+ 	_adcli_strv_free (enroll->service_names);
+@@ -2343,3 +2359,19 @@ adcli_enroll_set_computer_password_lifetime (adcli_enroll *enroll,
+ 
+ 	enroll->computer_password_lifetime_explicit = 1;
+ }
++
++void
++adcli_enroll_set_samba_data_tool (adcli_enroll *enroll, const char *value)
++{
++	return_if_fail (enroll != NULL);
++	if (value != NULL && value[0] != '\0') {
++		_adcli_str_set (&enroll->samba_data_tool, value);
++	}
++}
++
++const char *
++adcli_enroll_get_samba_data_tool (adcli_enroll *enroll)
++{
++	return_val_if_fail (enroll != NULL, NULL);
++	return enroll->samba_data_tool;
++}
+diff --git a/library/adenroll.h b/library/adenroll.h
+index 32c9764..31ca0bc 100644
+--- a/library/adenroll.h
++++ b/library/adenroll.h
+@@ -141,4 +141,9 @@ const char *       adcli_enroll_get_os_service_pack     (adcli_enroll *enroll);
+ void               adcli_enroll_set_os_service_pack     (adcli_enroll *enroll,
+                                                          const char *value);
+ 
++void               adcli_enroll_set_samba_data_tool     (adcli_enroll *enroll,
++                                                         const char *value);
++
++const char *       adcli_enroll_get_samba_data_tool     (adcli_enroll *enroll);
++
+ #endif /* ADENROLL_H_ */
+diff --git a/tools/computer.c b/tools/computer.c
+index fc646f2..f86548b 100644
+--- a/tools/computer.c
++++ b/tools/computer.c
+@@ -30,6 +30,7 @@
+ #include <err.h>
+ #include <stdio.h>
+ #include <errno.h>
++#include <unistd.h>
+ 
+ static void
+ dump_details (adcli_conn *conn,
+@@ -107,6 +108,7 @@ typedef enum {
+ 	opt_user_principal,
+ 	opt_computer_password_lifetime,
+ 	opt_add_samba_data,
++	opt_samba_data_tool,
+ } Option;
+ 
+ static adcli_tool_desc common_usages[] = {
+@@ -145,6 +147,7 @@ static adcli_tool_desc common_usages[] = {
+ 	                     "successful join" },
+ 	{ opt_add_samba_data, "add domain SID and computer account password\n"
+ 	                      "to the Samba specific configuration database" },
++	{ opt_samba_data_tool, "Absolute path to the tool used for add-samba-data" },
+ 	{ opt_verbose, "show verbose progress and failure messages", },
+ 	{ 0 },
+ };
+@@ -160,6 +163,7 @@ parse_option (Option opt,
+ 	static int stdin_password = 0;
+ 	char *endptr;
+ 	unsigned int lifetime;
++	int ret;
+ 
+ 	switch (opt) {
+ 	case opt_login_ccache:
+@@ -265,6 +269,16 @@ parse_option (Option opt,
+ 
+ 		adcli_enroll_set_computer_password_lifetime (enroll, lifetime);
+ 		return;
++	case opt_samba_data_tool:
++		errno = 0;
++		ret = access (optarg, X_OK);
++		if (ret != 0) {
++			ret = errno;
++			errx (EUSAGE, "Failed to access tool to add Samba data: %s", strerror (ret));
++		} else {
++			adcli_enroll_set_samba_data_tool (enroll, optarg);
++		}
++		return;
+ 	case opt_verbose:
+ 		return;
+ 
+@@ -331,6 +345,7 @@ adcli_tool_computer_join (adcli_conn *conn,
+ 		{ "show-details", no_argument, NULL, opt_show_details },
+ 		{ "show-password", no_argument, NULL, opt_show_password },
+ 		{ "add-samba-data", no_argument, NULL, opt_add_samba_data },
++		{ "samba-data-tool", no_argument, NULL, opt_samba_data_tool },
+ 		{ "verbose", no_argument, NULL, opt_verbose },
+ 		{ "help", no_argument, NULL, 'h' },
+ 		{ 0 },
+@@ -434,6 +449,7 @@ adcli_tool_computer_update (adcli_conn *conn,
+ 		{ "show-details", no_argument, NULL, opt_show_details },
+ 		{ "show-password", no_argument, NULL, opt_show_password },
+ 		{ "add-samba-data", no_argument, NULL, opt_add_samba_data },
++		{ "samba-data-tool", no_argument, NULL, opt_samba_data_tool },
+ 		{ "verbose", no_argument, NULL, opt_verbose },
+ 		{ "help", no_argument, NULL, 'h' },
+ 		{ 0 },
+-- 
+2.14.4
