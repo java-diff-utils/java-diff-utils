@@ -6,8 +6,8 @@
 
 [![Build Status using Github Actions](https://github.com/java-diff-utils/java-diff-utils/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/java-diff-utils/java-diff-utils/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/002c53aa0c924f71ac80a2f65446dfdd)](https://www.codacy.com/gh/java-diff-utils/java-diff-utils/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=java-diff-utils/java-diff-utils&amp;utm_campaign=Badge_Grade)
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7eba77f10bed4c2a8d08ac8dc8da4a86)](https://www.codacy.com/app/wumpz/java-diff-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=java-diff-utils/java-diff-utils&amp;utm_campaign=Badge_Grade)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.java-diff-utils/java-diff-utils/badge.svg)](http://maven-badges.herokuapp.com/maven-central/io.github.java-diff-utils/java-diff-utils)
 
 ## Intro
