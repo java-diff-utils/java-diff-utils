@@ -16,7 +16,7 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 ## API
 
-Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.7/docs/api/)
+Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.10/docs/apidocs/)
 
 ## Examples
 
@@ -84,7 +84,7 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils</artifactId>
-    <version>4.5</version>
+    <version>4.9</version>
 </dependency>
 ```
 
@@ -92,5 +92,5 @@ or using gradle:
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
-implementation "io.github.java-diff-utils:java-diff-utils:4.5"
+implementation "io.github.java-diff-utils:java-diff-utils:4.9"
 ```
