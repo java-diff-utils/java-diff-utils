@@ -90,9 +90,6 @@ public abstract class AbstractDelta<T> implements Serializable {
         if (!Objects.equals(this.target, other.target)) {
             return false;
         }
-        if (this.type != other.type) {
-            return false;
-        }
-        return true;
+        return this.type == other.type;
     }
 }

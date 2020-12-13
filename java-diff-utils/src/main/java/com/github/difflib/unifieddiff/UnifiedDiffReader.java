@@ -91,7 +91,7 @@ public final class UnifiedDiffReader {
             if (!CHUNK.validLine(line)) {
                 initFileIfNecessary();
                 while (line != null && !CHUNK.validLine(line)) {
-                    if (processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE, DELETED_FILE_MODE) == false) {
+                    if (!processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE, DELETED_FILE_MODE)) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
                     line = READER.readLine();
@@ -100,7 +100,7 @@ public final class UnifiedDiffReader {
             if (line != null) {
                 processLine(line, CHUNK);
                 while ((line = READER.readLine()) != null) {
-                    if (processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL) == false) {
+                    if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
                         throw new UnifiedDiffParserException("expected data line not found");
                     }
                     if ((originalTxt.size() == old_size && revisedTxt.size() == new_size)
