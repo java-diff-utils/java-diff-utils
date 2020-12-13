@@ -142,6 +142,7 @@ public final class Patch<T> implements Serializable {
                 case CHANGE:
                     patch.addDelta(new ChangeDelta<>(orgChunk, revChunk));
                     break;
+                default:
             }
 
             startOriginal = change.endOriginal;
