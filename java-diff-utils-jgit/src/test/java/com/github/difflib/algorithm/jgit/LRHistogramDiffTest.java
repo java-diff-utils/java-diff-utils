@@ -45,7 +45,7 @@ public class LRHistogramDiffTest {
         List<String> revised = readStringListFromInputStream(zip.getInputStream(zip.getEntry("tb")));
 
         List<String> logdata = new ArrayList<>();
-        Patch<String> patch = Patch.generate(original, revised, new HistogramDiff().computeDiff(original, revised, new DiffAlgorithmListener() {
+        Patch<String> patch = Patch.generate(original, revised, new HistogramDiff<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
             @Override
             public void diffStart() {
                 logdata.add("start");
