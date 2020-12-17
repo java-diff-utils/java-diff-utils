@@ -62,6 +62,6 @@ public final class DeleteDelta<T> extends AbstractDelta<T> {
     
     @Override
     public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-        return new DeleteDelta(original, revised);
+        return new DeleteDelta<T>(original, revised);
     }
 }

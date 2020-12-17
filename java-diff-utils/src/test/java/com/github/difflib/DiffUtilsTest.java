@@ -112,7 +112,7 @@ public class DiffUtilsTest {
 
         final Patch<Integer> patch = DiffUtils.diff(original, revised);
 
-        for (AbstractDelta delta : patch.getDeltas()) {
+        for (AbstractDelta<Integer> delta : patch.getDeltas()) {
             System.out.println(delta);
         }
 

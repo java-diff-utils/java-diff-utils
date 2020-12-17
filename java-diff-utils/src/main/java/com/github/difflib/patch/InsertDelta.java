@@ -62,6 +62,6 @@ public final class InsertDelta<T> extends AbstractDelta<T> {
     
     @Override
     public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-        return new InsertDelta(original, revised);
+        return new InsertDelta<T>(original, revised);
     }
 }

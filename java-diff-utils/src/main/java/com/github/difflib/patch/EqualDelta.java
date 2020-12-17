@@ -44,6 +44,6 @@ public class EqualDelta<T> extends AbstractDelta<T> {
     
     @Override
     public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-        return new EqualDelta(original, revised);
+        return new EqualDelta<T>(original, revised);
     }
 }

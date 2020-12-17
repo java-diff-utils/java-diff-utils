@@ -156,7 +156,7 @@ public final class Chunk<T> implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Chunk<T> other = (Chunk) obj;
+        Chunk<?> other = (Chunk<?>) obj;
         if (lines == null) {
             if (other.lines != null) {
                 return false;

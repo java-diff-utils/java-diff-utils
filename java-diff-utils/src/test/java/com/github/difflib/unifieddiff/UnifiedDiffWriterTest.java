@@ -46,7 +46,7 @@ public class UnifiedDiffWriterTest {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
 
         StringWriter writer = new StringWriter();
-        UnifiedDiffWriter.write(diff, f -> Collections.EMPTY_LIST, writer, 5);
+        UnifiedDiffWriter.write(diff, f -> Collections.emptyList(), writer, 5);
         System.out.println(writer.toString());
     }
     
