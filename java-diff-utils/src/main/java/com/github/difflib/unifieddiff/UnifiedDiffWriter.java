@@ -193,7 +193,6 @@ public class UnifiedDiffWriter {
      *
      * @param delta - the Delta to output
      * @return list of String lines of code.
-     * @author Bill James (tankerbay@gmail.com)
      */
     private static void getDeltaText(Consumer<String> writer, AbstractDelta<String> delta) {
         for (String line : delta.getSource().getLines()) {
