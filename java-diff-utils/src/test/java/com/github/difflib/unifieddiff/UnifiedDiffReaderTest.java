@@ -250,7 +250,7 @@ public class UnifiedDiffReaderTest {
                 
         assertThat(file.getPatch().toString()).isEqualTo("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}");
 
-        assertThat(diff.getTail()).isEqualTo("2.14.4");
+        assertThat(diff.getTail()).isEqualTo("2.14.4"); 
     }
     
     @Test
