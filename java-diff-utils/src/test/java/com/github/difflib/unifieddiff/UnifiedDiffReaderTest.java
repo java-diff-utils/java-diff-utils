@@ -256,7 +256,7 @@ public class UnifiedDiffReaderTest {
     @Test
     public void testParseIssue107BazelDiff() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
-                UnifiedDiffReaderTest.class.getResourceAsStream("01-bazel-strip-unused.patch.diff"));
+                UnifiedDiffReaderTest.class.getResourceAsStream("01-bazel-strip-unused.patch_issue107.diff"));
 
         assertThat(diff.getFiles().size()).isEqualTo(450);
 
