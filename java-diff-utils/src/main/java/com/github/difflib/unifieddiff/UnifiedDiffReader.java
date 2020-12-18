@@ -111,8 +111,13 @@ public final class UnifiedDiffReader {
                     }
                 }
                 line = READER.readLine();
+                
+                if ("\\ No newline at end of file".equals(line)) {                   
+                    actualFile.setNoNewLineAtTheEndOfTheFile(true);
+                    line = READER.readLine();
+                }
             }
-            if (line == null || line.startsWith("--")) {
+            if (line == null || (line.startsWith("--") && !line.startsWith("---"))) {
                 break;
             }
         }

@@ -252,4 +252,35 @@ public class UnifiedDiffReaderTest {
 
         assertThat(diff.getTail()).isEqualTo("2.14.4");
     }
+    
+    @Test
+    public void testParseIssue107BazelDiff() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("01-bazel-strip-unused.patch.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(450);
+
+        final UnifiedDiffFile file = diff.getFiles().get(0);
+        assertThat(file.getFromFile()).isEqualTo("./src/main/java/com/amazonaws/AbortedException.java");
+        assertThat(file.getToFile()).isEqualTo("/home/greg/projects/bazel/third_party/aws-sdk-auth-lite/src/main/java/com/amazonaws/AbortedException.java");
+                
+        assertThat(diff.getFiles().stream()
+                .filter(f -> f.isNoNewLineAtTheEndOfTheFile())
+                .count())
+                    .isEqualTo(48);
+    }
+    
+    @Test
+    public void testParseIssue107_2() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        final UnifiedDiffFile file = diff.getFiles().get(0);
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("Main.java");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+        
+    }
 }

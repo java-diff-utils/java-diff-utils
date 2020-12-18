@@ -32,6 +32,7 @@ public final class UnifiedDiffFile {
     private String newFileMode;
     private String deletedFileMode;
     private Patch<String> patch = new Patch<>();
+    private boolean noNewLineAtTheEndOfTheFile = false;
 
     public String getDiffCommand() {
         return diffCommand;
@@ -109,5 +110,13 @@ public final class UnifiedDiffFile {
 
     public void setDeletedFileMode(String deletedFileMode) {
         this.deletedFileMode = deletedFileMode;
+    }
+
+    public boolean isNoNewLineAtTheEndOfTheFile() {
+        return noNewLineAtTheEndOfTheFile;
+    }
+
+    public void setNoNewLineAtTheEndOfTheFile(boolean noNewLineAtTheEndOfTheFile) {
+        this.noNewLineAtTheEndOfTheFile = noNewLineAtTheEndOfTheFile;
     }
 }
