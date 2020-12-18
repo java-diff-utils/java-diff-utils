@@ -147,7 +147,7 @@ public class GenerateUnifiedDiffTest {
 
     private void validateChangePosition(Patch<String> patch, int index, List<Integer> realRemoveList,
                                         List<Integer> realAddList ) {
-        final Chunk originChunk = patch.getDeltas().get(index).getSource();
+        final Chunk<String> originChunk = patch.getDeltas().get(index).getSource();
         List<Integer> removeList = originChunk.getChangePosition();
         assertEquals(realRemoveList.size(), removeList.size());
         for (Integer ele: realRemoveList) {
@@ -156,7 +156,7 @@ public class GenerateUnifiedDiffTest {
         for (Integer ele: removeList) {
             assertTrue(realAddList.contains(ele));
         }
-        final Chunk targetChunk = patch.getDeltas().get(index).getTarget();
+        final Chunk<String> targetChunk = patch.getDeltas().get(index).getTarget();
         List<Integer> addList = targetChunk.getChangePosition();
         assertEquals(realAddList.size(), addList.size());
         for (Integer ele: realAddList) {

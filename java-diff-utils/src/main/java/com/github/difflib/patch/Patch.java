@@ -125,7 +125,7 @@ public final class Patch<T> implements Serializable {
         for (Change change : changes) {
 
             if (includeEquals && startOriginal < change.startOriginal) {
-                patch.addDelta(new EqualDelta(
+                patch.addDelta(new EqualDelta<T>(
                         buildChunk(startOriginal, change.startOriginal, original),
                         buildChunk(startRevised, change.startRevised, revised)));
             }
@@ -150,7 +150,7 @@ public final class Patch<T> implements Serializable {
         }
 
         if (includeEquals && startOriginal < original.size()) {
-            patch.addDelta(new EqualDelta(
+            patch.addDelta(new EqualDelta<T>(
                     buildChunk(startOriginal, original.size(), original),
                     buildChunk(startRevised, revised.size(), revised)));
         }
