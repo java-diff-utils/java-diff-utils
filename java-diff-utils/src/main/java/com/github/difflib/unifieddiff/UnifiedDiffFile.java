@@ -18,7 +18,8 @@ package com.github.difflib.unifieddiff;
 import com.github.difflib.patch.Patch;
 
 /**
- *
+ * Data structure for one patched file from a unified diff file. 
+ * 
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public final class UnifiedDiffFile {
@@ -27,12 +28,15 @@ public final class UnifiedDiffFile {
     private String fromFile;
     private String fromTimestamp;
     private String toFile;
+    private String renameFrom;
+    private String renameTo;
     private String toTimestamp;
     private String index;
     private String newFileMode;
     private String deletedFileMode;
     private Patch<String> patch = new Patch<>();
     private boolean noNewLineAtTheEndOfTheFile = false;
+    private Integer similarityIndex;
 
     public String getDiffCommand() {
         return diffCommand;
@@ -85,8 +89,30 @@ public final class UnifiedDiffFile {
     public void setToTimestamp(String toTimestamp) {
         this.toTimestamp = toTimestamp;
     }
-    
-    
+
+    public Integer getSimilarityIndex() {
+        return similarityIndex;
+    }
+
+    public void setSimilarityIndex(Integer similarityIndex) {
+        this.similarityIndex = similarityIndex;
+    }
+
+    public String getRenameFrom() {
+        return renameFrom;
+    }
+
+    public void setRenameFrom(String renameFrom) {
+        this.renameFrom = renameFrom;
+    }
+
+    public String getRenameTo() {
+        return renameTo;
+    }
+
+    public void setRenameTo(String renameTo) {
+        this.renameTo = renameTo;
+    }
 
     public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {
         UnifiedDiffFile file = new UnifiedDiffFile();

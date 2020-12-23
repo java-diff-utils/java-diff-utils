@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 /**
- * This is the first test version of a multifile diff parser. The Api is still subject
- * of change.
+ * This is the new implementation of UnifiedDiff Tools. This version is multi file aware.
+ * <p/>
+ * To read a unified diff file you should use {@link UnifiedDiffReader#parseUnifiedDiff}.
+ * You will get a {@link UnifiedDiff} that holds all informations about the
+ * diffs and the files.
+ * <p/>
+ * To process the UnifiedDiff use {@link UnifiedDiffWriter#write}.
  */
 package com.github.difflib.unifieddiff;

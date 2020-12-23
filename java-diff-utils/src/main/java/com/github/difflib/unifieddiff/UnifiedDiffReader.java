@@ -45,9 +45,12 @@ public final class UnifiedDiffReader {
     private final UnifiedDiff data = new UnifiedDiff();
 
     private final UnifiedDiffLine DIFF_COMMAND = new UnifiedDiffLine(true, "^diff\\s", this::processDiff);
+    private final UnifiedDiffLine SIMILARITY_INDEX = new UnifiedDiffLine(true, "^similarity index (\\d+)%$", this::processSimilarityIndex);
     private final UnifiedDiffLine INDEX = new UnifiedDiffLine(true, "^index\\s[\\da-zA-Z]+\\.\\.[\\da-zA-Z]+(\\s(\\d+))?$", this::processIndex);
     private final UnifiedDiffLine FROM_FILE = new UnifiedDiffLine(true, "^---\\s", this::processFromFile);
     private final UnifiedDiffLine TO_FILE = new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile);
+    private final UnifiedDiffLine RENAME_FROM = new UnifiedDiffLine(true, "^rename\\sfrom\\s(.+)$", this::processRenameFrom);
+    private final UnifiedDiffLine RENAME_TO = new UnifiedDiffLine(true, "^rename\\sto\\s(.+)$", this::processRenameTo);
 
     private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
     
@@ -91,7 +94,10 @@ public final class UnifiedDiffReader {
             if (!CHUNK.validLine(line)) {
                 initFileIfNecessary();
                 while (line != null && !CHUNK.validLine(line)) {
-                    if (!processLine(line, DIFF_COMMAND, INDEX, FROM_FILE, TO_FILE, NEW_FILE_MODE, DELETED_FILE_MODE)) {
+                    if (!processLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX, 
+                            FROM_FILE, TO_FILE, 
+                            RENAME_FROM, RENAME_TO, 
+                            NEW_FILE_MODE, DELETED_FILE_MODE)) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
                     line = READER.readLine();
@@ -146,6 +152,13 @@ public final class UnifiedDiffReader {
 
     private static final Logger LOG = Logger.getLogger(UnifiedDiffReader.class.getName());
 
+    /**
+     * To parse a diff file use this method. 
+     * @param stream This is the diff file data.
+     * @return In a UnifiedDiff structure this diff file data is returned.
+     * @throws IOException
+     * @throws UnifiedDiffParserException 
+     */
     public static UnifiedDiff parseUnifiedDiff(InputStream stream) throws IOException, UnifiedDiffParserException {
         UnifiedDiffReader parser = new UnifiedDiffReader(new BufferedReader(new InputStreamReader(stream)));
         return parser.parse();
@@ -184,6 +197,10 @@ public final class UnifiedDiffReader {
         actualFile.setFromFile(fromTo[0]);
         actualFile.setToFile(fromTo[1]);
         actualFile.setDiffCommand(line);
+    }
+    
+    private void processSimilarityIndex(MatchResult match, String line) {
+        actualFile.setSimilarityIndex(Integer.valueOf(match.group(1)));
     }
 
     private List<String> originalTxt = new ArrayList<>();
@@ -255,6 +272,14 @@ public final class UnifiedDiffReader {
         //initFileIfNecessary();
         actualFile.setToFile(extractFileName(line));
         actualFile.setToTimestamp(extractTimestamp(line));
+    }
+    
+    private void processRenameFrom(MatchResult match, String line) {
+        actualFile.setRenameFrom(match.group(1));
+    }
+
+    private void processRenameTo(MatchResult match, String line) {
+        actualFile.setRenameTo(match.group(1));
     }
 
     private void processNewFileMode(MatchResult match, String line) {
