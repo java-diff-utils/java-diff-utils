@@ -1,7 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group = "dev.gitlive"
-version = "5.0.0"
+version = "5.0.1"
 
 plugins {
     `maven-publish`
@@ -32,7 +32,7 @@ kotlin {
             kotlinOptions {
                 sourceMap = true
                 sourceMapEmbedSources = "always"
-                moduleKind = "commonjs"
+                moduleKind = "umd"
             }
         }
     }
