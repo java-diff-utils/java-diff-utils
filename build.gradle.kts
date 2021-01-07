@@ -1,7 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 group = "dev.gitlive"
-version = "5.0.1"
+version = project.property("version") as String
 
 plugins {
     `maven-publish`
@@ -102,6 +102,10 @@ tasks {
         } else {
             commandLine("npm", "publish")
         }
+    }
+
+    val updateVersion by registering(Exec::class) {
+        commandLine("npm", "--allow-same-version", "--prefix", projectDir, "version", "${project.property("version")}")
     }
 }
 
