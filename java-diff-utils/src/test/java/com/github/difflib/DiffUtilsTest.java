@@ -227,12 +227,4 @@ public class DiffUtilsTest {
         assertEquals(new Chunk<>(3, Arrays.asList("brown")), delta.getSource());
         assertEquals(new Chunk<>(3, Arrays.asList("down")), delta.getTarget());
     }
-    
-    @Test
-    public void testDiffIssue114() {
-        final Patch<String> patch = DiffUtils.diff(Arrays.asList("A", "B", "C", "D", "E"), Arrays.asList("a", "C", "", "E"), true);
-        assertNotNull(patch);
-        assertEquals(4, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
-    }
 }
