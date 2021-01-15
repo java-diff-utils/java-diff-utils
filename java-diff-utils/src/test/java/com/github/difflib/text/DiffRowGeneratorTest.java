@@ -600,23 +600,41 @@ public class DiffRowGeneratorTest {
 
         System.out.println(deltas);
     }
-    
+
     @Test
-    public void testIssue86WrongInlineDiff() throws IOException {      
+    public void testIssue86WrongInlineDiff() throws IOException {
         String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_original.txt")).collect(joining("\n"));
         String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_revised.txt")).collect(joining("\n"));
-        
+
         DiffRowGenerator generator = DiffRowGenerator.create()
-            .showInlineDiffs(true)
-            .mergeOriginalRevised(false)
-            .inlineDiffByWord(true)
-            .oldTag( f -> "~" )
-            .newTag( f -> "**" )
-            .build();
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(false)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList(original.split("\n")),
                 Arrays.asList(revised.split("\n")));
-        
+
+        for (DiffRow diff : rows) {
+            System.out.println(diff);
+        }
+    }
+
+    @Test
+    public void testCorrectChangeIssue114() throws IOException {
+        List<String> original = Arrays.asList("A", "B", "C", "D", "E");
+        List<String> revised = Arrays.asList("a", "C", "", "E");
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(original, revised);
+
         for (DiffRow diff : rows) {
             System.out.println(diff);
         }
