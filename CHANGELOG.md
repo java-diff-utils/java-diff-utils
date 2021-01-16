@@ -9,6 +9,13 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ### Changed
 
+## [4.10]
+
+### Changed
+
+* bugfixing on new UnifiedDiff reader / writer for multifile useage
+* bugfix for wrong DiffRow type while transforming from a patch that removed a line in one changeset
+
 ## [4.9]
 
 ### Changed

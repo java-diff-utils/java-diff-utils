@@ -225,44 +225,10 @@ public final class DiffRowGenerator {
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
 
-        decompressDeltas(deltaList);
-
-        for (AbstractDelta<String> delta : deltaList) {
-            Chunk<String> orig = delta.getSource();
-            Chunk<String> rev = delta.getTarget();
-
-            for (String line : original.subList(endPos, orig.getPosition())) {
-                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+        for (AbstractDelta<String> originalDelta : deltaList) {
+            for (AbstractDelta<String> delta : decompressDeltas(originalDelta)) {
+                endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta);
             }
-
-            // Inserted DiffRow
-            if (delta.getType() == DeltaType.INSERT) {
-                endPos = orig.last() + 1;
-                for (String line : rev.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
-                }
-                continue;
-            }
-
-            // Deleted DiffRow
-            if (delta.getType() == DeltaType.DELETE) {
-                endPos = orig.last() + 1;
-                for (String line : orig.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
-                }
-                continue;
-            }
-
-            if (showInlineDiffs) {
-                diffRows.addAll(generateInlineDiffs(delta));
-            } else {
-                for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
-                    diffRows.add(buildDiffRow(Tag.CHANGE,
-                            orig.getLines().size() > j ? orig.getLines().get(j) : "",
-                            rev.getLines().size() > j ? rev.getLines().get(j) : ""));
-                }
-            }
-            endPos = orig.last() + 1;
         }
 
         // Copy the final matching chunk if any.
@@ -273,41 +239,75 @@ public final class DiffRowGenerator {
     }
 
     /**
-     * Decompresses ChangeDeltas with different source and target size to a ChangeDelta with same size and
-     * a following InsertDelta or DeleteDelta. With this problems of building DiffRows getting smaller.
-     * @param deltaList 
+     * Transforms one patch delta into a DiffRow object.
      */
-    private void decompressDeltas(final List<AbstractDelta<String>> deltaList) {
-        for (int idx = 0; idx < deltaList.size(); idx++) {
-            AbstractDelta<String> delta = deltaList.get(idx);
-            if (delta.getType() == DeltaType.CHANGE && delta.getSource().size() != delta.getTarget().size()) {
-                //System.out.println("decompress this " + delta);
-                
-                List<AbstractDelta<String>> corrected = new ArrayList<>();
-                int minSize = Math.min(delta.getSource().size(), delta.getTarget().size());
-                Chunk<String> orig = delta.getSource();
-                Chunk<String> rev = delta.getTarget();
-                
-                deltaList.set(idx, new ChangeDelta<String>(
-                        new Chunk<>(orig.getPosition(), orig.getLines().subList(0, minSize)),
-                        new Chunk<>(rev.getPosition(), rev.getLines().subList(0, minSize))));
-                
-                if (orig.getLines().size() < rev.getLines().size()) {
-                    deltaList.add(idx + 1, new InsertDelta<String>(
-                            new Chunk<>(orig.getPosition() + minSize, Collections.emptyList()),
-                            new Chunk<>(rev.getPosition() + minSize, rev.getLines().subList(minSize, rev.getLines().size()))));
-                } else {
-                    deltaList.add(idx + 1, new DeleteDelta<String>(
-                            new Chunk<>(orig.getPosition() + minSize, orig.getLines().subList(minSize, orig.getLines().size())),
-                            new Chunk<>(rev.getPosition() + minSize, Collections.emptyList())));
-                }
-                
-                //System.out.println(" to " + corrected);
-            }
-            idx++;
+    private int transformDeltaIntoDiffRow(final List<String> original, int endPos, List<DiffRow> diffRows, AbstractDelta<String> delta) {
+        Chunk<String> orig = delta.getSource();
+        Chunk<String> rev = delta.getTarget();
+
+        for (String line : original.subList(endPos, orig.getPosition())) {
+            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
         }
-        
-        //System.out.println("got now " + deltaList);
+
+        switch (delta.getType()) {
+            case INSERT:
+                for (String line : rev.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
+                }
+                break;
+            case DELETE:
+                for (String line : orig.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
+                }
+                break;
+            default:
+                if (showInlineDiffs) {
+                    diffRows.addAll(generateInlineDiffs(delta));
+                } else {
+                    for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
+                        diffRows.add(buildDiffRow(Tag.CHANGE,
+                                orig.getLines().size() > j ? orig.getLines().get(j) : "",
+                                rev.getLines().size() > j ? rev.getLines().get(j) : ""));
+                    }
+                }
+        }
+
+        return orig.last() + 1;
+    }
+
+    /**
+     * Decompresses ChangeDeltas with different source and target size to a
+     * ChangeDelta with same size and a following InsertDelta or DeleteDelta.
+     * With this problems of building DiffRows getting smaller.
+     *
+     * @param deltaList
+     */
+    private List<AbstractDelta<String>> decompressDeltas(AbstractDelta<String> delta) {
+        if (delta.getType() == DeltaType.CHANGE && delta.getSource().size() != delta.getTarget().size()) {
+            List<AbstractDelta<String>> deltas = new ArrayList<>();
+            //System.out.println("decompress this " + delta);
+
+            int minSize = Math.min(delta.getSource().size(), delta.getTarget().size());
+            Chunk<String> orig = delta.getSource();
+            Chunk<String> rev = delta.getTarget();
+
+            deltas.add(new ChangeDelta<String>(
+                    new Chunk<>(orig.getPosition(), orig.getLines().subList(0, minSize)),
+                    new Chunk<>(rev.getPosition(), rev.getLines().subList(0, minSize))));
+
+            if (orig.getLines().size() < rev.getLines().size()) {
+                deltas.add(new InsertDelta<String>(
+                        new Chunk<>(orig.getPosition() + minSize, Collections.emptyList()),
+                        new Chunk<>(rev.getPosition() + minSize, rev.getLines().subList(minSize, rev.getLines().size()))));
+            } else {
+                deltas.add(new DeleteDelta<String>(
+                        new Chunk<>(orig.getPosition() + minSize, orig.getLines().subList(minSize, orig.getLines().size())),
+                        new Chunk<>(rev.getPosition() + minSize, Collections.emptyList())));
+            }
+            return deltas;
+        }
+
+        return Collections.singletonList(delta);
     }
 
     private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
