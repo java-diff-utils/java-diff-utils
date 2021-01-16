@@ -608,7 +608,7 @@ public class DiffRowGeneratorTest {
 
         DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
-                .mergeOriginalRevised(false)
+                .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
                 .oldTag(f -> "~")
                 .newTag(f -> "**")
@@ -617,9 +617,9 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(original.split("\n")),
                 Arrays.asList(revised.split("\n")));
 
-        for (DiffRow diff : rows) {
-            System.out.println(diff);
-        }
+        rows.stream()
+                .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
+                .forEach(System.out::println);
     }
 
     @Test
