@@ -28,13 +28,8 @@ kotlin {
     }
 
     js {
-        val main by compilations.getting {
-            kotlinOptions {
-                sourceMap = true
-                sourceMapEmbedSources = "always"
-                moduleKind = "umd"
-            }
-        }
+        browser()
+        nodejs()
     }
 
     iosArm64()
@@ -51,7 +46,8 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
             }
         }
-        val jvmMain by getting {
+        val jvmMain by get
+        ting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
             }
@@ -71,6 +67,15 @@ fun SigningExtension.whenRequired(block: () -> Boolean) {
 }
 
 tasks {
+
+    withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
+        kotlinOptions {
+            sourceMap = true
+            sourceMapEmbedSources = "always"
+            moduleKind = "umd"
+        }
+    }
+
     val copyPackageJson by registering(Copy::class) {
         from(file("package.json"))
         into(file("$buildDir/node_module"))
