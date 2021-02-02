@@ -6,30 +6,34 @@ version = project.property("version") as String
 plugins {
     `maven-publish`
     signing
-    kotlin("native.cocoapods")
-    kotlin("multiplatform")
+    kotlin("native.cocoapods") version "1.4.30-RC"
+    kotlin("multiplatform") version "1.4.30-RC"
 }
 
 repositories {
     mavenLocal()
     google()
     jcenter()
-    maven(url = "https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
 kotlin {
     jvm {
-        val main by compilations.getting {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
         }
+        testRuns["test"].executionTask.configure { useJUnit() }
     }
 
-    js {
+    js(LEGACY) {
         browser()
         nodejs()
+        compilations.all {
+            kotlinOptions {
+                sourceMap = true
+                sourceMapEmbedSources = "always"
+                moduleKind = "commonjs"
+            }
+        }
     }
 
     iosArm64()
@@ -38,18 +42,14 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib")
             }
         }
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
             }
         }
-        val jvmMain by get
-        ting {
+        val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
             }
         }
         val jvmTest by getting {
