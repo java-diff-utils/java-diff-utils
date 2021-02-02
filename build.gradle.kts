@@ -31,7 +31,7 @@ kotlin {
             kotlinOptions {
                 sourceMap = true
                 sourceMapEmbedSources = "always"
-                moduleKind = "commonjs"
+                moduleKind = "umd"
             }
         }
     }
@@ -67,14 +67,6 @@ fun SigningExtension.whenRequired(block: () -> Boolean) {
 }
 
 tasks {
-
-    withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
-        kotlinOptions {
-            sourceMap = true
-            sourceMapEmbedSources = "always"
-            moduleKind = "umd"
-        }
-    }
 
     val copyPackageJson by registering(Copy::class) {
         from(file("package.json"))
