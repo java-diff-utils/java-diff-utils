@@ -92,16 +92,16 @@ public final class Chunk<T> implements Serializable {
      * @param target the sequence to verify against.
      * @throws com.github.difflib.patch.PatchFailedException
      */
-    public void verify(List<T> target) throws PatchFailedException {
+    public VerifyChunk verifyChunk(List<T> target) throws PatchFailedException {
         if (position > target.size() || last() > target.size()) {
-            throw new PatchFailedException("Incorrect Chunk: the position of chunk > target size");
+            return VerifyChunk.POSITION_OUT_OF_TARGET;
         }
         for (int i = 0; i < size(); i++) {
             if (!target.get(position + i).equals(lines.get(i))) {
-                throw new PatchFailedException(
-                        "Incorrect Chunk: the chunk content doesn't match the target");
+                return VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET;
             }
         }
+        return VerifyChunk.OK;
     }
 
     /**
