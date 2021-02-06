@@ -12,7 +12,7 @@
     </modules>
     <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
     <url>https://github.com/java-diff-utils/java-diff-utils</url>
-    <inceptionYear>2009</inceptionYear>
+    <inceptionYear>2009</inceptionYear> 
 	
     <distributionManagement>
         <repository>
