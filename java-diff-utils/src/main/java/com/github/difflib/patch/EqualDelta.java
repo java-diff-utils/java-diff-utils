@@ -28,12 +28,11 @@ public class EqualDelta<T> extends AbstractDelta<T> {
     }
 
     @Override
-    public void applyTo(List<T> target) throws PatchFailedException {
-        verifyChunk(target);
+    protected void applyTo(List<T> target) throws PatchFailedException {
     }
 
     @Override
-    public void restore(List<T> target) {
+    protected void restore(List<T> target) {
     }
 
     @Override

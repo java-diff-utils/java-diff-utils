@@ -57,10 +57,18 @@ public abstract class AbstractDelta<T> implements Serializable {
     protected VerifyChunk verifyChunkToFitTarget(List<T> target) throws PatchFailedException {
         return getSource().verifyChunk(target);
     }
+   
+    protected VerifyChunk verifyAntApplyTo(List<T> target) throws PatchFailedException {
+        final VerifyChunk verify = verifyChunkToFitTarget(target);
+        if (verify == VerifyChunk.OK) {
+            applyTo(target);
+        }
+        return verify;
+    }
     
-    public abstract void applyTo(List<T> target) throws PatchFailedException;
+    protected abstract void applyTo(List<T> target) throws PatchFailedException;
     
-    public abstract void restore(List<T> target);
+    protected abstract void restore(List<T> target);
     
     /**
      * Create a new delta of the actual instance with customized chunk data.

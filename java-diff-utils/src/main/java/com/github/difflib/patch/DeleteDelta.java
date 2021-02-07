@@ -36,8 +36,7 @@ public final class DeleteDelta<T> extends AbstractDelta<T> {
     }
 
     @Override
-    public void applyTo(List<T> target) throws PatchFailedException {
-        verifyChunk(target);
+    protected void applyTo(List<T> target) throws PatchFailedException {
         int position = getSource().getPosition();
         int size = getSource().size();
         for (int i = 0; i < size; i++) {
@@ -46,7 +45,7 @@ public final class DeleteDelta<T> extends AbstractDelta<T> {
     }
 
     @Override
-    public void restore(List<T> target) {
+    protected void restore(List<T> target) {
         int position = this.getTarget().getPosition();
         List<T> lines = this.getSource().getLines();
         for (int i = 0; i < lines.size(); i++) {
