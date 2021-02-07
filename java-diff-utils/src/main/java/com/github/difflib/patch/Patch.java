@@ -57,7 +57,7 @@ public final class Patch<T> implements Serializable {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            delta.applyTo(result);
+            delta.verifyAntApplyTo(result);
         }
         return result;
     }
