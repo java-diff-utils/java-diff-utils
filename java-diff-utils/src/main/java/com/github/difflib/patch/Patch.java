@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Describes the patch holding all deltas between the original and revised texts.
- * 
+ * Describes the patch holding all deltas between the original and revised
+ * texts.
+ *
  * @author <a href="dm.naumenko@gmail.com">Dmitry Naumenko</a>
  * @param <T> The type of the compared elements in the 'lines'.
  */
@@ -57,9 +58,24 @@ public final class Patch<T> implements Serializable {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            delta.verifyAntApplyTo(result);
+            VerifyChunk valid = delta.verifyAntApplyTo(result);
+            if (valid != VerifyChunk.OK) {
+                
+            }
         }
         return result;
+    }
+    
+    private ConflictOutput<T> conflictOutput = (VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result) -> {
+        throw new PatchFailedException("could not apply patch due to " + verifyChunk.toString());
+    };
+    
+    /**
+     * Alter normal conflict output behaviour to e.g. inclide some conflict statements in the result, like git does it.
+     */
+    public Patch withConflictOutput(ConflictOutput<T> conflictOutput) {
+        this.conflictOutput = conflictOutput;
+        return this;
     }
 
     /**
@@ -114,14 +130,14 @@ public final class Patch<T> implements Serializable {
         Patch<T> patch = new Patch<>(_changes.size());
         int startOriginal = 0;
         int startRevised = 0;
-        
+
         List<Change> changes = _changes;
-        
+
         if (includeEquals) {
             changes = new ArrayList<Change>(_changes);
             Collections.sort(changes, comparing(d -> d.startOriginal));
         }
-        
+
         for (Change change : changes) {
 
             if (includeEquals && startOriginal < change.startOriginal) {
