@@ -60,18 +60,24 @@ public final class Patch<T> implements Serializable {
             AbstractDelta<T> delta = it.previous();
             VerifyChunk valid = delta.verifyAntApplyTo(result);
             if (valid != VerifyChunk.OK) {
-                
+                conflictOutput.processConflict(valid, delta, result);
             }
         }
         return result;
     }
-    
-    private ConflictOutput<T> conflictOutput = (VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result) -> {
+
+    /**
+     * Standard Patch behaviour to throw an exception for pathching conflicts.
+     */
+    public final ConflictOutput<T> CONFLICT_PRODUCES_EXCEPTION = (VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result) -> {
         throw new PatchFailedException("could not apply patch due to " + verifyChunk.toString());
     };
-    
+
+    private ConflictOutput<T> conflictOutput = CONFLICT_PRODUCES_EXCEPTION;
+
     /**
-     * Alter normal conflict output behaviour to e.g. inclide some conflict statements in the result, like git does it.
+     * Alter normal conflict output behaviour to e.g. inclide some conflict
+     * statements in the result, like git does it.
      */
     public Patch withConflictOutput(ConflictOutput<T> conflictOutput) {
         this.conflictOutput = conflictOutput;

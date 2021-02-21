@@ -19,6 +19,7 @@ limitations under the License.
  */
 package com.github.difflib.patch;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ import java.util.List;
  * @author tw
  */
 @FunctionalInterface
-public interface ConflictOutput<T> {
+public interface ConflictOutput<T> extends Serializable {
 
     public void processConflict(VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result) throws PatchFailedException;
 }

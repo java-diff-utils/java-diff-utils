@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
@@ -133,7 +134,7 @@ public class GenerateUnifiedDiffTest {
      * Issue 89
      */
     @Test
-    public void testChagngePosition() throws IOException {
+    public void testChangePosition() throws IOException {
         final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue89_patch.txt");
         final Patch<String> patch = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
         List<Integer> realRemoveListOne = Collections.singletonList(3);
@@ -190,5 +191,21 @@ public class GenerateUnifiedDiffTest {
         } catch (PatchFailedException e) {
             fail(e.getMessage());
         }
+    }
+    
+    
+    @Test
+    public void testFailingPatchByException() throws IOException {
+        final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
+        final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
+        final Patch<String> p = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
+        
+        //make original not fitting
+        baseLines.set(40, baseLines.get(40) + " corrupted ");
+        
+        assertThrows(PatchFailedException.class, () -> DiffUtils.patch(baseLines, p));
+        
+        
+        
     }
 }
