@@ -16,6 +16,9 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 * bugfixing on new UnifiedDiff reader / writer for multifile usage
 * bugfix for wrong DiffRow type while transforming from a patch that removed a line in one changeset
 * introduced change position into UnifiedDiff reader
+* introduced first version of conflict output possibility (like GIT merge conflict)
+  * moved verification to `AbstractDelta`
+  * introduced `ConflictOutput` to `Patch` to add optional behaviour to patch conflicts
 
 ## [4.9]
 
