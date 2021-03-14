@@ -1,0 +1,49 @@
+diff --git a/java-diff-utils/src/main/java/com/github/difflib/text/StringUtils.java b/java-diff-utils/src/main/java/com/github/difflib/text/StringUtils.java
+index a142548..b7e3549 100644
+--- a/java-diff-utils/src/main/java/com/github/difflib/text/StringUtils.java
++++ b/java-diff-utils/src/main/java/com/github/difflib/text/StringUtils.java
+@@ -21,10 +21,10 @@
+ final class StringUtils {
+ 
+     /**
+-     * Replaces all opening an closing tags with <code>&lt;</code> or <code>&gt;</code>.
++     * Replaces all opening and closing tags with <code>&lt;</code> or <code>&gt;</code>.
+      *
+      * @param str
+-     * @return
++     * @return str with some HTML meta characters escaped.
+      */
+     public static String htmlEntites(String str) {
+         return str.replace("<", "&lt;").replace(">", "&gt;");
+@@ -61,7 +61,17 @@ public static String wrapText(String line, int columnWidth) {
+         StringBuilder b = new StringBuilder(line);
+ 
+         for (int count = 0; length > widthIndex; count++) {
+-            b.insert(widthIndex + delimiter * count, "<br/>");
++            int breakPoint = widthIndex + delimiter * count;
++            if (Character.isHighSurrogate(b.charAt(breakPoint - 1)) &&
++                Character.isLowSurrogate(b.charAt(breakPoint))) {
++              // Shift a breakpoint that would split a supplemental code-point.
++              breakPoint += 1;
++              if (breakPoint == b.length()) {
++                // Break before instead of after if this is the last code-point.
++                breakPoint -= 2;
++              }
++            }
++            b.insert(breakPoint, "<br/>");
+             widthIndex += columnWidth;
+         }
+ 
+diff --git a/java-diff-utils/src/test/java/com/github/difflib/text/StringUtilsTest.java b/java-diff-utils/src/test/java/com/github/difflib/text/StringUtilsTest.java
+index c4b2acc..6867072 100644
+--- a/java-diff-utils/src/test/java/com/github/difflib/text/StringUtilsTest.java
++++ b/java-diff-utils/src/test/java/com/github/difflib/text/StringUtilsTest.java
+@@ -49,6 +49,8 @@ public void testWrapText_String_int() {
+         assertEquals("te<br/>st", StringUtils.wrapText("test", 2));
+         assertEquals("tes<br/>t", StringUtils.wrapText("test", 3));
+         assertEquals("test", StringUtils.wrapText("test", 10));
++        assertEquals(".\uD800\uDC01<br/>.", StringUtils.wrapText(".\uD800\uDC01.", 2));
++        assertEquals("..<br/>\uD800\uDC01", StringUtils.wrapText("..\uD800\uDC01", 3));
+     }
+ 
+     @Test

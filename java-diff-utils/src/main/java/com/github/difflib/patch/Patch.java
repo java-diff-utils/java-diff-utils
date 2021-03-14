@@ -73,6 +73,30 @@ public final class Patch<T> implements Serializable {
         throw new PatchFailedException("could not apply patch due to " + verifyChunk.toString());
     };
 
+    /**
+     * Git like merge conflict output.
+     */
+    public static final ConflictOutput<String> CONFLICT_PRODUCES_MERGE_CONFLICT = (VerifyChunk verifyChunk, AbstractDelta<String> delta, List<String> result) -> {
+        if (result.size() > delta.getSource().getPosition()) {
+            List<String> orgData = new ArrayList<>();
+
+            for (int i = 0; i < delta.getSource().size(); i++) {
+                orgData.add(result.get(delta.getSource().getPosition()));
+                result.remove(delta.getSource().getPosition());
+            }
+
+            orgData.add(0, "<<<<<< HEAD");
+            orgData.add("======");
+            orgData.addAll(delta.getSource().getLines());
+            orgData.add(">>>>>>> PATCH");
+
+            result.addAll(delta.getSource().getPosition(), orgData);
+
+        } else {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    };
+
     private ConflictOutput<T> conflictOutput = CONFLICT_PRODUCES_EXCEPTION;
 
     /**

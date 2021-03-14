@@ -53,7 +53,7 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine RENAME_TO = new UnifiedDiffLine(true, "^rename\\sto\\s(.+)$", this::processRenameTo);
 
     private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
-    
+
     private final UnifiedDiffLine DELETED_FILE_MODE = new UnifiedDiffLine(true, "^deleted\\sfile\\smode\\s(\\d+)", this::processDeletedFileMode);
 
     private final UnifiedDiffLine CHUNK = new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk);
@@ -94,9 +94,9 @@ public final class UnifiedDiffReader {
             if (!CHUNK.validLine(line)) {
                 initFileIfNecessary();
                 while (line != null && !CHUNK.validLine(line)) {
-                    if (!processLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX, 
-                            FROM_FILE, TO_FILE, 
-                            RENAME_FROM, RENAME_TO, 
+                    if (!processLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
+                            FROM_FILE, TO_FILE,
+                            RENAME_FROM, RENAME_TO,
                             NEW_FILE_MODE, DELETED_FILE_MODE)) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
@@ -117,8 +117,8 @@ public final class UnifiedDiffReader {
                     }
                 }
                 line = READER.readLine();
-                
-                if ("\\ No newline at end of file".equals(line)) {                   
+
+                if ("\\ No newline at end of file".equals(line)) {
                     actualFile.setNoNewLineAtTheEndOfTheFile(true);
                     line = READER.readLine();
                 }
@@ -153,11 +153,12 @@ public final class UnifiedDiffReader {
     private static final Logger LOG = Logger.getLogger(UnifiedDiffReader.class.getName());
 
     /**
-     * To parse a diff file use this method. 
+     * To parse a diff file use this method.
+     *
      * @param stream This is the diff file data.
      * @return In a UnifiedDiff structure this diff file data is returned.
      * @throws IOException
-     * @throws UnifiedDiffParserException 
+     * @throws UnifiedDiffParserException
      */
     public static UnifiedDiff parseUnifiedDiff(InputStream stream) throws IOException, UnifiedDiffParserException {
         UnifiedDiffReader parser = new UnifiedDiffReader(new BufferedReader(new InputStreamReader(stream)));
@@ -198,27 +199,35 @@ public final class UnifiedDiffReader {
         actualFile.setToFile(fromTo[1]);
         actualFile.setDiffCommand(line);
     }
-    
+
     private void processSimilarityIndex(MatchResult match, String line) {
         actualFile.setSimilarityIndex(Integer.valueOf(match.group(1)));
     }
 
     private List<String> originalTxt = new ArrayList<>();
     private List<String> revisedTxt = new ArrayList<>();
+    private List<Integer> addLineIdxList = new ArrayList<>();
+    private List<Integer> delLineIdxList = new ArrayList<>();
     private int old_ln;
     private int old_size;
     private int new_ln;
     private int new_size;
+    private int delLineIdx = 0;
+    private int addLineIdx = 0;
 
     private void finalizeChunk() {
         if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
             actualFile.getPatch().addDelta(new ChangeDelta<>(new Chunk<>(
-                    old_ln - 1, originalTxt), new Chunk<>(
-                    new_ln - 1, revisedTxt)));
+                    old_ln - 1, originalTxt, delLineIdxList), new Chunk<>(
+                    new_ln - 1, revisedTxt, addLineIdxList)));
             old_ln = 0;
             new_ln = 0;
             originalTxt.clear();
             revisedTxt.clear();
+            addLineIdxList.clear();
+            delLineIdxList.clear();
+            delLineIdx = 0;
+            addLineIdx = 0;
         }
     }
 
@@ -226,16 +235,22 @@ public final class UnifiedDiffReader {
         String cline = line.substring(1);
         originalTxt.add(cline);
         revisedTxt.add(cline);
+        delLineIdx++;
+        addLineIdx++;
     }
 
     private void processAddLine(MatchResult match, String line) {
         String cline = line.substring(1);
         revisedTxt.add(cline);
+        addLineIdx++;
+        addLineIdxList.add(new_ln - 1 + addLineIdx);
     }
 
     private void processDelLine(MatchResult match, String line) {
         String cline = line.substring(1);
         originalTxt.add(cline);
+        delLineIdx++;
+        delLineIdxList.add(old_ln - 1 + delLineIdx);
     }
 
     private void processChunk(MatchResult match, String chunkStart) {
@@ -273,7 +288,7 @@ public final class UnifiedDiffReader {
         actualFile.setToFile(extractFileName(line));
         actualFile.setToTimestamp(extractTimestamp(line));
     }
-    
+
     private void processRenameFrom(MatchResult match, String line) {
         actualFile.setRenameFrom(match.group(1));
     }
@@ -286,7 +301,7 @@ public final class UnifiedDiffReader {
         //initFileIfNecessary();
         actualFile.setNewFileMode(match.group(1));
     }
-    
+
     private void processDeletedFileMode(MatchResult match, String line) {
         //initFileIfNecessary();
         actualFile.setDeletedFileMode(match.group(1));

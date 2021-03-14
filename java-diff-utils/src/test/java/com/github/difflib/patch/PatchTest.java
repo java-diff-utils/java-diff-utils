@@ -14,7 +14,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.difflib.DiffUtils;
-import java.util.ArrayList;
 
 public class PatchTest {
 
@@ -89,29 +88,7 @@ public class PatchTest {
 
         changeTest_from.set(2, "CDC");
 
-        patch.withConflictOutput(new ConflictOutput<String>() {
-            @Override
-            public void processConflict(VerifyChunk verifyChunk, AbstractDelta<String> delta, List<String> result) throws PatchFailedException {
-                if (result.size() > delta.getSource().getPosition()) {
-                    List<String> orgData = new ArrayList<>();
-
-                    for (int i = 0; i < delta.getSource().size(); i++) {
-                        orgData.add(result.get(delta.getSource().getPosition()));
-                        result.remove(delta.getSource().getPosition());
-                    }
-
-                    orgData.add(0, "<<<<<< HEAD");
-                    orgData.add("======");
-                    orgData.addAll(delta.getSource().getLines());
-                    orgData.add(">>>>>>> PATCH");
-                    
-                    result.addAll(delta.getSource().getPosition(), orgData);
-
-                } else {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-            }
-        });
+        patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
 
         try {
             List<String> data = DiffUtils.patch(changeTest_from, patch);

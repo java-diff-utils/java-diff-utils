@@ -25,10 +25,11 @@ import java.util.Objects;
  * Holds the information about the part of text involved in the diff process
  *
  * <p>
- * Text is represented as <code>Object[]</code> because the diff engine is capable of handling more
- * than plain ascci. In fact, arrays or lists of any type that implements
- * {@link java.lang.Object#hashCode hashCode()} and {@link java.lang.Object#equals equals()}
- * correctly can be subject to differencing using this library.
+ * Text is represented as <code>Object[]</code> because the diff engine is
+ * capable of handling more than plain ascci. In fact, arrays or lists of any
+ * type that implements {@link java.lang.Object#hashCode hashCode()} and
+ * {@link java.lang.Object#equals equals()} correctly can be subject to
+ * differencing using this library.
  * </p>
  *
  * @author <a href="dm.naumenko@gmail.com>Dmitry Naumenko</a>
@@ -50,7 +51,7 @@ public final class Chunk<T> implements Serializable {
     public Chunk(int position, List<T> lines, List<Integer> changePosition) {
         this.position = position;
         this.lines = new ArrayList<>(lines);
-        this.changePosition = changePosition;
+        this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
     }
 
     /**
@@ -73,7 +74,7 @@ public final class Chunk<T> implements Serializable {
     public Chunk(int position, T[] lines, List<Integer> changePosition) {
         this.position = position;
         this.lines = Arrays.asList(lines);
-        this.changePosition = changePosition;
+        this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
     }
 
     /**
@@ -87,7 +88,8 @@ public final class Chunk<T> implements Serializable {
     }
 
     /**
-     * Verifies that this chunk's saved text matches the corresponding text in the given sequence.
+     * Verifies that this chunk's saved text matches the corresponding text in
+     * the given sequence.
      *
      * @param target the sequence to verify against.
      * @throws com.github.difflib.patch.PatchFailedException

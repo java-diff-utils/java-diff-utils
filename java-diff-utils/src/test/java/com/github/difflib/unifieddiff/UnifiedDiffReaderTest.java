@@ -295,8 +295,41 @@ public class UnifiedDiffReaderTest {
         assertThat(file.getSimilarityIndex()).isEqualTo(87);
         assertThat(file.getRenameFrom()).isEqualTo("service-type-database/build-db.in");
         assertThat(file.getRenameTo()).isEqualTo("service-type-database/build-db");
-        
+
         assertThat(file.getFromFile()).isEqualTo("service-type-database/build-db.in");
-        assertThat(file.getToFile()).isEqualTo("service-type-database/build-db");   
+        assertThat(file.getToFile()).isEqualTo("service-type-database/build-db");
+    }
+
+    @Test
+    public void testParseIssue117() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue117.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+        
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(0).getSource().getChangePosition())
+                .containsExactly(24, 27);
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(0).getTarget().getChangePosition())
+                .containsExactly(24, 27);
+        
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(1).getSource().getChangePosition())
+                .containsExactly(64);
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(1).getTarget().getChangePosition())
+                .containsExactly(64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74);
+
+//        diff.getFiles().forEach(f -> {
+//            System.out.println("File: " + f.getFromFile());
+//            f.getPatch().getDeltas().forEach(delta -> {
+//
+//                System.out.println(delta);
+//                System.out.println("Source: ");
+//                System.out.println(delta.getSource().getPosition());
+//                System.out.println(delta.getSource().getChangePosition());
+//
+//                System.out.println("Target: ");
+//                System.out.println(delta.getTarget().getPosition());
+//                System.out.println(delta.getTarget().getChangePosition());
+//            });
+//        });
     }
 }
