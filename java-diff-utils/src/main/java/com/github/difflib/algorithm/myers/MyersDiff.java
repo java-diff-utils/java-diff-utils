@@ -30,11 +30,10 @@ import java.util.function.BiPredicate;
  */
 public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 
-    private static final BiPredicate<T, T> DEFAULT_EQUALIZER = Object::equals;
     private final BiPredicate<T, T> equalizer;
 
     public MyersDiff() {
-        equalizer = DEFAULT_EQUALIZER;
+        equalizer = Objects::equals; // DEFAULT_EQUALIZER
     }
 
     public MyersDiff(final BiPredicate<T, T> equalizer) {
