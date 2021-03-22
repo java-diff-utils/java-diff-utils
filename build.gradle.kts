@@ -6,8 +6,8 @@ version = project.property("version") as String
 plugins {
     `maven-publish`
     signing
-    kotlin("native.cocoapods") version "1.4.31"
-    kotlin("multiplatform") version "1.4.31"
+    kotlin("native.cocoapods") version "1.4.30"
+    kotlin("multiplatform") version "1.4.30"
 }
 
 repositories {
