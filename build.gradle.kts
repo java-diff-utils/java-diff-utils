@@ -24,7 +24,7 @@ kotlin {
         testRuns["test"].executionTask.configure { useJUnit() }
     }
 
-    js(LEGACY) {
+    js(BOTH) {
         browser()
         nodejs()
         compilations.all {
