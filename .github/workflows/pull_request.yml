@@ -20,14 +20,8 @@ jobs:
         with:
           path: 'gradle.properties'
           property: 'version'
-      - name: Read version old
-        id: read_version_old
-        uses: christian-draeger/read-properties@1.0.1
-        with:
-          path: 'gradle.properties'
-          property: 'version'
       - name: Update version
-        uses: christian-draeger/write-properties@1.0.1
+        uses: reedyuk/read-properties@v0.0.3
         with:
           path: 'gradle.properties'
           property: 'version'
