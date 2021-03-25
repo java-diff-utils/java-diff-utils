@@ -14,7 +14,13 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Read version
+    - name: Read version
+        id: read_version
+        uses: reedyuk/read-properties@0.0.2
+        with:
+          path: 'gradle.properties'
+          property: 'pluginVersion'
+    - name: Read version
         id: read_version
         uses: christian-draeger/read-properties@1.0.1
         with:
