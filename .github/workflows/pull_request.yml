@@ -13,6 +13,20 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+
+      - name: Read version
+        id: read_version
+        uses: christian-draeger/read-properties@1.0.1
+        with:
+          path: 'gradle.properties'
+          property: 'pluginVersion'
+      - name: Update version
+        uses: christian-draeger/write-properties@1.0.1
+        with:
+          path: 'gradle.properties'
+          property: 'pluginVersion'
+          value: "${{ steps.read_version.outputs.value }}-${{ github.run_id }}"
+
       - name: Build
         uses: eskatos/gradle-command-action@v1
         with:
@@ -27,3 +41,18 @@ jobs:
         with:
           report_paths: "build/test-results/jvmTest/*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: publishAllPublicationsToGitHubPackagesRepository
+        env:
+          TOKEN: ${{ secrets.AUTO_TOKEN }}
+          USERNAME: ${{ secrets.AUTO_USERNAME }}
+      - name: Setup NPM
+        run: npm config set //npm.pkg.github.com/:_authToken=$token
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish npm
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: publishToNpm
