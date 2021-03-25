@@ -110,6 +110,7 @@ tasks {
         from.writeText(
             from.readText()
                 .replace("https://registry.npmjs.org/","https://npm.pkg.github.com/")
+                .replace("\"name\": \"kotlin-diff-utils\",", "\"name\": \"@gitliveapp/kotlin-diff-utils\",")
         )
     }
 }
