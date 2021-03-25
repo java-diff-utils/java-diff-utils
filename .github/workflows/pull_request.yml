@@ -21,7 +21,7 @@ jobs:
           path: 'gradle.properties'
           property: 'version'
       - name: Update version
-        uses: reedyuk/read-properties@v0.0.3
+        uses: reedyuk/write-properties@v0.0.3
         with:
           path: 'gradle.properties'
           property: 'version'
