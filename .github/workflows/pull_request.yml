@@ -59,4 +59,4 @@ jobs:
       - name: Publish npm
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: publishToNpm
+          arguments: prepareForGithubNpmPublish publishToNpm

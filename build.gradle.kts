@@ -104,6 +104,14 @@ tasks {
     val updateVersion by registering(Exec::class) {
         commandLine("npm", "--allow-same-version", "--no-git-tag-version", "--prefix", projectDir, "version", "${project.property("version")}")
     }
+
+    val prepareForGithubNpmPublish by registering(Copy::class) {
+        val from = file("package.json")
+        from.writeText(
+            from.readText()
+                .replace("https://registry.npmjs.org/","https://npm.pkg.github.com/")
+        )
+    }
 }
 
 val javadocJar by tasks.creating(Jar::class) {
