@@ -19,18 +19,18 @@ jobs:
         uses: reedyuk/read-properties@v0.0.3
         with:
           path: 'gradle.properties'
-          property: 'pluginVersion'
+          property: 'version'
       - name: Read version old
         id: read_version_old
         uses: christian-draeger/read-properties@1.0.1
         with:
           path: 'gradle.properties'
-          property: 'pluginVersion'
+          property: 'version'
       - name: Update version
         uses: christian-draeger/write-properties@1.0.1
         with:
           path: 'gradle.properties'
-          property: 'pluginVersion'
+          property: 'version'
           value: "${{ steps.read_version.outputs.value }}-${{ github.run_id }}"
 
       - name: Build
