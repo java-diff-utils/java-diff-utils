@@ -26,6 +26,10 @@ jobs:
           path: 'gradle.properties'
           property: 'version'
           value: "${{ steps.read_version.outputs.value }}-${{ github.head_ref }}"
+      - name: Change package version
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: :updateVersion
 
       - name: Build
         uses: eskatos/gradle-command-action@v1
