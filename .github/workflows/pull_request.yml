@@ -16,12 +16,12 @@ jobs:
 
       - name: Read version
         id: read_version
-        uses: reedyuk/read-properties@v0.0.7
+        uses: reedyuk/read-properties@v1.0.0
         with:
           path: 'gradle.properties'
           property: 'version'
       - name: Update version
-        uses: reedyuk/write-properties@v0.0.3
+        uses: reedyuk/write-properties@v1.0.0
         with:
           path: 'gradle.properties'
           property: 'version'
