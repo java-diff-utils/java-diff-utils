@@ -16,7 +16,7 @@ jobs:
 
       - name: Read version
         id: read_version
-        uses: reedyuk/read-properties@v0.0.6
+        uses: reedyuk/read-properties@v0.0.7
         with:
           path: 'gradle.properties'
           property: 'version'
@@ -25,7 +25,7 @@ jobs:
         with:
           path: 'gradle.properties'
           property: 'version'
-          value: "${{ steps.read_version.outputs.value }}-${{ github.run_id }}"
+          value: "${{ steps.read_version.outputs.value }}-${{ github.head_ref }}"
 
       - name: Build
         uses: eskatos/gradle-command-action@v1
