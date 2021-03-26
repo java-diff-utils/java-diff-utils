@@ -74,12 +74,12 @@ tasks {
     }
 
     val copyJS by registering(Copy::class) {
-        from(file("$buildDir/classes/kotlin/js/main/${project.name}.js"))
+        from(file("$buildDir/distributions/${project.name}.js"))
         into(file("$buildDir/node_module"))
     }
 
     val copySourceMap by registering(Copy::class) {
-        from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
+        from(file("$buildDir/distributions/${project.name}.js.map"))
         into(file("$buildDir/node_module"))
     }
 
