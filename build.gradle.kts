@@ -24,8 +24,17 @@ kotlin {
         testRuns["test"].executionTask.configure { useJUnit() }
     }
 
-    js(LEGACY) {
+    js("browser", IR) {
         browser()
+        compilations.all {
+            kotlinOptions {
+                sourceMap = true
+                sourceMapEmbedSources = "always"
+                moduleKind = "umd"
+            }
+        }
+    }
+    js("node", LEGACY) {
         nodejs()
         compilations.all {
             kotlinOptions {
@@ -44,9 +53,13 @@ kotlin {
             dependencies {
             }
         }
-        val jsMain by getting {
-            dependencies {
-            }
+        val jsMain by creating
+
+        val browserMain by getting {
+            dependsOn(jsMain)
+        }
+        val nodeMain by getting {
+            dependsOn(jsMain)
         }
         val jvmMain by getting {
             dependencies {
