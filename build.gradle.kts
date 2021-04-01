@@ -16,8 +16,6 @@ repositories {
     jcenter()
 }
 
-val jsTargetAttribute = Attribute.of("jsTarget", String::class.java)
-
 kotlin {
     jvm {
         compilations.all {
@@ -26,20 +24,9 @@ kotlin {
         testRuns["test"].executionTask.configure { useJUnit() }
     }
 
-    js("browser", LEGACY) {
-        attributes.attribute(jsTargetAttribute, "browser")
-        browser()
-        compilations.all {
-            kotlinOptions {
-                sourceMap = true
-                sourceMapEmbedSources = "always"
-                moduleKind = "umd"
-            }
-        }
-    }
-    js("node", LEGACY) {
-        attributes.attribute(jsTargetAttribute, "node")
+    js {
         nodejs()
+        browser()
         compilations.all {
             kotlinOptions {
                 sourceMap = true
@@ -57,14 +44,8 @@ kotlin {
             dependencies {
             }
         }
-        val jsMain by creating
+        val jsMain by getting
 
-        val browserMain by getting {
-            dependsOn(jsMain)
-        }
-        val nodeMain by getting {
-            dependsOn(jsMain)
-        }
         val jvmMain by getting {
             dependencies {
             }
