@@ -16,6 +16,8 @@ repositories {
     jcenter()
 }
 
+val jsTargetAttribute = Attribute.of("jsTarget", String::class.java)
+
 kotlin {
     jvm {
         compilations.all {
@@ -24,7 +26,8 @@ kotlin {
         testRuns["test"].executionTask.configure { useJUnit() }
     }
 
-    js("browser", IR) {
+    js("browser", LEGACY) {
+        attributes.attribute(jsTargetAttribute, "browser")
         browser()
         compilations.all {
             kotlinOptions {
@@ -35,6 +38,7 @@ kotlin {
         }
     }
     js("node", LEGACY) {
+        attributes.attribute(jsTargetAttribute, "node")
         nodejs()
         compilations.all {
             kotlinOptions {
