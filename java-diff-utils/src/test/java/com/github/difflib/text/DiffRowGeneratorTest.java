@@ -662,4 +662,25 @@ public class DiffRowGeneratorTest {
         assertThat(rows).extracting(item -> item.getTag().name()).containsExactly("CHANGE", "DELETE", "EQUAL", "CHANGE", "EQUAL");
         assertThat(rows.get(1).toString()).isEqualTo("[DELETE,~B~,]");
     }
+    
+    @Test
+    public void testIssue119WrongContextLength() throws IOException {
+        String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_119_original.txt")).collect(joining("\n"));
+        String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_119_revised.txt")).collect(joining("\n"));
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(original.split("\n")),
+                Arrays.asList(revised.split("\n")));
+
+        rows.stream()
+                .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
+                .forEach(System.out::println);
+    }
 }

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -204,8 +205,19 @@ public class GenerateUnifiedDiffTest {
         baseLines.set(40, baseLines.get(40) + " corrupted ");
         
         assertThrows(PatchFailedException.class, () -> DiffUtils.patch(baseLines, p));
+    }
+    
+    @Test
+    public void testWrongContextLength() throws IOException {
+        List<String> original = fileToLines(TestConstants.BASE_FOLDER_RESOURCES + "com/github/difflib/text/issue_119_original.txt");
+        List<String> revised = fileToLines(TestConstants.BASE_FOLDER_RESOURCES + "com/github/difflib/text/issue_119_revised.txt");
+
+        Patch<String> patch = DiffUtils.diff(original, revised);
+        List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff("a/$filename", "b/$filename",
+                original, patch, 3);
         
+        //System.out.println(udiff.stream().collect(joining("\n")));
         
-        
+        assertThat(udiff).contains("@@ -1,4 +1,4 @@");
     }
 }
