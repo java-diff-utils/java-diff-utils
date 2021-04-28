@@ -9,6 +9,10 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ### Changed
 
+## [4.11]
+
+### Changed
+
 ## [4.10]
 
 ### Changed
