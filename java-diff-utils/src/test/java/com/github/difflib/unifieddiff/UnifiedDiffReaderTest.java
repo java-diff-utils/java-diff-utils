@@ -277,11 +277,43 @@ public class UnifiedDiffReaderTest {
 
         assertThat(diff.getFiles().size()).isEqualTo(2);
 
-        final UnifiedDiffFile file = diff.getFiles().get(0);
         UnifiedDiffFile file1 = diff.getFiles().get(0);
         assertThat(file1.getFromFile()).isEqualTo("Main.java");
         assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
 
+    }
+    
+    @Test
+    public void testParseIssue107_3() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_3.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("Billion laughs attack.md");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+
+    }
+    
+    @Test
+    public void testParseIssue107_4() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_4.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(27);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("README.md");
+    }
+    
+    @Test
+    public void testParseIssue107_5() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_5.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(22);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java");
     }
 
     @Test

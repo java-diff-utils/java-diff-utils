@@ -1,0 +1,24 @@
+diff -r 4d1de0a006b7 -r ace1482360cb Billion laughs attack.md
+--- a/Billion laughs attack.md	Mon Feb 24 13:37:17 2020 +0000
++++ b/Billion laughs attack.md	Mon Feb 24 14:22:50 2020 +0000
+@@ -11,14 +11,12 @@
+ 
+ *The problem is*: when you stay with the mouth open and eyes closed then they may throw trash and you get sick.
+ 
+-
+-SnakeYAML Engine [has a way to restrict the amount of aliases for collections](https://bitbucket.org/asomov/snakeyaml-engine/src/default/src/test/java/org/snakeyaml/engine/usecases/references/ReferencesTest.java) to fail early without allocation too much resources.
++SnakeYAML 1.26+ [has a way to restrict the amount of aliases for collections](https://bitbucket.org/asomov/snakeyaml/src/default/src/test/java/org/yaml/snakeyaml/issues/issue377/ReferencesTest.java) to fail early without allocation too much resources.
+ 
+ # Solution #
+ 
+-1. If the YAML is not coming from untrusted source (it is merely a configuration file) then it is a false positive. Just ignore it. The quality of NVD database is very low and contains tons of issues which appear to be false positives.
+-2. Migrate to [SnakeYAML Engine](https://bitbucket.org/asomov/snakeyaml-engine/src/default/). It has a configuration option to restrict aliases for collections (the aliases for scalars cannot grow and they are not restricted)
+-3. Check how it is done in SnakeYAML Engine and build your own SnakeYAML version with the same change.
+-4. Read the YAML and check its quality before giving the document to SnakeYAML (count `*` and `&` for instance)
++1. Update to SnakeYAML 1.26. It has a configuration option to restrict aliases for collections (the aliases for scalars cannot grow and they are not restricted)
++2. If the YAML is not coming from untrusted source (it is merely a configuration file) then it is a false positive. Just ignore it. The quality of NVD database is very low and contains tons of issues which appear to be false positives.
++3. Read the YAML and check its quality before giving the document to SnakeYAML (count `*` and `&` for instance)
+ 
+-Enjoy.
+\ No newline at end of file
++Enjoy.

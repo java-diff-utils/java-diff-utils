@@ -106,6 +106,8 @@ public final class UnifiedDiffReader {
             if (line != null) {
                 processLine(line, CHUNK);
                 while ((line = READER.readLine()) != null) {
+                    line = checkForNoNewLineAtTheEndOfTheFile(line);
+                    
                     if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
                         throw new UnifiedDiffParserException("expected data line not found");
                     }
@@ -118,10 +120,7 @@ public final class UnifiedDiffReader {
                 }
                 line = READER.readLine();
 
-                if ("\\ No newline at end of file".equals(line)) {
-                    actualFile.setNoNewLineAtTheEndOfTheFile(true);
-                    line = READER.readLine();
-                }
+                line = checkForNoNewLineAtTheEndOfTheFile(line);
             }
             if (line == null || (line.startsWith("--") && !line.startsWith("---"))) {
                 break;
@@ -140,6 +139,14 @@ public final class UnifiedDiffReader {
         }
 
         return data;
+    }
+
+    private String checkForNoNewLineAtTheEndOfTheFile(String line) throws IOException {
+        if ("\\ No newline at end of file".equals(line)) {
+            actualFile.setNoNewLineAtTheEndOfTheFile(true);
+            return READER.readLine();
+        }
+        return line;
     }
 
     static String[] parseFileNames(String line) {
