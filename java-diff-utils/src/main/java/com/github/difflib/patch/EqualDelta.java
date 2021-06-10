@@ -36,6 +36,11 @@ public class EqualDelta<T> extends AbstractDelta<T> {
     }
 
     @Override
+    protected int applyFuzzyTo(List<T> target, int maxFuzz, int delta, int lastPatchAppliedTo) {
+        return delta;
+    }
+
+    @Override
     public String toString() {
         return "[EqualDelta, position: " + getSource().getPosition() + ", lines: "
                 + getSource().getLines() + "]";
