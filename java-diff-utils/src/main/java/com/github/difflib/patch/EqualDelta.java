@@ -35,6 +35,9 @@ public class EqualDelta<T> extends AbstractDelta<T> {
     protected void restore(List<T> target) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void applyFuzzyToAt(List<T> target, int fuzz, int delta) {
     }
