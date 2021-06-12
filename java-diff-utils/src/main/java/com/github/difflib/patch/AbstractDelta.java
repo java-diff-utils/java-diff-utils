@@ -74,27 +74,12 @@ public abstract class AbstractDelta<T> implements Serializable {
      * Apply patch fuzzy.
      *
      * @param target the list this patch will be applied to
-     * @param maxFuzz max fuzz size
-     * @param delta the changed offset from expected previous patch to actually applied position.
-     * @param lastPatchAppliedTo the position of target which 
-     * @return the delta, changed offset from expected previous patch to actually applied position.
+     * @param fuzz the count of elements which ignores prefix and suffix
+     * @param position the position this patch will be applied to. ignores {@code source.getPosition()}
      */
     @SuppressWarnings("RedundantThrows")
-    protected int applyFuzzyTo(List<T> target, int maxFuzz, int delta, int lastPatchAppliedTo) throws PatchFailedException {
+    protected void applyFuzzyToAt(List<T> target, int fuzz, int position) throws PatchFailedException {
         throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not supports applying patch fuzzy");
-    }
-
-    /**
-     * Restore patch fuzzy.
-     *
-     * @param target the list this patch will be applied to
-     * @param maxFuzz max fuzz size
-     * @param delta the changed offset from expected previous patch to actually applied position.
-     * @param lastPatchAppliedTo the position of target which 
-     * @return the delta, changed offset from expected previous patch to actually applied position.
-     */
-    protected int restoreFuzzy(List<T> target, int maxFuzz, int delta, int lastPatchAppliedTo) {
-        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not supports restoring patch fuzzy");
     }
 
     /**

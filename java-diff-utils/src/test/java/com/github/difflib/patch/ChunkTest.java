@@ -16,25 +16,25 @@ class ChunkTest {
         assertEquals(VerifyChunk.OK,
                 chunk.verifyChunk(toCharList("prefix test suffix")));
         assertEquals(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET,
-                chunk.verifyChunk(toCharList("prefix  es  suffix"), 0, 0));
+                chunk.verifyChunk(toCharList("prefix  es  suffix"), 0, 7));
 
-        // delta
+        // position
         assertEquals(VerifyChunk.OK,
-                chunk.verifyChunk(toCharList("short test suffix"), 0, -1));
+                chunk.verifyChunk(toCharList("short test suffix"), 0, 6));
         assertEquals(VerifyChunk.OK,
-                chunk.verifyChunk(toCharList("loonger test suffix"), 0, 1));
+                chunk.verifyChunk(toCharList("loonger test suffix"), 0, 8));
         assertEquals(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET,
-                chunk.verifyChunk(toCharList("prefix test suffix"), 0, -1));
+                chunk.verifyChunk(toCharList("prefix test suffix"), 0, 6));
         assertEquals(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET,
-                chunk.verifyChunk(toCharList("prefix test suffix"), 0, 1));
+                chunk.verifyChunk(toCharList("prefix test suffix"), 0, 8));
 
         // fuzz
         assertEquals(VerifyChunk.OK,
-                chunk.verifyChunk(toCharList("prefix test suffix"), 1, 0));
+                chunk.verifyChunk(toCharList("prefix test suffix"), 1, 7));
         assertEquals(VerifyChunk.OK,
-                chunk.verifyChunk(toCharList("prefix  es  suffix"), 1, 0));
+                chunk.verifyChunk(toCharList("prefix  es  suffix"), 1, 7));
         assertEquals(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET,
-                chunk.verifyChunk(toCharList("prefix      suffix"), 1, 0));
+                chunk.verifyChunk(toCharList("prefix      suffix"), 1, 7));
     }
 
     private List<Character> toCharList(String str) {

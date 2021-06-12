@@ -66,6 +66,19 @@ public final class ChangeDelta<T> extends AbstractDelta<T> {
         }
     }
 
+    protected void applyFuzzyToAt(List<T> target, int fuzz, int position) throws PatchFailedException {
+        int size = getSource().size();
+        for (int i = fuzz; i < size - fuzz; i++) {
+            target.remove(position + fuzz);
+        }
+
+        int i = fuzz;
+        for (T line : getTarget().getLines().subList(fuzz, getTarget().size() - fuzz)) {
+            target.add(position + i, line);
+            i++;
+        }
+    }
+
     @Override
     public String toString() {
         return "[ChangeDelta, position: " + getSource().getPosition() + ", lines: "

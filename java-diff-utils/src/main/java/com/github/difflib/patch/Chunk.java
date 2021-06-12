@@ -95,7 +95,7 @@ public final class Chunk<T> implements Serializable {
      * @throws com.github.difflib.patch.PatchFailedException
      */
     public VerifyChunk verifyChunk(List<T> target) throws PatchFailedException {
-        return verifyChunk(target, 0, 0);
+        return verifyChunk(target, 0, getPosition());
     }
 
     /**
@@ -104,15 +104,14 @@ public final class Chunk<T> implements Serializable {
      *
      * @param target the sequence to verify against.
      * @param fuzz the count of ignored prefix/suffix
-     * @param delta the position of target which
+     * @param position the position of target
      * @throws com.github.difflib.patch.PatchFailedException
      */
-    public VerifyChunk verifyChunk(List<T> target, int fuzz, int delta) throws PatchFailedException {
+    public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) throws PatchFailedException {
         //noinspection UnnecessaryLocalVariable
         int startIndex = fuzz;
         int lastIndex = size() - fuzz;
-        int position = this.position + delta;
-        int last = last() + delta;
+        int last = position + size() - 1;
 
         if (position + fuzz > target.size() || last - fuzz > target.size()) {
             return VerifyChunk.POSITION_OUT_OF_TARGET;

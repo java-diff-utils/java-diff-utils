@@ -1,6 +1,7 @@
 package com.github.difflib.patch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -8,8 +9,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +59,69 @@ public class PatchTest {
             assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
         } catch (PatchFailedException e) {
             fail(e.getMessage());
+        }
+    }
+
+    // region testPatch_fuzzyApply utils
+
+    private List<String> intRange(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(Integer::toString)
+                .collect(Collectors.toList());
+    }
+
+    @SafeVarargs
+    private final List<String> join(List<String>... lists) {
+        return Arrays.stream(lists).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private static class FuzzyApplyTestPair {
+        final List<String> from;
+        final List<String> to;
+        final int requiredFuzz;
+
+        private FuzzyApplyTestPair(List<String> from, List<String> to, int requiredFuzz) {
+            this.from = from;
+            this.to = to;
+            this.requiredFuzz = requiredFuzz;
+        }
+    }
+
+    // endregion
+
+    @Test
+    public void testPatch_fuzzyApply() throws PatchFailedException {
+        Patch<String> patch = new Patch<>();
+        List<String> deltaFrom = Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff");
+        List<String> deltaTo = Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff");
+        patch.addDelta(new ChangeDelta<>(
+                new Chunk<>(6, deltaFrom),
+                new Chunk<>(6, deltaTo)));
+
+        //noinspection unchecked
+        List<String>[] moves = new List[] {
+                intRange(6), // no patch move
+                intRange(3), // forward patch move
+                intRange(9), // backward patch move
+        };
+
+        for (FuzzyApplyTestPair pair : pairs) {
+            for (List<String> move : moves) {
+                List<String> from = join(move, pair.from);
+                List<String> to = join(move, pair.to);
+
+                for (int i = 0; i < pair.requiredFuzz; i++) {
+                    int maxFuzz = i;
+                    assertThrows(PatchFailedException.class, () ->
+                            patch.applyFuzzy(from, maxFuzz),
+                            () -> "fail for " + from + " -> " + to + " for fuzz " + maxFuzz + " required " + pair.requiredFuzz);
+                }
+                for (int i = pair.requiredFuzz; i < 4; i++) {
+                    int maxFuzz = i;
+                    assertEquals(to, patch.applyFuzzy(from, maxFuzz),
+                            () -> "with " + maxFuzz);
+                }
+            }
         }
     }
 
@@ -100,4 +169,183 @@ public class PatchTest {
             fail(e.getMessage());
         }
     }
+
+    static class FuzzyApplyTestDataGenerator {
+        private static String createList(List<String> values) {
+            return values.stream()
+                    .map(x -> '"' + x + '"')
+                    .collect(Collectors.joining(", ", "Arrays.asList(", ")"));
+        }
+
+        public static void main(String[] args) {
+            String[] deltaFrom = new String[] { "aaa", "bbb", "ccc", "ddd", "eee", "fff" };
+            String[] deltaTo = new String[] { "aaa", "bbb", "cxc", "dxd", "eee", "fff" };
+
+            List<FuzzyApplyTestPair> pairs = new ArrayList<>();
+
+            // create test data.
+            // Brute-force search
+            String[] changedValue = new String[]{"axa", "bxb", "czc", "dzd", "exe", "fxf"};
+            for (int i = 0; i < 1 << 6; i++) {
+                if ((i & 0b001100) != 0 && (i & 0b001100) != 0b001100) continue;
+
+                String[] from = deltaFrom.clone();
+                String[] to = deltaTo.clone();
+                for (int j = 0; j < 6; j++) {
+                    if ((i & (1 << j)) != 0) {
+                        from[j] = changedValue[j];
+                        to[j] = changedValue[j];
+                    }
+                }
+
+                int requiredFuzz;
+                if ((i & 0b001100) != 0) requiredFuzz = 3;
+                else if ((i & 0b010010) != 0) requiredFuzz = 2;
+                else if ((i & 0b100001) != 0) requiredFuzz = 1;
+                else requiredFuzz = 0;
+
+                pairs.add(new FuzzyApplyTestPair(Arrays.asList(from), Arrays.asList(to), requiredFuzz));
+            }
+            pairs.sort(Comparator.comparingInt(a -> a.requiredFuzz));
+            System.out.println("FuzzyApplyTestPair[] pairs = new FuzzyApplyTestPair[] {");
+            for (FuzzyApplyTestPair pair : pairs) {
+                System.out.println("        new FuzzyApplyTestPair(");
+                System.out.println("                " + createList(pair.from) + ",");
+                System.out.println("                " + createList(pair.to) + ",");
+                System.out.println("                " + pair.requiredFuzz + "),");
+            }
+            System.out.println("};");
+        }
+    }
+
+    private static final FuzzyApplyTestPair[] pairs = new FuzzyApplyTestPair[] {
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff"),
+                    Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff"),
+                    0),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "ccc", "ddd", "eee", "fff"),
+                    Arrays.asList("axa", "bbb", "cxc", "dxd", "eee", "fff"),
+                    1),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fxf"),
+                    Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fxf"),
+                    1),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "ccc", "ddd", "eee", "fxf"),
+                    Arrays.asList("axa", "bbb", "cxc", "dxd", "eee", "fxf"),
+                    1),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "ccc", "ddd", "eee", "fff"),
+                    Arrays.asList("aaa", "bxb", "cxc", "dxd", "eee", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "ccc", "ddd", "eee", "fff"),
+                    Arrays.asList("axa", "bxb", "cxc", "dxd", "eee", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "ccc", "ddd", "exe", "fff"),
+                    Arrays.asList("aaa", "bbb", "cxc", "dxd", "exe", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "ccc", "ddd", "exe", "fff"),
+                    Arrays.asList("axa", "bbb", "cxc", "dxd", "exe", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "ccc", "ddd", "exe", "fff"),
+                    Arrays.asList("aaa", "bxb", "cxc", "dxd", "exe", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "ccc", "ddd", "exe", "fff"),
+                    Arrays.asList("axa", "bxb", "cxc", "dxd", "exe", "fff"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "ccc", "ddd", "eee", "fxf"),
+                    Arrays.asList("aaa", "bxb", "cxc", "dxd", "eee", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "ccc", "ddd", "eee", "fxf"),
+                    Arrays.asList("axa", "bxb", "cxc", "dxd", "eee", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "ccc", "ddd", "exe", "fxf"),
+                    Arrays.asList("aaa", "bbb", "cxc", "dxd", "exe", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "ccc", "ddd", "exe", "fxf"),
+                    Arrays.asList("axa", "bbb", "cxc", "dxd", "exe", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "ccc", "ddd", "exe", "fxf"),
+                    Arrays.asList("aaa", "bxb", "cxc", "dxd", "exe", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "ccc", "ddd", "exe", "fxf"),
+                    Arrays.asList("axa", "bxb", "cxc", "dxd", "exe", "fxf"),
+                    2),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "eee", "fff"),
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "eee", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "eee", "fff"),
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "eee", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "eee", "fff"),
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "eee", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "eee", "fff"),
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "eee", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "exe", "fff"),
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "exe", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "exe", "fff"),
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "exe", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "exe", "fff"),
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "exe", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "exe", "fff"),
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "exe", "fff"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "eee", "fxf"),
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "eee", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "eee", "fxf"),
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "eee", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "eee", "fxf"),
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "eee", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "eee", "fxf"),
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "eee", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "exe", "fxf"),
+                    Arrays.asList("aaa", "bbb", "czc", "dzd", "exe", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "exe", "fxf"),
+                    Arrays.asList("axa", "bbb", "czc", "dzd", "exe", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "exe", "fxf"),
+                    Arrays.asList("aaa", "bxb", "czc", "dzd", "exe", "fxf"),
+                    3),
+            new FuzzyApplyTestPair(
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "exe", "fxf"),
+                    Arrays.asList("axa", "bxb", "czc", "dzd", "exe", "fxf"),
+                    3),
+    };
 }
