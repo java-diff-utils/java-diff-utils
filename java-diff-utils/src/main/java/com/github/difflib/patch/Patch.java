@@ -107,7 +107,9 @@ public final class Patch<T> implements Serializable {
         for (int fuzz = 0; fuzz <= ctx.maxFuzz; fuzz++) {
             ctx.currentFuzz = fuzz;
             int foundPosition = findPositionWithFuzz(ctx, delta, fuzz);
-            if (foundPosition >= 0) return foundPosition;
+            if (foundPosition >= 0) {
+                return foundPosition;
+            }
         }
         return -1;
     }
@@ -148,13 +150,19 @@ public final class Patch<T> implements Serializable {
 
             if (!beforeOutRange) {
                 VerifyChunk before = original.verifyChunk(ctx.result, fuzz, defaultPosition - moreDelta);
-                if (before == VerifyChunk.OK) return defaultPosition - moreDelta;
+                if (before == VerifyChunk.OK) {
+                    return defaultPosition - moreDelta;
+                }
             }
             if (!afterOutRange) {
                 VerifyChunk after = original.verifyChunk(ctx.result, fuzz, defaultPosition + moreDelta);
-                if (after == VerifyChunk.OK) return defaultPosition + moreDelta;
+                if (after == VerifyChunk.OK) {
+                    return defaultPosition + moreDelta;
+                }
             }
-            if (beforeOutRange && afterOutRange) break;
+            if (beforeOutRange && afterOutRange) {
+                break;
+            }
         }
 
         return -1;

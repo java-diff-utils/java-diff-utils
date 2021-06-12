@@ -105,7 +105,7 @@ public class PatchTest {
                 intRange(9), // backward patch move
         };
 
-        for (FuzzyApplyTestPair pair : pairs) {
+        for (FuzzyApplyTestPair pair : FUZZY_APPLY_TEST_PAIRS) {
             for (List<String> move : moves) {
                 List<String> from = join(move, pair.from);
                 List<String> to = join(move, pair.to);
@@ -187,7 +187,9 @@ public class PatchTest {
             // Brute-force search
             String[] changedValue = new String[]{"axa", "bxb", "czc", "dzd", "exe", "fxf"};
             for (int i = 0; i < 1 << 6; i++) {
-                if ((i & 0b001100) != 0 && (i & 0b001100) != 0b001100) continue;
+                if ((i & 0b001100) != 0 && (i & 0b001100) != 0b001100) {
+                    continue;
+                }
 
                 String[] from = deltaFrom.clone();
                 String[] to = deltaTo.clone();
@@ -199,10 +201,15 @@ public class PatchTest {
                 }
 
                 int requiredFuzz;
-                if ((i & 0b001100) != 0) requiredFuzz = 3;
-                else if ((i & 0b010010) != 0) requiredFuzz = 2;
-                else if ((i & 0b100001) != 0) requiredFuzz = 1;
-                else requiredFuzz = 0;
+                if ((i & 0b001100) != 0) {
+                    requiredFuzz = 3;
+                } else if ((i & 0b010010) != 0) {
+                    requiredFuzz = 2;
+                } else if ((i & 0b100001) != 0) {
+                    requiredFuzz = 1;
+                } else {
+                    requiredFuzz = 0;
+                }
 
                 pairs.add(new FuzzyApplyTestPair(Arrays.asList(from), Arrays.asList(to), requiredFuzz));
             }
@@ -218,7 +225,7 @@ public class PatchTest {
         }
     }
 
-    private static final FuzzyApplyTestPair[] pairs = new FuzzyApplyTestPair[] {
+    private static final FuzzyApplyTestPair[] FUZZY_APPLY_TEST_PAIRS = new FuzzyApplyTestPair[] {
             new FuzzyApplyTestPair(
                     Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff"),
                     Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff"),

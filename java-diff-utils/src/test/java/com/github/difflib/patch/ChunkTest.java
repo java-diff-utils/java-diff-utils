@@ -38,6 +38,6 @@ class ChunkTest {
     }
 
     private List<Character> toCharList(String str) {
-        return str.chars().mapToObj(x -> (char)x).collect(Collectors.toList());
+        return str.chars().mapToObj(x -> (char) x).collect(Collectors.toList());
     }
 }
