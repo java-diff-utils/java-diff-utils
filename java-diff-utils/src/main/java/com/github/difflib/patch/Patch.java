@@ -70,8 +70,6 @@ public final class Patch<T> implements Serializable {
         final List<T> result;
         final int maxFuzz;
 
-        // the difference between patch's position and actually applied position
-        int lastPatchDelta = 0;
         // the position last patch applied to.
         int lastPatchEnd = -1;
 
@@ -91,14 +89,19 @@ public final class Patch<T> implements Serializable {
     public List<T> applyFuzzy(List<T> target, int maxFuzz) throws PatchFailedException {
         PatchApplyingContext<T> ctx = new PatchApplyingContext<>(new ArrayList<>(target), maxFuzz);
 
+        // the difference between patch's position and actually applied position
+        int lastPatchDelta = 0;
+
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
 
-            ctx.defaultPosition = delta.getSource().getPosition() + ctx.lastPatchDelta;
+            ctx.defaultPosition = delta.getSource().getPosition() + lastPatchDelta;
             int patchPosition = findPositionFuzzy(ctx, delta);
             if (0 <= patchPosition) {
                 delta.applyFuzzyToAt(ctx.result, ctx.currentFuzz, patchPosition);
+                lastPatchDelta = patchPosition - delta.getSource().getPosition();
+                ctx.lastPatchEnd = delta.getSource().last() + lastPatchDelta;
             } else {
                 conflictOutput.processConflict(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET, delta, ctx.result);
             }
