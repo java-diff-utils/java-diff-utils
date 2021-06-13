@@ -90,7 +90,7 @@ public class PatchTest {
     // endregion
 
     @Test
-    public void testPatch_fuzzyApply() throws PatchFailedException {
+    public void fuzzyApply() throws PatchFailedException {
         Patch<String> patch = new Patch<>();
         List<String> deltaFrom = Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff");
         List<String> deltaTo = Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff");
