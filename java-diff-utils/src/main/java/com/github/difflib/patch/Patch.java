@@ -92,10 +92,7 @@ public final class Patch<T> implements Serializable {
         // the difference between patch's position and actually applied position
         int lastPatchDelta = 0;
 
-        ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
-        while (it.hasPrevious()) {
-            AbstractDelta<T> delta = it.previous();
-
+        for (AbstractDelta<T> delta : getDeltas()) {
             ctx.defaultPosition = delta.getSource().getPosition() + lastPatchDelta;
             int patchPosition = findPositionFuzzy(ctx, delta);
             if (0 <= patchPosition) {
