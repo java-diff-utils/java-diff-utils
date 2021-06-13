@@ -76,9 +76,9 @@ public class PatchTest {
     }
 
     private static class FuzzyApplyTestPair {
-        final List<String> from;
-        final List<String> to;
-        final int requiredFuzz;
+        public final List<String> from;
+        public final List<String> to;
+        public final int requiredFuzz;
 
         private FuzzyApplyTestPair(List<String> from, List<String> to, int requiredFuzz) {
             this.from = from;

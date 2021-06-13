@@ -67,18 +67,18 @@ public final class Patch<T> implements Serializable {
     }
 
     private static class PatchApplyingContext<T> {
-        final List<T> result;
-        final int maxFuzz;
+        public final List<T> result;
+        public final int maxFuzz;
 
         // the position last patch applied to.
-        int lastPatchEnd = -1;
+        public int lastPatchEnd = -1;
 
         ///// passing values from find to apply
-        int currentFuzz = 0;
+        public int currentFuzz = 0;
 
-        int defaultPosition;
-        boolean beforeOutRange = false;
-        boolean afterOutRange = false;
+        public int defaultPosition;
+        public boolean beforeOutRange = false;
+        public boolean afterOutRange = false;
 
         private PatchApplyingContext(List<T> result, int maxFuzz) {
             this.result = result;
