@@ -103,6 +103,7 @@ public class PatchTest {
                 intRange(6), // no patch move
                 intRange(3), // forward patch move
                 intRange(9), // backward patch move
+                intRange(0), // apply to the first
         };
 
         for (FuzzyApplyTestPair pair : FUZZY_APPLY_TEST_PAIRS) {
@@ -123,6 +124,40 @@ public class PatchTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void fuzzyApplyTwoSideBySidePatches() throws PatchFailedException {
+        Patch<String> patch = new Patch<>();
+        List<String> deltaFrom = Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff");
+        List<String> deltaTo = Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff");
+        patch.addDelta(new ChangeDelta<>(
+                new Chunk<>(0, deltaFrom),
+                new Chunk<>(0, deltaTo)));
+        patch.addDelta(new ChangeDelta<>(
+                new Chunk<>(6, deltaFrom),
+                new Chunk<>(6, deltaTo)));
+
+
+        assertEquals(join(deltaTo, deltaTo), patch.applyFuzzy(join(deltaFrom, deltaFrom), 0));
+    }
+
+    @Test
+    public void fuzzyApplyToNearest() throws PatchFailedException {
+        Patch<String> patch = new Patch<>();
+        List<String> deltaFrom = Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee", "fff");
+        List<String> deltaTo = Arrays.asList("aaa", "bbb", "cxc", "dxd", "eee", "fff");
+        patch.addDelta(new ChangeDelta<>(
+                new Chunk<>(0, deltaFrom),
+                new Chunk<>(0, deltaTo)));
+        patch.addDelta(new ChangeDelta<>(
+                new Chunk<>(10, deltaFrom),
+                new Chunk<>(10, deltaTo)));
+
+        assertEquals(join(deltaTo, deltaFrom, deltaTo),
+                patch.applyFuzzy(join(deltaFrom, deltaFrom, deltaFrom), 0));
+        assertEquals(join(intRange(1), deltaTo, deltaFrom, deltaTo),
+                patch.applyFuzzy(join(intRange(1), deltaFrom, deltaFrom, deltaFrom), 0));
     }
 
     @Test
