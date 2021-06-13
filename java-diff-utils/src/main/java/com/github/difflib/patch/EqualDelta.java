@@ -40,6 +40,7 @@ public class EqualDelta<T> extends AbstractDelta<T> {
      */
     @Override
     protected void applyFuzzyToAt(List<T> target, int fuzz, int delta) {
+        // equals so no operations
     }
 
     @Override
