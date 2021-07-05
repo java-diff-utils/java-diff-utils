@@ -55,7 +55,7 @@ public final class UnifiedDiff {
         return tail;
     }
 
-    public List<String> spplyPatchTo(Predicate<String> findFile, List<String> originalLines) throws PatchFailedException {
+    public List<String> applyPatchTo(Predicate<String> findFile, List<String> originalLines) throws PatchFailedException {
         UnifiedDiffFile file = files.stream()
                 .filter(diff -> findFile.test(diff.getFromFile()))
                 .findFirst().orElse(null);
