@@ -150,7 +150,7 @@ public class UnifiedDiffRoundTripTest {
 //                Patch<String> fromUnifiedPatch = unifiedDiff.getFiles().get(0).getPatch();
 //                patchedLines = fromUnifiedPatch.applyTo(origLines);
 //            }
-            patchedLines = unifiedDiff.spplyPatchTo(file -> originalFile.equals(file), origLines);
+            patchedLines = unifiedDiff.applyPatchTo(file -> originalFile.equals(file), origLines);
             assertEquals(revLines.size(), patchedLines.size());
             for (int i = 0; i < revLines.size(); i++) {
                 String l1 = revLines.get(i);
