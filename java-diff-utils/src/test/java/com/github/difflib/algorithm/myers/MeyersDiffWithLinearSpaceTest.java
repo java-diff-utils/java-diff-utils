@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 java-diff-utils.
+ * Copyright 2021 java-diff-utils.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,22 @@ import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author tw
  */
-public class MyersDiffTest {
-
+public class MeyersDiffWithLinearSpaceTest {
+    
     @Test
     public void testDiffMyersExample1Forward() {
         List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
-        final Patch<String> patch = Patch.generate(original, revised, new MyersDiff<String>().computeDiff(original, revised, null));
+        final Patch<String> patch = Patch.generate(original, revised, new MeyersDiffWithLinearSpace<String>().computeDiff(original, revised, null));
         assertNotNull(patch);
+        System.out.println(patch);
         assertEquals(4, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
     }
@@ -47,7 +47,7 @@ public class MyersDiffTest {
         
         List<String> logdata = new ArrayList<>();
         final Patch<String> patch = Patch.generate(original, revised, 
-                new MyersDiff<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
+                new MeyersDiffWithLinearSpace<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
             @Override
             public void diffStart() {
                 logdata.add("start");
@@ -64,6 +64,7 @@ public class MyersDiffTest {
             }
         }));
         assertNotNull(patch);
+        System.out.println(patch);
         assertEquals(4, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
         System.out.println(logdata);
