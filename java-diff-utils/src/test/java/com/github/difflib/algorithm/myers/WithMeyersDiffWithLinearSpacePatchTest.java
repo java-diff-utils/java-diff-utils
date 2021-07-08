@@ -93,7 +93,7 @@ public class WithMeyersDiffWithLinearSpacePatchTest {
 
         try {
             List<String> data = DiffUtils.patch(changeTest_from, patch);
-            assertEquals(9, data.size());
+            assertEquals(11, data.size());
             
             assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
             

@@ -65,11 +65,22 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
                     //TODO: compress these commands.
                     if (end1 - start1 > end2 - start2) {
                         //script.append(new DeleteCommand<>(left.charAt(i)));
-                        data.script.add(new Change(DeltaType.DELETE, i, i + 1, j, j));
+                        if (data.script.isEmpty()
+                                || data.script.get(data.script.size() - 1).endOriginal != i
+                                || data.script.get(data.script.size() - 1).deltaType != DeltaType.DELETE) {
+                            data.script.add(new Change(DeltaType.DELETE, i, i + 1, j, j));
+                        } else {
+                            data.script.set(data.script.size() - 1, data.script.get(data.script.size() - 1).withEndOriginal(i + 1));
+                        }
                         ++i;
                     } else {
-                        //script.append(new InsertCommand<>(right.charAt(j)));
-                        data.script.add(new Change(DeltaType.INSERT, i, i, j, j + 1));
+                        if (data.script.isEmpty()
+                                || data.script.get(data.script.size() - 1).endRevised != j
+                                || data.script.get(data.script.size() - 1).deltaType != DeltaType.INSERT) {
+                            data.script.add(new Change(DeltaType.INSERT, i, i, j, j + 1));
+                        } else {
+                            data.script.set(data.script.size() - 1, data.script.get(data.script.size() - 1).withEndRevised(j + 1));
+                        }
                         ++j;
                     }
                 }
