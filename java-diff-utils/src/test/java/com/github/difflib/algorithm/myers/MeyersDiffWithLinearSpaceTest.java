@@ -15,11 +15,14 @@
  */
 package com.github.difflib.algorithm.myers;
 
+import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -69,5 +72,20 @@ public class MeyersDiffWithLinearSpaceTest {
         assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
         System.out.println(logdata);
         assertEquals(8, logdata.size());
+    }
+    
+    
+    @Test
+    public void testPerformanceProblemsIssue124() {
+         List<String> old = Arrays.asList("abcd");
+         List<String> newl = IntStream.range(0, 90000)
+                    .boxed()
+                    .map(i -> i.toString())
+                    .collect(toList());
+         
+        long start = System.currentTimeMillis();
+        Patch<String> diff = DiffUtils.diff(old, newl, new MeyersDiffWithLinearSpace<String>());
+        long end = System.currentTimeMillis();
+        System.out.println("Finished in " + (end - start) + "ms and resulted " + diff.getDeltas().size() + " deltas");
     }
 }

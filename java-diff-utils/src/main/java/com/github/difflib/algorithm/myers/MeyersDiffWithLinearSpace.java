@@ -87,9 +87,6 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
             }
         } else {
             buildScript(data, start1, middle.start, start2, middle.start - middle.diag);
-//            for (int i = middle.getStart(); i < middle.getEnd(); ++i) {
-//                script.append(new KeepCommand<>(left.charAt(i)));
-//            }
             buildScript(data, middle.end, end1, middle.end - middle.diag, end2);
         }
     }

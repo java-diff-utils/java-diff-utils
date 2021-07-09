@@ -95,7 +95,7 @@ public class WithMeyersDiffWithLinearSpacePatchTest {
             List<String> data = DiffUtils.patch(changeTest_from, patch);
             assertEquals(11, data.size());
             
-            assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
+            assertEquals(Arrays.asList("aaa", "bxb", "cxc", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
             
         } catch (PatchFailedException e) {
             fail(e.getMessage());
