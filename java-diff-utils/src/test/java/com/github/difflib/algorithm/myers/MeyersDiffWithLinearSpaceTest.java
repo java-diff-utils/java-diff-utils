@@ -39,8 +39,8 @@ public class MeyersDiffWithLinearSpaceTest {
         final Patch<String> patch = Patch.generate(original, revised, new MeyersDiffWithLinearSpace<String>().computeDiff(original, revised, null));
         assertNotNull(patch);
         System.out.println(patch);
-        assertEquals(4, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
+        assertEquals(5, patch.getDeltas().size());
+        assertEquals("Patch{deltas=[[InsertDelta, position: 0, lines: [C]], [DeleteDelta, position: 0, lines: [A]], [DeleteDelta, position: 2, lines: [C]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
     }
     
     @Test
@@ -68,8 +68,8 @@ public class MeyersDiffWithLinearSpaceTest {
         }));
         assertNotNull(patch);
         System.out.println(patch);
-        assertEquals(4, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
+        assertEquals(5, patch.getDeltas().size());
+        assertEquals("Patch{deltas=[[InsertDelta, position: 0, lines: [C]], [DeleteDelta, position: 0, lines: [A]], [DeleteDelta, position: 2, lines: [C]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
         System.out.println(logdata);
         assertEquals(8, logdata.size());
     }

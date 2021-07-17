@@ -15,9 +15,10 @@
  */
 package com.github.difflib;
 
+import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.myers.MyersDiff;
+import com.github.difflib.algorithm.myers.MeyersDiff;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
@@ -34,26 +35,35 @@ import java.util.function.BiPredicate;
 public final class DiffUtils {
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * This factory generates the DEFAULT_DIFF algorithm for all these routines.
+     */
+    static DiffAlgorithmFactory DEFAULT_DIFF = MeyersDiff.factory();
+
+    public static void withDefaultDiffAlgorithmFactory(DiffAlgorithmFactory factory) {
+        DEFAULT_DIFF = factory;
+    }
+
+    /**
+     * Computes the difference between the original and revised list of elements
+     * with default diff algorithm
      *
      * @param <T> types to be diffed
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param progress progress listener
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @return The patch describing the difference between the original and
+     * revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) {
-        return DiffUtils.diff(original, revised, new MyersDiff<>(), progress);
+        return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), progress);
     }
 
     public static <T> Patch<T> diff(List<T> original, List<T> revised) {
-        return DiffUtils.diff(original, revised, new MyersDiff<>(), null);
+        return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null);
     }
-    
+
     public static <T> Patch<T> diff(List<T> original, List<T> revised, boolean includeEqualParts) {
-        return DiffUtils.diff(original, revised, new MyersDiff<>(), null, includeEqualParts);
+        return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
     }
 
     /**
@@ -67,45 +77,46 @@ public final class DiffUtils {
     }
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements
+     * with default diff algorithm
      *
      * @param source The original text. Must not be {@code null}.
      * @param target The revised text. Must not be {@code null}.
      *
-     * @param equalizer the equalizer object to replace the default compare algorithm
-     * (Object.equals). If {@code null} the default equalizer of the default algorithm is used..
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @param equalizer the equalizer object to replace the default compare
+     * algorithm (Object.equals). If {@code null} the default equalizer of the
+     * default algorithm is used..
+     * @return The patch describing the difference between the original and
+     * revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> source, List<T> target,
             BiPredicate<T, T> equalizer) {
         if (equalizer != null) {
             return DiffUtils.diff(source, target,
-                    new MyersDiff<>(equalizer));
+                    DEFAULT_DIFF.create(equalizer));
         }
-        return DiffUtils.diff(source, target, new MyersDiff<>());
+        return DiffUtils.diff(source, target, new MeyersDiff<>());
     }
 
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
             DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress) {
         return diff(original, revised, algorithm, progress, false);
     }
-    
+
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements
+     * with default diff algorithm
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param algorithm The diff algorithm. Must not be {@code null}.
      * @param progress The diff algorithm listener.
      * @param includeEqualParts Include equal data parts into the patch.
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @return The patch describing the difference between the original and
+     * revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised,
-            DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress, 
+            DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress,
             boolean includeEqualParts) {
         Objects.requireNonNull(original, "original must not be null");
         Objects.requireNonNull(revised, "revised must not be null");
@@ -115,23 +126,23 @@ public final class DiffUtils {
     }
 
     /**
-     * Computes the difference between the original and revised list of elements with default diff
-     * algorithm
+     * Computes the difference between the original and revised list of elements
+     * with default diff algorithm
      *
      * @param original The original text. Must not be {@code null}.
      * @param revised The revised text. Must not be {@code null}.
      * @param algorithm The diff algorithm. Must not be {@code null}.
-     * @return The patch describing the difference between the original and revised sequences. Never
-     * {@code null}.
+     * @return The patch describing the difference between the original and
+     * revised sequences. Never {@code null}.
      */
     public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmI<T> algorithm) {
         return diff(original, revised, algorithm, null);
     }
 
     /**
-     * Computes the difference between the given texts inline. This one uses the "trick" to make out
-     * of texts lists of characters, like DiffRowGenerator does and merges those changes at the end
-     * together again.
+     * Computes the difference between the given texts inline. This one uses the
+     * "trick" to make out of texts lists of characters, like DiffRowGenerator
+     * does and merges those changes at the end together again.
      *
      * @param original
      * @param revised

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 
 /**
  *
@@ -43,13 +44,33 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 
     @Override
     public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
+        Objects.requireNonNull(source, "source list must not be null");
+        Objects.requireNonNull(target, "target list must not be null");
+
+        if (progress != null) {
+            progress.diffStart();
+        }
+
         DiffData data = new DiffData(source, target);
-        //shouldn't it be source.size() - 1?
-        buildScript(data, 0, source.size(), 0, target.size());
+
+        int maxIdx = source.size() + target.size();
+
+        buildScript(data, 0, source.size(), 0, target.size(), idx -> {
+            if (progress != null) {
+                progress.diffStep(idx, maxIdx);
+            }
+        });
+
+        if (progress != null) {
+            progress.diffEnd();
+        }
         return data.script;
     }
 
-    private void buildScript(DiffData data, int start1, int end1, int start2, int end2) {
+    private void buildScript(DiffData data, int start1, int end1, int start2, int end2, Consumer<Integer> progress) {
+        if (progress != null) {
+            progress.accept(start1);
+        }
         final Snake middle = getMiddleSnake(data, start1, end1, start2, end2);
         if (middle == null
                 || middle.start == end1 && middle.diag == end1 - end2
@@ -86,8 +107,8 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
                 }
             }
         } else {
-            buildScript(data, start1, middle.start, start2, middle.start - middle.diag);
-            buildScript(data, middle.end, end1, middle.end - middle.diag, end2);
+            buildScript(data, start1, middle.start, start2, middle.start - middle.diag, progress);
+            buildScript(data, middle.end, end1, middle.end - middle.diag, end2, progress);
         }
     }
 
@@ -169,7 +190,7 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
         return new Snake(start, end, diag);
     }
 
-    class DiffData {
+    private class DiffData {
 
         final int size;
         final int[] vDown;
@@ -188,7 +209,7 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
         }
     }
 
-    class Snake {
+    private class Snake {
 
         final int start;
         final int end;

@@ -16,6 +16,7 @@
 package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.Change;
+import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.DeltaType;
@@ -26,17 +27,17 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
- * A clean-room implementation of Eugene Myers greedy differencing algorithm.
+ * A clean-room implementation of Eugene Meyers greedy differencing algorithm.
  */
-public final class MyersDiff<T> implements DiffAlgorithmI<T> {
+public final class MeyersDiff<T> implements DiffAlgorithmI<T> {
 
     private final BiPredicate<T, T> equalizer;
 
-    public MyersDiff() {
+    public MeyersDiff() {
         equalizer = Object::equals;
     }
 
-    public MyersDiff(final BiPredicate<T, T> equalizer) {
+    public MeyersDiff(final BiPredicate<T, T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
@@ -63,8 +64,9 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences between the original and revised
-     * sequences, according to Gene Myers differencing algorithm.
+     * Computes the minimum diffpath that expresses de differences between the
+     * original and revised sequences, according to Gene Myers differencing
+     * algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
@@ -138,8 +140,8 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A {@link Patch} script corresponding to the path.
-     * @throws DifferentiationFailedException if a {@link Patch} could not be built from the given
-     * path.
+     * @throws DifferentiationFailedException if a {@link Patch} could not be
+     * built from the given path.
      */
     private List<Change> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
         Objects.requireNonNull(actualPath, "path is null");
@@ -175,5 +177,24 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
             }
         }
         return changes;
+    }
+
+    /**
+     * Factory to create instances of this specific diff algorithm.
+     */
+    public static DiffAlgorithmFactory factory() {
+        return new DiffAlgorithmFactory() {
+            @Override
+            public <T> DiffAlgorithmI<T> 
+            create() {
+                return new MeyersDiff<T>();
+            }
+
+            @Override
+            public <T> DiffAlgorithmI<T> 
+            create(BiPredicate < T, T > equalizer) {
+                return new MeyersDiff<T>(equalizer);
+            }
+        };
     }
 }
