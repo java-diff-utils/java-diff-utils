@@ -71,7 +71,7 @@ public class MeyersDiffWithLinearSpaceTest {
         assertEquals(5, patch.getDeltas().size());
         assertEquals("Patch{deltas=[[InsertDelta, position: 0, lines: [C]], [DeleteDelta, position: 0, lines: [A]], [DeleteDelta, position: 2, lines: [C]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
         System.out.println(logdata);
-        assertEquals(8, logdata.size());
+        assertEquals(11, logdata.size());
     }
     
     

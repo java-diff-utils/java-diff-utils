@@ -69,7 +69,7 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 
     private void buildScript(DiffData data, int start1, int end1, int start2, int end2, Consumer<Integer> progress) {
         if (progress != null) {
-            progress.accept(start1);
+            progress.accept((end1 - start1) / 2 + (end2 - start2) / 2);
         }
         final Snake middle = getMiddleSnake(data, start1, end1, start2, end2);
         if (middle == null
