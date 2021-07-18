@@ -370,9 +370,9 @@ public class UnifiedDiffReaderTest {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue122.diff"));
 
-        assertThat(diff.getFiles().size()).isEqualTo(22);
+        assertThat(diff.getFiles().size()).isEqualTo(1);
 
-        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java");
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("coders/wpg.c");
     }
     
     @Test
@@ -380,8 +380,8 @@ public class UnifiedDiffReaderTest {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue123.diff"));
 
-        assertThat(diff.getFiles().size()).isEqualTo(22);
+        assertThat(diff.getFiles().size()).isEqualTo(2);
 
-        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java");
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java");
     }
 }
