@@ -11,14 +11,35 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.DiffAlgorithmFactory;
+import com.github.difflib.algorithm.myers.MeyersDiff;
+import com.github.difflib.algorithm.myers.MeyersDiffWithLinearSpace;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class PatchTest {
+public class PatchWithAllDiffAlgorithmsTest {
 
-    @Test
-    public void testPatch_Insert() {
+    private static Stream<Arguments> provideAlgorithms() {
+        return Stream.of(
+                Arguments.of(MeyersDiff.factory()), 
+                Arguments.of(MeyersDiffWithLinearSpace.factory()));
+    }
+    
+    @AfterAll
+    public static void afterAll() {
+        DiffUtils.withDefaultDiffAlgorithmFactory(MeyersDiff.factory());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAlgorithms")
+    public void testPatch_Insert(DiffAlgorithmFactory factory) {
+        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
+        
         final List<String> insertTest_from = Arrays.asList("hhh");
         final List<String> insertTest_to = Arrays.asList("hhh", "jjj", "kkk", "lll");
 
@@ -30,8 +51,11 @@ public class PatchTest {
         }
     }
 
-    @Test
-    public void testPatch_Delete() {
+    @ParameterizedTest
+    @MethodSource("provideAlgorithms")
+    public void testPatch_Delete(DiffAlgorithmFactory factory) {
+        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
+        
         final List<String> deleteTest_from = Arrays.asList("ddd", "fff", "ggg", "hhh");
         final List<String> deleteTest_to = Arrays.asList("ggg");
 
@@ -43,8 +67,11 @@ public class PatchTest {
         }
     }
 
-    @Test
-    public void testPatch_Change() {
+    @ParameterizedTest
+    @MethodSource("provideAlgorithms")
+    public void testPatch_Change(DiffAlgorithmFactory factory) {
+        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
+        
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
@@ -56,8 +83,11 @@ public class PatchTest {
         }
     }
 
-    @Test
-    public void testPatch_Serializable() throws IOException, ClassNotFoundException {
+    @ParameterizedTest
+    @MethodSource("provideAlgorithms")
+    public void testPatch_Serializable(DiffAlgorithmFactory factory) throws IOException, ClassNotFoundException {
+        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
+        
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
@@ -79,8 +109,11 @@ public class PatchTest {
 
     }
 
-    @Test
-    public void testPatch_Change_withExceptionProcessor() {
+    @ParameterizedTest
+    @MethodSource("provideAlgorithms")
+    public void testPatch_Change_withExceptionProcessor(DiffAlgorithmFactory factory) {
+        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
+        
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
@@ -93,9 +126,9 @@ public class PatchTest {
         try {
             List<String> data = DiffUtils.patch(changeTest_from, patch);
             assertEquals(9, data.size());
-            
+
             assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
-            
+
         } catch (PatchFailedException e) {
             fail(e.getMessage());
         }

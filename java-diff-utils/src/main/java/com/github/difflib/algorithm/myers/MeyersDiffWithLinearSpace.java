@@ -16,6 +16,7 @@
 package com.github.difflib.algorithm.myers;
 
 import com.github.difflib.algorithm.Change;
+import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.DeltaType;
@@ -220,5 +221,24 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
             this.end = end;
             this.diag = diag;
         }
+    }
+    
+    /**
+     * Factory to create instances of this specific diff algorithm.
+     */
+    public static DiffAlgorithmFactory factory() {
+        return new DiffAlgorithmFactory() {
+            @Override
+            public <T> DiffAlgorithmI<T> 
+            create() {
+                return new MeyersDiffWithLinearSpace<T>();
+            }
+
+            @Override
+            public <T> DiffAlgorithmI<T> 
+            create(BiPredicate < T, T > equalizer) {
+                return new MeyersDiffWithLinearSpace<T>(equalizer);
+            }
+        };
     }
 }
