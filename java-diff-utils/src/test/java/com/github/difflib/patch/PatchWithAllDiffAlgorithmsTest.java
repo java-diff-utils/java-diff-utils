@@ -107,30 +107,5 @@ public class PatchWithAllDiffAlgorithmsTest {
             fail(e.getMessage());
         }
 
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAlgorithms")
-    public void testPatch_Change_withExceptionProcessor(DiffAlgorithmFactory factory) {
-        DiffUtils.withDefaultDiffAlgorithmFactory(factory);
-        
-        final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
-        final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
-
-        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
-
-        changeTest_from.set(2, "CDC");
-
-        patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
-
-        try {
-            List<String> data = DiffUtils.patch(changeTest_from, patch);
-            assertEquals(9, data.size());
-
-            assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
-
-        } catch (PatchFailedException e) {
-            fail(e.getMessage());
-        }
-    }
+    }    
 }
