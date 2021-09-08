@@ -189,10 +189,10 @@ public class UnifiedDiffWriter {
     }
 
     /**
-     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter
+     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter. 
      *
-     * @param delta - the Delta to output
-     * @return list of String lines of code.
+     * @param writer consumer for the list of String lines of code
+     * @param delta the Delta to output
      */
     private static void getDeltaText(Consumer<String> writer, AbstractDelta<String> delta) {
         for (String line : delta.getSource().getLines()) {

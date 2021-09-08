@@ -129,7 +129,7 @@ public final class UnifiedDiffUtils {
 
     /**
      * generateUnifiedDiff takes a Patch and some other arguments, returning the Unified Diff format
-     * text representing the Patch.
+     * text representing the Patch.  Author: Bill James (tankerbay@gmail.com).
      *
      * @param originalFileName - Filename of the original (unrevised file)
      * @param revisedFileName - Filename of the revised file
@@ -137,7 +137,6 @@ public final class UnifiedDiffUtils {
      * @param patch - Patch created by the diff() function
      * @param contextSize - number of lines of context output around each difference in the file.
      * @return List of strings representing the Unified Diff representation of the Patch argument.
-     * @author Bill James (tankerbay@gmail.com)
      */
     public static List<String> generateUnifiedDiff(String originalFileName,
             String revisedFileName, List<String> originalLines, Patch<String> patch,
@@ -200,13 +199,12 @@ public final class UnifiedDiffUtils {
 
     /**
      * processDeltas takes a list of Deltas and outputs them together in a single block of
-     * Unified-Diff-format text.
+     * Unified-Diff-format text.  Author: Bill James (tankerbay@gmail.com).
      *
      * @param origLines - the lines of the original file
      * @param deltas - the Deltas to be output as a single block
      * @param contextSize - the number of lines of context to place around block
      * @return
-     * @author Bill James (tankerbay@gmail.com)
      */
     private static List<String> processDeltas(List<String> origLines,
             List<AbstractDelta<String>> deltas, int contextSize, boolean newFile) {
@@ -297,11 +295,10 @@ public final class UnifiedDiffUtils {
     }
 
     /**
-     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter
+     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter.  Author: Bill James (tankerbay@gmail.com).
      *
      * @param delta - the Delta to output
      * @return list of String lines of code.
-     * @author Bill James (tankerbay@gmail.com)
      */
     private static List<String> getDeltaText(AbstractDelta<String> delta) {
         List<String> buffer = new ArrayList<>();
