@@ -13,6 +13,12 @@ This project uses a custom versioning scheme (and not [Semantic Versioning](http
 
 ### Changed
 
+* bugfixing new UnifiedDiff reader
+  * header for each file
+  * skip empty lines
+* introduction of Meyers Diff Algorithm with Linear Space improvment (until matured this will not be the default diff algorithm)
+* introduction of DiffAlgorithmFactory to set the default diff algorithm DiffUtils use (`DiffUtils.withDefaultDiffAlgorithmFactory(MeyersDiffWithLinearSpace.factory());`)
+
 ## [4.10]
 
 ### Changed
