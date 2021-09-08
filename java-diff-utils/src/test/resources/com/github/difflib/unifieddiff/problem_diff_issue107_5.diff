@@ -1,0 +1,835 @@
+diff --git a/distribution/src/main/release/samples/throttling/src/main/java/demo/throttling/client/Client.java b/distribution/src/main/release/samples/throttling/src/main/java/demo/throttling/client/Client.java
+index 1f2a7c4baec..9d636200d61 100644
+--- a/distribution/src/main/release/samples/throttling/src/main/java/demo/throttling/client/Client.java
++++ b/distribution/src/main/release/samples/throttling/src/main/java/demo/throttling/client/Client.java
+@@ -112,7 +112,6 @@ public static void main(String[] args) throws Exception {
+         Map<String, Object> properties = new HashMap<>();
+         properties.put("bus.jmx.usePlatformMBeanServer", Boolean.TRUE);
+         properties.put("bus.jmx.enabled", Boolean.TRUE);
+-        properties.put("bus.jmx.createMBServerConnectorFactory", Boolean.FALSE);
+         Bus b = new CXFBusFactory().createBus(null, properties);
+         MetricRegistry registry = new MetricRegistry();
+         CodahaleMetricsProvider.setupJMXReporter(b, registry);
+diff --git a/distribution/src/main/release/samples/wsdl_first/src/main/resources/server-applicationContext.xml b/distribution/src/main/release/samples/wsdl_first/src/main/resources/server-applicationContext.xml
+index 8bf5109ec95..391f97c624e 100644
+--- a/distribution/src/main/release/samples/wsdl_first/src/main/resources/server-applicationContext.xml
++++ b/distribution/src/main/release/samples/wsdl_first/src/main/resources/server-applicationContext.xml
+@@ -45,4 +45,4 @@
+             <bean class="org.apache.cxf.ext.logging.LoggingFeature"/>
+         </jaxws:features>
+     </jaxws:endpoint>
+-</beans>
+\ No newline at end of file
++</beans>
+diff --git a/rt/management/pom.xml b/rt/management/pom.xml
+index f63f3bfa6d7..19ccf6ada0c 100644
+--- a/rt/management/pom.xml
++++ b/rt/management/pom.xml
+@@ -34,8 +34,7 @@
+         <cxf.module.name>org.apache.cxf.management</cxf.module.name>
+         <cxf.osgi.import>
+             javax.xml.bind*;version="${cxf.osgi.javax.bind.version}",
+-            javax.annotation*;version="${cxf.osgi.javax.annotation.version}",
+-            sun.rmi*;resolution:=optional
++            javax.annotation*;version="${cxf.osgi.javax.annotation.version}"
+         </cxf.osgi.import>
+     </properties>
+     <dependencies>
+diff --git a/rt/management/src/main/java/org/apache/cxf/management/jmx/InstrumentationManagerImpl.java b/rt/management/src/main/java/org/apache/cxf/management/jmx/InstrumentationManagerImpl.java
+index ee7f0a71fee..d898a4b6f5f 100644
+--- a/rt/management/src/main/java/org/apache/cxf/management/jmx/InstrumentationManagerImpl.java
++++ b/rt/management/src/main/java/org/apache/cxf/management/jmx/InstrumentationManagerImpl.java
+@@ -19,7 +19,6 @@
+ 
+ package org.apache.cxf.management.jmx;
+ 
+-import java.io.IOException;
+ import java.lang.management.ManagementFactory;
+ import java.util.HashMap;
+ import java.util.HashSet;
+@@ -53,31 +52,25 @@
+ import org.apache.cxf.management.ManagedComponent;
+ import org.apache.cxf.management.ManagementConstants;
+ import org.apache.cxf.management.jmx.export.runtime.ModelMBeanAssembler;
+-import org.apache.cxf.management.jmx.type.JMXConnectorPolicyType;
+ 
+ /**
+  * The manager class for the JMXManagedComponent which hosts the JMXManagedComponents.
+  */
+-public class InstrumentationManagerImpl extends JMXConnectorPolicyType
++public class InstrumentationManagerImpl
+     implements InstrumentationManager, BusLifeCycleListener {
+     private static final Logger LOG = LogUtils.getL7dLogger(InstrumentationManagerImpl.class);
+ 
+     private static Map<String, String> mbeanServerIDMap = new HashMap<>();
+ 
+     private Bus bus;
+-    private MBServerConnectorFactory mcf;
+     private MBeanServer mbs;
+     private Set<ObjectName> busMBeans = new HashSet<>();
+     private boolean connectFailed;
+     private String persistentBusId;
+-    private Map<String, ?> environment;
+ 
+-    /**
+-     * For backward compatibility, {@link #createMBServerConnectorFactory} is <code>true</code> by default.
+-     */
+-    private boolean createMBServerConnectorFactory = true;
+     private String mbeanServerName = ManagementConstants.DEFAULT_DOMAIN_NAME;
+     private boolean usePlatformMBeanServer;
++    private boolean enabled;
+ 
+     public InstrumentationManagerImpl() {
+         super();
+@@ -119,16 +112,16 @@ public void setServerName(String s) {
+         mbeanServerName = s;
+     }
+ 
+-    public void setCreateMBServerConnectorFactory(boolean createMBServerConnectorFactory) {
+-        this.createMBServerConnectorFactory = createMBServerConnectorFactory;
+-    }
+-
+     public void setUsePlatformMBeanServer(Boolean flag) {
+         usePlatformMBeanServer = flag;
+     }
+ 
+-    public void setEnvironment(Map<String, ?> env) {
+-        environment = env;
++    public void setEnabled(boolean enabled) {
++        this.enabled = enabled;
++    }
++
++    public boolean isEnabled() {
++        return enabled;
+     }
+ 
+     @Deprecated
+@@ -139,7 +132,6 @@ public void register() {
+     public void init() {
+         if (bus != null && bus.getExtension(MBeanServer.class) != null) {
+             enabled = true;
+-            createMBServerConnectorFactory = false;
+             mbs = bus.getExtension(MBeanServer.class);
+         }
+         if (isEnabled()) {
+@@ -168,21 +160,6 @@ public void init() {
+                 }
+             }
+ 
+-            if (createMBServerConnectorFactory) {
+-                mcf = MBServerConnectorFactory.getInstance();
+-                mcf.setMBeanServer(mbs);
+-                mcf.setThreaded(isThreaded());
+-                mcf.setDaemon(isDaemon());
+-                mcf.setServiceUrl(getJMXServiceURL());
+-                mcf.setEnvironment(environment);
+-                try {
+-                    mcf.createConnector();
+-                } catch (IOException ex) {
+-                    connectFailed = true;
+-                    LOG.log(Level.SEVERE, "START_CONNECTOR_FAILURE_MSG", new Object[] {ex});
+-                }
+-            }
+-
+             if (!connectFailed && null != bus) {
+                 try {
+                     //Register Bus here since we can guarantee that Instrumentation
+@@ -282,14 +259,6 @@ public void shutdown() {
+             return;
+         }
+ 
+-        if (mcf != null) {
+-            try {
+-                mcf.destroy();
+-            } catch (IOException ex) {
+-                LOG.log(Level.SEVERE, "STOP_CONNECTOR_FAILURE_MSG", new Object[] {ex});
+-            }
+-        }
+-
+         //Using the array to hold the busMBeans to avoid the CurrentModificationException
+         Object[] mBeans = busMBeans.toArray();
+         for (Object name : mBeans) {
+@@ -400,12 +369,7 @@ private void readJMXProperties(Bus b) {
+                 getBusProperty(b, "bus.jmx.serverName", mbeanServerName);
+             usePlatformMBeanServer =
+                 getBusProperty(b, "bus.jmx.usePlatformMBeanServer", usePlatformMBeanServer);
+-            createMBServerConnectorFactory =
+-                getBusProperty(b, "bus.jmx.createMBServerConnectorFactory", createMBServerConnectorFactory);
+-            daemon = getBusProperty(b, "bus.jmx.daemon", daemon);
+-            threaded = getBusProperty(b, "bus.jmx.threaded", threaded);
+             enabled = getBusProperty(b, "bus.jmx.enabled", enabled);
+-            jmxServiceURL = getBusProperty(b, "bus.jmx.JMXServiceURL", jmxServiceURL);
+         }
+     }
+ 
+diff --git a/rt/management/src/main/java/org/apache/cxf/management/jmx/MBServerConnectorFactory.java b/rt/management/src/main/java/org/apache/cxf/management/jmx/MBServerConnectorFactory.java
+deleted file mode 100644
+index 5eb7059b8fb..00000000000
+--- a/rt/management/src/main/java/org/apache/cxf/management/jmx/MBServerConnectorFactory.java
++++ /dev/null
+@@ -1,260 +0,0 @@
+-/**
+- * Licensed to the Apache Software Foundation (ASF) under one
+- * or more contributor license agreements. See the NOTICE file
+- * distributed with this work for additional information
+- * regarding copyright ownership. The ASF licenses this file
+- * to you under the Apache License, Version 2.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License. You may obtain a copy of the License at
+- *
+- * http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing,
+- * software distributed under the License is distributed on an
+- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+- * KIND, either express or implied. See the License for the
+- * specific language governing permissions and limitations
+- * under the License.
+- */
+-
+-package org.apache.cxf.management.jmx;
+-
+-import java.io.IOException;
+-import java.net.URI;
+-import java.net.URISyntaxException;
+-import java.rmi.AccessException;
+-import java.rmi.AlreadyBoundException;
+-import java.rmi.NotBoundException;
+-import java.rmi.Remote;
+-import java.rmi.RemoteException;
+-import java.util.Map;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import javax.management.MBeanServer;
+-import javax.management.MBeanServerFactory;
+-import javax.management.remote.JMXConnectorServer;
+-import javax.management.remote.JMXServiceURL;
+-import javax.management.remote.rmi.RMIConnectorServer;
+-import javax.management.remote.rmi.RMIJRMPServerImpl;
+-
+-import org.apache.cxf.common.logging.LogUtils;
+-
+-
+-
+-/**
+- * Deal with the MBeanServer Connections
+- *
+- */
+-public final class MBServerConnectorFactory {
+-
+-    public static final String DEFAULT_SERVICE_URL = "service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi";
+-
+-    private static final Logger LOG = LogUtils.getL7dLogger(MBServerConnectorFactory.class);
+-
+-    private static MBeanServer server;
+-
+-    private static String serviceUrl = DEFAULT_SERVICE_URL;
+-
+-    private static Map<String, ?> environment;
+-
+-    private static boolean threaded;
+-
+-    private static boolean daemon;
+-
+-    private static JMXConnectorServer connectorServer;
+-
+-    private static Remote remoteServerStub;
+-
+-    private static RMIJRMPServerImpl rmiServer;
+-
+-    private static class MBServerConnectorFactoryHolder {
+-        private static final MBServerConnectorFactory INSTANCE =
+-            new MBServerConnectorFactory();
+-    }
+-
+-    private static class MBeanServerHolder {
+-        private static final MBeanServer INSTANCE =
+-            MBeanServerFactory.createMBeanServer();
+-    }
+-
+-    private MBServerConnectorFactory() {
+-
+-    }
+-
+-    static int getServerPort(final String url) {
+-        int portStart = url.indexOf("localhost") + 10;
+-        int portEnd;
+-        int port = 0;
+-        if (portStart > 0) {
+-            portEnd = indexNotOfNumber(url, portStart);
+-            if (portEnd > portStart) {
+-                final String portString = url.substring(portStart, portEnd);
+-                port = Integer.parseInt(portString);
+-            }
+-        }
+-        return port;
+-    }
+-
+-    private static int indexNotOfNumber(String str, int index) {
+-        int i = 0;
+-        for (i = index; i < str.length(); i++) {
+-            if (str.charAt(i) < '0' || str.charAt(i) > '9') {
+-                return i;
+-            }
+-        }
+-        return -1;
+-    }
+-
+-    public static MBServerConnectorFactory getInstance() {
+-        return MBServerConnectorFactoryHolder.INSTANCE;
+-    }
+-
+-    public void setMBeanServer(MBeanServer ms) {
+-        server = ms;
+-    }
+-
+-    public void setServiceUrl(String url) {
+-        serviceUrl = url;
+-    }
+-
+-    public void setEnvironment(Map<String, ?> env) {
+-        environment = env;
+-    }
+-
+-    public void setThreaded(boolean fthread) {
+-        threaded = fthread;
+-    }
+-
+-    public void setDaemon(boolean fdaemon) {
+-        daemon = fdaemon;
+-    }
+-
+-
+-    public void createConnector() throws IOException {
+-
+-        if (server == null) {
+-            server = MBeanServerHolder.INSTANCE;
+-        }
+-
+-        // Create the JMX service URL.
+-        final JMXServiceURL url = new JMXServiceURL(serviceUrl);
+-
+-        // if the URL is localhost, start up an Registry
+-        if (serviceUrl.indexOf("localhost") > -1
+-            && url.getProtocol().compareToIgnoreCase("rmi") == 0) {
+-            try {
+-                int port = getRegistryPort(serviceUrl);
+-                new JmxRegistry(port, getBindingName(url));
+-
+-            } catch (Exception ex) {
+-                LOG.log(Level.SEVERE, "CREATE_REGISTRY_FAULT_MSG", new Object[]{ex});
+-            }
+-        }
+-
+-        rmiServer = new RMIJRMPServerImpl(getServerPort(serviceUrl), null, null, environment);
+-
+-        // Create the connector server now.
+-        connectorServer = new RMIConnectorServer(url, environment, rmiServer, server);
+-
+-        if (threaded) {
+-             // Start the connector server asynchronously (in a separate thread).
+-            Thread connectorThread = new Thread() {
+-                public void run() {
+-                    try {
+-                        connectorServer.start();
+-                        remoteServerStub = rmiServer.toStub();
+-                    } catch (IOException ex) {
+-                        LOG.log(Level.SEVERE, "START_CONNECTOR_FAILURE_MSG", new Object[]{ex});
+-                    }
+-                }
+-            };
+-
+-            connectorThread.setName("JMX Connector Thread [" + serviceUrl + "]");
+-            connectorThread.setDaemon(daemon);
+-            connectorThread.start();
+-        } else {
+-             // Start the connector server in the same thread.
+-            connectorServer.start();
+-            remoteServerStub = rmiServer.toStub();
+-        }
+-
+-        if (LOG.isLoggable(Level.INFO)) {
+-            LOG.info("JMX connector server started: " + connectorServer);
+-        }
+-    }
+-
+-    static int getRegistryPort(final String url) {
+-        int serverStart = url.indexOf("/jndi/rmi://");
+-        final String serverPart = url.substring(serverStart + 12);
+-        int portStart = serverPart.indexOf(':') + 1;
+-
+-        int portEnd;
+-        int port = 0;
+-        if (portStart > 0) {
+-            portEnd = indexNotOfNumber(serverPart, portStart);
+-            if (portEnd > portStart) {
+-                final String portString = serverPart.substring(portStart, portEnd);
+-                port = Integer.parseInt(portString);
+-            }
+-        }
+-        return port;
+-    }
+-
+-    protected static String getBindingName(final JMXServiceURL jmxServiceURL) {
+-        final String urlPath = jmxServiceURL.getURLPath();
+-
+-        try {
+-            if (urlPath.startsWith("/jndi/")) {
+-                return new URI(urlPath.substring(6)).getPath()
+-                        .replaceAll("^/+", "").replaceAll("/+$", "");
+-            }
+-        } catch (URISyntaxException e) {
+-            // ignore
+-        }
+-
+-        return "jmxrmi"; // use the default
+-    }
+-
+-    public void destroy() throws IOException {
+-        connectorServer.stop();
+-        if (LOG.isLoggable(Level.INFO)) {
+-            LOG.info("JMX connector server stopped: " + connectorServer);
+-        }
+-    }
+-
+-    /*
+-     * Better to use the internal API than re-invent the wheel.
+-     */
+-    @SuppressWarnings("restriction")
+-    private class JmxRegistry extends sun.rmi.registry.RegistryImpl {
+-        private final String lookupName;
+-
+-        JmxRegistry(final int port, final String lookupName) throws RemoteException {
+-            super(port);
+-            this.lookupName = lookupName;
+-        }
+-
+-        @Override
+-        public Remote lookup(String s) throws RemoteException, NotBoundException {
+-            return lookupName.equals(s) ? remoteServerStub : null;
+-        }
+-
+-        @Override
+-        public void bind(String s, Remote remote) throws RemoteException, AlreadyBoundException, AccessException {
+-        }
+-
+-        @Override
+-        public void unbind(String s) throws RemoteException, NotBoundException, AccessException {
+-        }
+-
+-        @Override
+-        public void rebind(String s, Remote remote) throws RemoteException, AccessException {
+-        }
+-
+-        @Override
+-        public String[] list() throws RemoteException {
+-            return new String[] {lookupName};
+-        }
+-    }
+-}
+diff --git a/rt/management/src/main/java/org/apache/cxf/management/utils/ManagementConsole.java b/rt/management/src/main/java/org/apache/cxf/management/utils/ManagementConsole.java
+index 3fa2fe2891c..3739ffaa915 100644
+--- a/rt/management/src/main/java/org/apache/cxf/management/utils/ManagementConsole.java
++++ b/rt/management/src/main/java/org/apache/cxf/management/utils/ManagementConsole.java
+@@ -42,7 +42,7 @@
+ public final class ManagementConsole {
+     private static MBeanServerConnection mbsc;
+     private static final String DEFAULT_JMXSERVICE_URL =
+-        "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
++        "service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi";
+     private static final Logger LOG = LogUtils.getL7dLogger(ManagementConsole.class);
+ 
+     String jmxServerURL;
+diff --git a/rt/management/src/test/java/org/apache/cxf/management/InstrumentationManagerTest.java b/rt/management/src/test/java/org/apache/cxf/management/InstrumentationManagerTest.java
+index 9ebc7ca4fe2..c505835d10a 100644
+--- a/rt/management/src/test/java/org/apache/cxf/management/InstrumentationManagerTest.java
++++ b/rt/management/src/test/java/org/apache/cxf/management/InstrumentationManagerTest.java
+@@ -158,7 +158,6 @@ public void testInstrumentBusWithBusProperties() {
+             assertNotNull("Instrumentation Manager of cxf1 should not be null", im1);
+ 
+             assertTrue(im1.isEnabled());
+-            assertEquals("service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi", im1.getJMXServiceURL());
+ 
+             cxf2 = (Bus)context.getBean("cxf2");
+             InstrumentationManagerImpl im2 =
+@@ -166,7 +165,6 @@ public void testInstrumentBusWithBusProperties() {
+             assertNotNull("Instrumentation Manager of cxf2 should not be null", im2);
+ 
+             assertFalse(im2.isEnabled());
+-            assertEquals("service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi", im2.getJMXServiceURL());
+ 
+         } finally {
+             if (cxf1 != null) {
+diff --git a/rt/management/src/test/java/org/apache/cxf/management/jmx/BusRegistrationTest.java b/rt/management/src/test/java/org/apache/cxf/management/jmx/BusRegistrationTest.java
+index e9f9308289a..6c458f3085b 100644
+--- a/rt/management/src/test/java/org/apache/cxf/management/jmx/BusRegistrationTest.java
++++ b/rt/management/src/test/java/org/apache/cxf/management/jmx/BusRegistrationTest.java
+@@ -64,12 +64,6 @@ public void tearDown() throws Exception {
+         }
+     }
+ 
+-    @Test
+-    public void testRegisterMultipleBuses() throws Exception {
+-        // classic external IM-bean
+-        testRegisterMultipleBuses("managed-spring.xml");
+-    }
+-
+     @Test
+     public void testRegisterMultipleBuses2() throws Exception {
+         // integrated IM configuration in bus
+diff --git a/rt/management/src/test/java/org/apache/cxf/management/jmx/JMXManagedComponentManagerTest.java b/rt/management/src/test/java/org/apache/cxf/management/jmx/JMXManagedComponentManagerTest.java
+index d516da39c06..20a7b091435 100644
+--- a/rt/management/src/test/java/org/apache/cxf/management/jmx/JMXManagedComponentManagerTest.java
++++ b/rt/management/src/test/java/org/apache/cxf/management/jmx/JMXManagedComponentManagerTest.java
+@@ -28,7 +28,6 @@
+ import javax.management.ObjectName;
+ 
+ import org.apache.cxf.management.jmx.export.AnnotationTestInstrumentation;
+-import org.apache.cxf.testutil.common.TestUtil;
+ 
+ import org.junit.After;
+ import org.junit.Before;
+@@ -38,17 +37,13 @@
+ import static org.junit.Assert.fail;
+ 
+ public class JMXManagedComponentManagerTest {
+-    private static final String PORT = TestUtil.getPortNumber(JMXManagedComponentManagerTest.class);
+     private static final String NAME_ATTRIBUTE = "Name";
+     private InstrumentationManagerImpl manager;
+ 
+     @Before
+     public void setUp() throws Exception {
+         manager = new InstrumentationManagerImpl();
+-        manager.setDaemon(false);
+-        manager.setThreaded(true);
+         manager.setEnabled(true);
+-        manager.setJMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + PORT + "/jmxrmi");
+         manager.init();
+         //Wait for MBeanServer connector to be initialized on separate thread.
+         Thread.sleep(2000);
+@@ -61,10 +56,6 @@ public void tearDown() throws Exception {
+ 
+     @Test
+     public void testRegisterInstrumentation() throws Exception {
+-        //manager.setDaemon(false);
+-        //manager.setThreaded(false);
+-        //manager.setJMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi");
+-        //manager.init();
+ 
+         AnnotationTestInstrumentation im = new AnnotationTestInstrumentation();
+         ObjectName name = new ObjectName("org.apache.cxf:type=foo,name=bar");
+@@ -128,13 +119,7 @@ public void testBusLifecycleListener() throws Exception {
+         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+ 
+         this.manager = new InstrumentationManagerImpl();
+-        this.manager.setDaemon(false);
+-        // Turn threading off so that we get the exception in this thread
+-        // and the manager is set into a failed state if the connector
+-        // cannot be created.
+-        this.manager.setThreaded(false);
+         this.manager.setEnabled(true);
+-        this.manager.setJMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + PORT + "/jmxrmi");
+         this.manager.setServer(server);
+         this.manager.init();
+ 
+@@ -161,13 +146,7 @@ public void testBusLifecycleListener() throws Exception {
+         }
+ 
+         this.manager = new InstrumentationManagerImpl();
+-        this.manager.setDaemon(false);
+-        // Turn threading off so that we get the exception in this thread
+-        // and the manager is set into a failed state if the connector
+-        // cannot be created.
+-        this.manager.setThreaded(false);
+         this.manager.setEnabled(true);
+-        this.manager.setJMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + PORT + "/jmxrmi");
+         this.manager.setServer(server);
+         this.manager.init();
+ 
+@@ -183,4 +162,4 @@ private ObjectName registerStandardMBean(String name) throws Exception {
+         this.manager.register(hw, oName);
+         return oName;
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java b/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java
+deleted file mode 100644
+index 468ec0cbfaf..00000000000
+--- a/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java
++++ /dev/null
+@@ -1,55 +0,0 @@
+-/**
+- * Licensed to the Apache Software Foundation (ASF) under one
+- * or more contributor license agreements. See the NOTICE file
+- * distributed with this work for additional information
+- * regarding copyright ownership. The ASF licenses this file
+- * to you under the Apache License, Version 2.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License. You may obtain a copy of the License at
+- *
+- * http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing,
+- * software distributed under the License is distributed on an
+- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+- * KIND, either express or implied. See the License for the
+- * specific language governing permissions and limitations
+- * under the License.
+- */
+-package org.apache.cxf.management.jmx;
+-
+-import javax.management.remote.JMXServiceURL;
+-
+-import org.junit.Assert;
+-import org.junit.Test;
+-
+-
+-public class MBServerConnectorFactoryTest {
+-
+-    @Test
+-    public void testGetServerPort() throws Exception {
+-        Assert.assertEquals(9914, MBServerConnectorFactory.getServerPort(
+-                "service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"));
+-
+-        Assert.assertEquals(10002, MBServerConnectorFactory.getServerPort(
+-                "service:jmx:rmi://localhost:10002/jndi/rmi://localhost:10001/jmxrmi"));
+-    }
+-
+-    @Test
+-    public void testGetRegistryPort() throws Exception {
+-        Assert.assertEquals(9914, MBServerConnectorFactory.getRegistryPort(
+-                "service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"));
+-
+-        Assert.assertEquals(10001, MBServerConnectorFactory.getRegistryPort(
+-                        "service:jmx:rmi://localhost:10002/jndi/rmi://localhost:10001/jmxrmi"));
+-    }
+-
+-    @Test
+-    public void testGetBindingName() throws Exception {
+-        Assert.assertEquals("jmxrmi", MBServerConnectorFactory.getBindingName(
+-                new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi")));
+-
+-        Assert.assertEquals("cxf-jmxrmi", MBServerConnectorFactory.getBindingName(
+-                new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9913/cxf-jmxrmi")));
+-    }
+-}
+\ No newline at end of file
+diff --git a/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorTest.java b/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorTest.java
+deleted file mode 100644
+index c01e10fc6f2..00000000000
+--- a/rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorTest.java
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/**
+- * Licensed to the Apache Software Foundation (ASF) under one
+- * or more contributor license agreements. See the NOTICE file
+- * distributed with this work for additional information
+- * regarding copyright ownership. The ASF licenses this file
+- * to you under the Apache License, Version 2.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License. You may obtain a copy of the License at
+- *
+- * http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing,
+- * software distributed under the License is distributed on an
+- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+- * KIND, either express or implied. See the License for the
+- * specific language governing permissions and limitations
+- * under the License.
+- */
+-
+-package org.apache.cxf.management.jmx;
+-
+-
+-
+-import javax.management.MBeanServer;
+-import javax.management.MBeanServerFactory;
+-
+-import org.apache.cxf.testutil.common.TestUtil;
+-
+-import org.junit.Test;
+-
+-import static org.junit.Assert.fail;
+-
+-
+-public class MBServerConnectorTest {
+-    private static final String PORT = TestUtil.getPortNumber(MBServerConnectorTest.class);
+-
+-    @Test
+-    public void testMBServerConnector() {
+-        MBServerConnectorFactory mcf;
+-        MBeanServer mbs;
+-        mbs = MBeanServerFactory.createMBeanServer("test");
+-        mcf = MBServerConnectorFactory.getInstance();
+-        mcf.setMBeanServer(mbs);
+-        mcf.setThreaded(true);
+-        mcf.setDaemon(true);
+-        mcf.setServiceUrl("service:jmx:rmi:///jndi/rmi://localhost:" + PORT + "/jmxrmi");
+-        try {
+-            mcf.createConnector();
+-            Thread.sleep(1000);
+-            mcf.destroy();
+-        } catch (Exception ex) {
+-            ex.printStackTrace();
+-            fail("Some Exception happened to MBServerConnectorTest");
+-        }
+-    }
+-
+-}
+diff --git a/rt/management/src/test/resources/managed-spring.xml b/rt/management/src/test/resources/managed-spring.xml
+index 81808a54a5a..683c1b3ab32 100644
+--- a/rt/management/src/test/resources/managed-spring.xml
++++ b/rt/management/src/test/resources/managed-spring.xml
+@@ -24,11 +24,7 @@
+     xsi:schemaLocation="http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+     <cxf:bus id="CXF-Test-Bus" bus="cxf"/>
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+-        <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="threaded" value="false"/>
+-        <property name="daemon" value="false"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"/>
+     </bean>
+     <cxf:workqueue name="default" highWaterMark="15" lowWaterMark="5"/>
+     <cxf:workqueue name="test-wq" highWaterMark="10" lowWaterMark="2"/>
+diff --git a/rt/management/src/test/resources/managed-spring3.xml b/rt/management/src/test/resources/managed-spring3.xml
+index 83add997fe0..57009b7cf40 100644
+--- a/rt/management/src/test/resources/managed-spring3.xml
++++ b/rt/management/src/test/resources/managed-spring3.xml
+@@ -26,9 +26,5 @@
+     <!--  the bus setting at the end should not interfer with the other props -->
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="enabled" value="true"/>
+-        <property name="threaded" value="false"/>
+-        <property name="daemon" value="false"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"/>
+-        <property name="bus" ref="cxf"/>
+     </bean>
+ </beans>
+\ No newline at end of file
+diff --git a/rt/management/src/test/resources/no-connector-spring.xml b/rt/management/src/test/resources/no-connector-spring.xml
+index f6c197d9a2c..565d92dffe0 100644
+--- a/rt/management/src/test/resources/no-connector-spring.xml
++++ b/rt/management/src/test/resources/no-connector-spring.xml
+@@ -24,6 +24,5 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="createMBServerConnectorFactory" value="false"/>
+     </bean>
+ </beans>
+\ No newline at end of file
+diff --git a/rt/ws/rm/src/test/java/org/apache/cxf/ws/rm/managed-manager-bean.xml b/rt/ws/rm/src/test/java/org/apache/cxf/ws/rm/managed-manager-bean.xml
+index 8e01539b360..7571a48693d 100644
+--- a/rt/ws/rm/src/test/java/org/apache/cxf/ws/rm/managed-manager-bean.xml
++++ b/rt/ws/rm/src/test/java/org/apache/cxf/ws/rm/managed-manager-bean.xml
+@@ -26,9 +26,6 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="threaded" value="false"/>
+-        <property name="daemon" value="false"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"/>
+     </bean>
+     <cxf:bus>
+         <cxf:features>
+diff --git a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/ManagedBusTest.java b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/ManagedBusTest.java
+index dbde562570a..a40c61d394c 100644
+--- a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/ManagedBusTest.java
++++ b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/ManagedBusTest.java
+@@ -98,8 +98,6 @@ public void testManagedSpringBus() throws Exception {
+         assertNotNull(im);
+ 
+         InstrumentationManagerImpl imi = (InstrumentationManagerImpl)im;
+-        assertEquals("service:jmx:rmi:///jndi/rmi://localhost:9913/jmxrmi",
+-                     imi.getJMXServiceURL());
+         assertFalse(imi.isEnabled());
+         assertNull(imi.getMBeanServer());
+ 
+@@ -127,8 +125,6 @@ private void doManagedBusTest(Bus bus, String expect, String reject, int port) t
+         InstrumentationManager im = bus.getExtension(InstrumentationManager.class);
+         assertNotNull(im);
+         InstrumentationManagerImpl imi = (InstrumentationManagerImpl)im;
+-        assertEquals("service:jmx:rmi:///jndi/rmi://localhost:" + port + "/jmxrmi",
+-                     imi.getJMXServiceURL());
+         assertTrue(imi.isEnabled());
+         assertNotNull(imi.getMBeanServer());
+ 
+diff --git a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/counter-spring.xml b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/counter-spring.xml
+index e5cc90f9a17..b3d516022d9 100644
+--- a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/counter-spring.xml
++++ b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/counter-spring.xml
+@@ -24,7 +24,6 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:${testutil.ports.CountersClientServerTest.1}/jmxrmi"/>
+     </bean>
+     <bean id="org.apache.cxf.management.counters.CounterRepository" class="org.apache.cxf.management.counters.CounterRepository">
+         <property name="bus" ref="cxf"/>
+diff --git a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-bus.xml b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-bus.xml
+index 7304a399d39..fed391b4a60 100644
+--- a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-bus.xml
++++ b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-bus.xml
+@@ -24,7 +24,6 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:${testutil.ports.ManagedBusTest.1}/jmxrmi"/>
+     </bean>
+     <bean id="wq" class="org.apache.cxf.workqueue.AutomaticWorkQueueImpl">
+         <property name="name" value="testQueue"/>
+diff --git a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-spring.xml b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-spring.xml
+index 4beb120a457..fed391b4a60 100644
+--- a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-spring.xml
++++ b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/managed-spring.xml
+@@ -24,7 +24,6 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:${testutil.ports.ManagedClientServerTest.1}/jmxrmi"/>
+     </bean>
+     <bean id="wq" class="org.apache.cxf.workqueue.AutomaticWorkQueueImpl">
+         <property name="name" value="testQueue"/>
+diff --git a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/persistent-id.xml b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/persistent-id.xml
+index 118abfe7978..9219b56bcf3 100644
+--- a/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/persistent-id.xml
++++ b/systests/uncategorized/src/test/java/org/apache/cxf/systest/management/persistent-id.xml
+@@ -24,7 +24,6 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:${testutil.ports.ManagedBusTest.3}/jmxrmi"/>
+         <property name="persistentBusId" value="cxf:managed,bus=test"/>
+     </bean>
+     <bean id="wq" class="org.apache.cxf.workqueue.AutomaticWorkQueueImpl">
+diff --git a/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-client.xml b/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-client.xml
+index c0cd5b2700a..514038f02b8 100644
+--- a/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-client.xml
++++ b/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-client.xml
+@@ -43,7 +43,5 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="createMBServerConnectorFactory" value="false"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"/>
+     </bean>
+-</beans>
+\ No newline at end of file
++</beans>
+diff --git a/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-server.xml b/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-server.xml
+index 823d8f0622e..1ee90cfbae4 100644
+--- a/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-server.xml
++++ b/systests/ws-rm/src/test/java/org/apache/cxf/systest/ws/rm/managed-server.xml
+@@ -43,6 +43,5 @@
+     <bean id="org.apache.cxf.management.InstrumentationManager" class="org.apache.cxf.management.jmx.InstrumentationManagerImpl">
+         <property name="bus" ref="cxf"/>
+         <property name="enabled" value="true"/>
+-        <property name="JMXServiceURL" value="service:jmx:rmi:///jndi/rmi://localhost:9914/jmxrmi"/>
+     </bean>
+-</beans>
+\ No newline at end of file
++</beans>

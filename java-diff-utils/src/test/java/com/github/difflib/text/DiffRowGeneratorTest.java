@@ -163,7 +163,7 @@ public class DiffRowGeneratorTest {
         assertEquals(6, rows.size());
         assertEquals("[CHANGE,<span class=\"editOldInline\">test</span>,anything]", rows.get(0).toString());
         assertEquals("[CHANGE,anything<span class=\"editOldInline\"> </span>,]", rows.get(1).toString());
-        assertEquals("[CHANGE,<span class=\"editOldInline\"> </span>,]", rows.get(2).toString());
+        assertEquals("[DELETE,<span class=\"editOldInline\"> </span>,]", rows.get(2).toString());
         assertEquals("[EQUAL,other,other]", rows.get(3).toString());
         assertEquals("[INSERT,<span class=\"editNewInline\">test</span>,test]", rows.get(4).toString());
         assertEquals("[INSERT,<span class=\"editNewInline\">test2</span>,test2]", rows.get(5).toString());
@@ -343,7 +343,7 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [CHANGE,,**This is the second line.**]]",
+        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [INSERT,,**This is the second line.**]]",
                 rows.toString());
 
         System.out.println("|original|new|");
@@ -367,7 +367,7 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        assertEquals("[[CHANGE,This is a test ~for diffutils~.,This is a test **senctence**.], [CHANGE,~This is the second line.~,]]",
+        assertEquals("[[CHANGE,This is a test ~for diffutils~.,This is a test **senctence**.], [DELETE,~This is the second line.~,]]",
                 rows.toString());
     }
 
@@ -385,7 +385,7 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(aa.split("\n")),
                 Arrays.asList(bb.split("\n")));
 
-        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [CHANGE,,**This is the second line.**], [CHANGE,,**And one more.**]]",
+        assertEquals("[[CHANGE,This is a test ~senctence~.,This is a test **for diffutils**.], [INSERT,,**This is the second line.**], [INSERT,,**And one more.**]]",
                 rows.toString());
     }
 
@@ -600,25 +600,87 @@ public class DiffRowGeneratorTest {
 
         System.out.println(deltas);
     }
-    
+
     @Test
-    public void testIssue86WrongInlineDiff() throws IOException {      
+    public void testIssue86WrongInlineDiff() throws IOException {
         String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_original.txt")).collect(joining("\n"));
         String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_86_revised.txt")).collect(joining("\n"));
-        
+
         DiffRowGenerator generator = DiffRowGenerator.create()
-            .showInlineDiffs(true)
-            .mergeOriginalRevised(false)
-            .inlineDiffByWord(true)
-            .oldTag( f -> "~" )
-            .newTag( f -> "**" )
-            .build();
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
         List<DiffRow> rows = generator.generateDiffRows(
                 Arrays.asList(original.split("\n")),
                 Arrays.asList(revised.split("\n")));
-        
+
+        rows.stream()
+                .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
+                .forEach(System.out::println);
+    }
+
+    @Test
+    public void testCorrectChangeIssue114() throws IOException {
+        List<String> original = Arrays.asList("A", "B", "C", "D", "E");
+        List<String> revised = Arrays.asList("a", "C", "", "E");
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(false)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(original, revised);
+
         for (DiffRow diff : rows) {
             System.out.println(diff);
         }
+
+        assertThat(rows).extracting(item -> item.getTag().name()).containsExactly("CHANGE", "DELETE", "EQUAL", "CHANGE", "EQUAL");
+    }
+    
+    @Test
+    public void testCorrectChangeIssue114_2() throws IOException {
+        List<String> original = Arrays.asList("A", "B", "C", "D", "E");
+        List<String> revised = Arrays.asList("a", "C", "", "E");
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(original, revised);
+
+        for (DiffRow diff : rows) {
+            System.out.println(diff);
+        }
+
+        assertThat(rows).extracting(item -> item.getTag().name()).containsExactly("CHANGE", "DELETE", "EQUAL", "CHANGE", "EQUAL");
+        assertThat(rows.get(1).toString()).isEqualTo("[DELETE,~B~,]");
+    }
+    
+    @Test
+    public void testIssue119WrongContextLength() throws IOException {
+        String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_119_original.txt")).collect(joining("\n"));
+        String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_119_revised.txt")).collect(joining("\n"));
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "~")
+                .newTag(f -> "**")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(original.split("\n")),
+                Arrays.asList(revised.split("\n")));
+
+        rows.stream()
+                .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
+                .forEach(System.out::println);
     }
 }

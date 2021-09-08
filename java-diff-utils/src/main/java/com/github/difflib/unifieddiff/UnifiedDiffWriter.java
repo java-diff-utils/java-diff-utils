@@ -189,7 +189,7 @@ public class UnifiedDiffWriter {
     }
 
     /**
-     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter.  Author: Bill James (tankerboy@gmail.com).
+     * getDeltaText returns the lines to be added to the Unified Diff text from the Delta parameter. 
      *
      * @param writer consumer for the list of String lines of code
      * @param delta the Delta to output

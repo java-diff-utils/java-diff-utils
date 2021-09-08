@@ -17,8 +17,11 @@ package com.github.difflib.text;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
+import com.github.difflib.patch.DeleteDelta;
 import com.github.difflib.patch.DeltaType;
+import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
 import java.util.*;
@@ -30,14 +33,16 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 
 /**
- * This class for generating DiffRows for side-by-sidy view. You can customize the way of
- * generating. For example, show inline diffs on not, ignoring white spaces or/and blank lines and
- * so on. All parameters for generating are optional. If you do not specify them, the class will use
- * the default values.
+ * This class for generating DiffRows for side-by-sidy view. You can customize
+ * the way of generating. For example, show inline diffs on not, ignoring white
+ * spaces or/and blank lines and so on. All parameters for generating are
+ * optional. If you do not specify them, the class will use the default values.
  *
- * These values are: showInlineDiffs = false; ignoreWhiteSpaces = true; ignoreBlankLines = true; ...
+ * These values are: showInlineDiffs = false; ignoreWhiteSpaces = true;
+ * ignoreBlankLines = true; ...
  *
- * For instantiating the DiffRowGenerator you should use the its builder. Like in example  <code>
+ * For instantiating the DiffRowGenerator you should use the its builder. Like
+ * in example  <code>
  *    DiffRowGenerator generator = new DiffRowGenerator.Builder().showInlineDiffs(true).
  *      ignoreWhiteSpaces(true).columnWidth(100).build();
  * </code>
@@ -100,8 +105,8 @@ public final class DiffRowGenerator {
     /**
      * Wrap the elements in the sequence with the given tag
      *
-     * @param startPosition the position from which tag should start. The counting start from a
-     * zero.
+     * @param startPosition the position from which tag should start. The
+     * counting start from a zero.
      * @param endPosition the position before which tag should should be closed.
      * @param tagGenerator the tag generator
      */
@@ -187,7 +192,7 @@ public final class DiffRowGenerator {
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
         processDiffs = builder.processDiffs;
-        
+
         replaceOriginalLinefeedInChangesWithSpaces = builder.replaceOriginalLinefeedInChangesWithSpaces;
 
         Objects.requireNonNull(inlineDiffSplitter);
@@ -195,8 +200,8 @@ public final class DiffRowGenerator {
     }
 
     /**
-     * Get the DiffRows describing the difference between original and revised texts using the given
-     * patch. Useful for displaying side-by-side diff.
+     * Get the DiffRows describing the difference between original and revised
+     * texts using the given patch. Useful for displaying side-by-side diff.
      *
      * @param original the original text
      * @param revised the revised text
@@ -207,8 +212,9 @@ public final class DiffRowGenerator {
     }
 
     /**
-     * Generates the DiffRows describing the difference between original and revised texts using the
-     * given patch. Useful for displaying side-by-side diff.
+     * Generates the DiffRows describing the difference between original and
+     * revised texts using the given patch. Useful for displaying side-by-side
+     * diff.
      *
      * @param original the original text
      * @param patch the given patch
@@ -218,42 +224,11 @@ public final class DiffRowGenerator {
         List<DiffRow> diffRows = new ArrayList<>();
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
-        for (AbstractDelta<String> delta : deltaList) {
-            Chunk<String> orig = delta.getSource();
-            Chunk<String> rev = delta.getTarget();
 
-            for (String line : original.subList(endPos, orig.getPosition())) {
-                diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+        for (AbstractDelta<String> originalDelta : deltaList) {
+            for (AbstractDelta<String> delta : decompressDeltas(originalDelta)) {
+                endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta);
             }
-
-            // Inserted DiffRow
-            if (delta.getType() == DeltaType.INSERT) {
-                endPos = orig.last() + 1;
-                for (String line : rev.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
-                }
-                continue;
-            }
-
-            // Deleted DiffRow
-            if (delta.getType() == DeltaType.DELETE) {
-                endPos = orig.last() + 1;
-                for (String line : orig.getLines()) {
-                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
-                }
-                continue;
-            }
-
-            if (showInlineDiffs) {
-                diffRows.addAll(generateInlineDiffs(delta));
-            } else {
-                for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
-                    diffRows.add(buildDiffRow(Tag.CHANGE,
-                            orig.getLines().size() > j ? orig.getLines().get(j) : "",
-                            rev.getLines().size() > j ? rev.getLines().get(j) : ""));
-                }
-            }
-            endPos = orig.last() + 1;
         }
 
         // Copy the final matching chunk if any.
@@ -261,6 +236,78 @@ public final class DiffRowGenerator {
             diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
         }
         return diffRows;
+    }
+
+    /**
+     * Transforms one patch delta into a DiffRow object.
+     */
+    private int transformDeltaIntoDiffRow(final List<String> original, int endPos, List<DiffRow> diffRows, AbstractDelta<String> delta) {
+        Chunk<String> orig = delta.getSource();
+        Chunk<String> rev = delta.getTarget();
+
+        for (String line : original.subList(endPos, orig.getPosition())) {
+            diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+        }
+
+        switch (delta.getType()) {
+            case INSERT:
+                for (String line : rev.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.INSERT, "", line));
+                }
+                break;
+            case DELETE:
+                for (String line : orig.getLines()) {
+                    diffRows.add(buildDiffRow(Tag.DELETE, line, ""));
+                }
+                break;
+            default:
+                if (showInlineDiffs) {
+                    diffRows.addAll(generateInlineDiffs(delta));
+                } else {
+                    for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
+                        diffRows.add(buildDiffRow(Tag.CHANGE,
+                                orig.getLines().size() > j ? orig.getLines().get(j) : "",
+                                rev.getLines().size() > j ? rev.getLines().get(j) : ""));
+                    }
+                }
+        }
+
+        return orig.last() + 1;
+    }
+
+    /**
+     * Decompresses ChangeDeltas with different source and target size to a
+     * ChangeDelta with same size and a following InsertDelta or DeleteDelta.
+     * With this problems of building DiffRows getting smaller.
+     *
+     * @param deltaList
+     */
+    private List<AbstractDelta<String>> decompressDeltas(AbstractDelta<String> delta) {
+        if (delta.getType() == DeltaType.CHANGE && delta.getSource().size() != delta.getTarget().size()) {
+            List<AbstractDelta<String>> deltas = new ArrayList<>();
+            //System.out.println("decompress this " + delta);
+
+            int minSize = Math.min(delta.getSource().size(), delta.getTarget().size());
+            Chunk<String> orig = delta.getSource();
+            Chunk<String> rev = delta.getTarget();
+
+            deltas.add(new ChangeDelta<String>(
+                    new Chunk<>(orig.getPosition(), orig.getLines().subList(0, minSize)),
+                    new Chunk<>(rev.getPosition(), rev.getLines().subList(0, minSize))));
+
+            if (orig.getLines().size() < rev.getLines().size()) {
+                deltas.add(new InsertDelta<String>(
+                        new Chunk<>(orig.getPosition() + minSize, Collections.emptyList()),
+                        new Chunk<>(rev.getPosition() + minSize, rev.getLines().subList(minSize, rev.getLines().size()))));
+            } else {
+                deltas.add(new DeleteDelta<String>(
+                        new Chunk<>(orig.getPosition() + minSize, orig.getLines().subList(minSize, orig.getLines().size())),
+                        new Chunk<>(rev.getPosition() + minSize, Collections.emptyList())));
+            }
+            return deltas;
+        }
+
+        return Collections.singletonList(delta);
     }
 
     private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
@@ -436,8 +483,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Give the originial old and new text lines to Diffrow without any additional processing
-         * and without any tags to highlight the change.
+         * Give the originial old and new text lines to Diffrow without any
+         * additional processing and without any tags to highlight the change.
          *
          * @param val the value to set. Default: false.
          * @return builder with configured reportLinesUnWrapped parameter
@@ -492,8 +539,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Processor for diffed text parts. Here e.g. whitecharacters could be replaced by something
-         * visible.
+         * Processor for diffed text parts. Here e.g. whitecharacters could be
+         * replaced by something visible.
          *
          * @param processDiffs
          * @return
@@ -504,7 +551,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Set the column width of generated lines of original and revised texts.
+         * Set the column width of generated lines of original and revised
+         * texts.
          *
          * @param width the width to set. Making it &lt; 0 doesn't make any sense. Default 80.
          * @return builder with config of column width
@@ -517,7 +565,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Build the DiffRowGenerator. If some parameters is not set, the default values are used.
+         * Build the DiffRowGenerator. If some parameters is not set, the
+         * default values are used.
          *
          * @return the customized DiffRowGenerator
          */
@@ -526,8 +575,8 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Merge the complete result within the original text. This makes sense for one line
-         * display.
+         * Merge the complete result within the original text. This makes sense
+         * for one line display.
          *
          * @param mergeOriginalRevised
          * @return
@@ -538,9 +587,9 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Per default each character is separatly processed. This variant introduces processing by
-         * word, which does not deliver in word changes. Therefore the whole word will be tagged as
-         * changed:
+         * Per default each character is separatly processed. This variant
+         * introduces processing by word, which does not deliver in word
+         * changes. Therefore the whole word will be tagged as changed:
          *
          * <pre>
          * false:    (aBa : aba) --  changed: a(B)a : a(b)a
@@ -553,8 +602,9 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * To provide some customized splitting a splitter can be provided. Here someone could think
-         * about sentence splitter, comma splitter or stuff like that.
+         * To provide some customized splitting a splitter can be provided. Here
+         * someone could think about sentence splitter, comma splitter or stuff
+         * like that.
          *
          * @param inlineDiffSplitter
          * @return
@@ -565,9 +615,10 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * By default DiffRowGenerator preprocesses lines for HTML output. Tabs and special HTML
-         * characters like "&lt;" are replaced with its encoded value. To change this you can
-         * provide a customized line normalizer here.
+         * By default DiffRowGenerator preprocesses lines for HTML output. Tabs
+         * and special HTML characters like "&lt;" are replaced with its encoded
+         * value. To change this you can provide a customized line normalizer
+         * here.
          *
          * @param lineNormalizer
          * @return
@@ -587,13 +638,14 @@ public final class DiffRowGenerator {
             this.equalizer = equalizer;
             return this;
         }
-        
+
         /**
-         * Sometimes it happens that a change contains multiple lines. If there is no correspondence
-         * in old and new. To keep the merged line more readable the linefeeds could be replaced
-         * by spaces.
+         * Sometimes it happens that a change contains multiple lines. If there
+         * is no correspondence in old and new. To keep the merged line more
+         * readable the linefeeds could be replaced by spaces.
+         *
          * @param replace
-         * @return 
+         * @return
          */
         public Builder replaceOriginalLinefeedInChangesWithSpaces(boolean replace) {
             this.replaceOriginalLinefeedInChangesWithSpaces = replace;

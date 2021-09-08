@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 java-diff-utils.
+ * Copyright 2021 java-diff-utils.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.difflib.algorithm;
+
+import java.util.function.BiPredicate;
+
 /**
- * This is the new implementation of UnifiedDiff Tools. This version is multi file aware.
- * <p/>
- * To read a unified diff file you should use {@link UnifiedDiffReader#parseUnifiedDiff}.
- * You will get a {@link UnifiedDiff} that holds all informations about the
- * diffs and the files.
- * <p/>
- * To process the UnifiedDiff use {@link UnifiedDiffWriter#write}.
+ * Tool to create new instances of a diff algorithm. This one is only needed at the moment to 
+ * set DiffUtils default diff algorithm.
+ * @author tw
  */
-package com.github.difflib.unifieddiff;
+public interface DiffAlgorithmFactory {
+    <T> DiffAlgorithmI<T> create();
+    
+    <T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer);
+}

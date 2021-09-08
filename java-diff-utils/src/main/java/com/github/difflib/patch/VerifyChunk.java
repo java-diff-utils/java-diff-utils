@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 java-diff-utils.
+ * Copyright 2021 java-diff-utils.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.difflib.patch;
+
 /**
- * This is the new implementation of UnifiedDiff Tools. This version is multi file aware.
- * <p/>
- * To read a unified diff file you should use {@link UnifiedDiffReader#parseUnifiedDiff}.
- * You will get a {@link UnifiedDiff} that holds all informations about the
- * diffs and the files.
- * <p/>
- * To process the UnifiedDiff use {@link UnifiedDiffWriter#write}.
+ *
+ * @author tw
  */
-package com.github.difflib.unifieddiff;
+public enum VerifyChunk {
+    OK,
+    POSITION_OUT_OF_TARGET,
+    CONTENT_DOES_NOT_MATCH_TARGET
+}

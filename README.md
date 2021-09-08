@@ -24,7 +24,7 @@ Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-
 
 ## Examples
 
-Look [here](https://github.com/wumpz/java-diff-utils/wiki) to find more helpful informations and examples.
+Look [here](https://github.com/java-diff-utils/java-diff-utils/wiki) to find more helpful informations and examples.
 
 These two outputs are generated using this java-diff-utils. The source code can also be found at the *Examples* page:
 
@@ -88,7 +88,7 @@ Just add the code below to your maven dependencies:
 <dependency>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils</artifactId>
-    <version>4.5</version>
+    <version>4.9</version>
 </dependency>
 ```
 

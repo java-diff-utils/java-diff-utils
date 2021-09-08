@@ -155,7 +155,7 @@ public class UnifiedDiffReaderTest {
         UnifiedDiffFile file1 = diff.getFiles().get(0);
         assertThat(file1.getFromFile()).isEqualTo("f1");
         assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
-        
+
         UnifiedDiffFile file2 = diff.getFiles().get(1);
         assertThat(file2.getFromFile()).isEqualTo("f2");
         assertThat(file2.getPatch().getDeltas().size()).isEqualTo(1);
@@ -220,7 +220,7 @@ public class UnifiedDiffReaderTest {
     public void testTimeStampRegexp() {
         assertThat("2019-04-18 13:49:39.516149751 +0200").matches(UnifiedDiffReader.TIMESTAMP_REGEXP);
     }
-    
+
     @Test
     public void testParseIssue98() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
@@ -236,7 +236,7 @@ public class UnifiedDiffReaderTest {
         assertEquals("src/test/java/se/bjurr/violations/lib/model/ViolationTest.java", file1.getFromFile());
         assertThat(diff.getTail()).isEqualTo("2.25.1");
     }
-    
+
     @Test
     public void testParseIssue104() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
@@ -247,9 +247,141 @@ public class UnifiedDiffReaderTest {
         final UnifiedDiffFile file = diff.getFiles().get(2);
         assertThat(file.getFromFile()).isEqualTo("/dev/null");
         assertThat(file.getToFile()).isEqualTo("doc/samba_data_tool_path.xml.in");
-                
+
         assertThat(file.getPatch().toString()).isEqualTo("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}");
 
         assertThat(diff.getTail()).isEqualTo("2.14.4");
+    }
+
+    @Test
+    public void testParseIssue107BazelDiff() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("01-bazel-strip-unused.patch_issue107.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(450);
+
+        final UnifiedDiffFile file = diff.getFiles().get(0);
+        assertThat(file.getFromFile()).isEqualTo("./src/main/java/com/amazonaws/AbortedException.java");
+        assertThat(file.getToFile()).isEqualTo("/home/greg/projects/bazel/third_party/aws-sdk-auth-lite/src/main/java/com/amazonaws/AbortedException.java");
+
+        assertThat(diff.getFiles().stream()
+                .filter(f -> f.isNoNewLineAtTheEndOfTheFile())
+                .count())
+                .isEqualTo(48);
+    }
+
+    @Test
+    public void testParseIssue107_2() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("Main.java");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+
+    }
+    
+    @Test
+    public void testParseIssue107_3() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_3.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+        assertThat(file1.getFromFile()).isEqualTo("Billion laughs attack.md");
+        assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
+
+    }
+    
+    @Test
+    public void testParseIssue107_4() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_4.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(27);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("README.md");
+    }
+    
+    @Test
+    public void testParseIssue107_5() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue107_5.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(22);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java");
+    }
+
+    @Test
+    public void testParseIssue110() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("0001-avahi-python-Use-the-agnostic-DBM-interface.patch"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(5);
+
+        final UnifiedDiffFile file = diff.getFiles().get(4);
+        assertThat(file.getSimilarityIndex()).isEqualTo(87);
+        assertThat(file.getRenameFrom()).isEqualTo("service-type-database/build-db.in");
+        assertThat(file.getRenameTo()).isEqualTo("service-type-database/build-db");
+
+        assertThat(file.getFromFile()).isEqualTo("service-type-database/build-db.in");
+        assertThat(file.getToFile()).isEqualTo("service-type-database/build-db");
+    }
+
+    @Test
+    public void testParseIssue117() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue117.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+        
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(0).getSource().getChangePosition())
+                .containsExactly(24, 27);
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(0).getTarget().getChangePosition())
+                .containsExactly(24, 27);
+        
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(1).getSource().getChangePosition())
+                .containsExactly(64);
+        assertThat(diff.getFiles().get(0).getPatch().getDeltas().get(1).getTarget().getChangePosition())
+                .containsExactly(64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74);
+
+//        diff.getFiles().forEach(f -> {
+//            System.out.println("File: " + f.getFromFile());
+//            f.getPatch().getDeltas().forEach(delta -> {
+//
+//                System.out.println(delta);
+//                System.out.println("Source: ");
+//                System.out.println(delta.getSource().getPosition());
+//                System.out.println(delta.getSource().getChangePosition());
+//
+//                System.out.println("Target: ");
+//                System.out.println(delta.getTarget().getPosition());
+//                System.out.println(delta.getTarget().getChangePosition());
+//            });
+//        });
+    }
+    
+    @Test
+    public void testParseIssue122() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue122.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("coders/wpg.c");
+    }
+    
+    @Test
+    public void testParseIssue123() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue123.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java");
     }
 }

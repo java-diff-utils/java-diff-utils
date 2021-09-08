@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
@@ -133,7 +135,7 @@ public class GenerateUnifiedDiffTest {
      * Issue 89
      */
     @Test
-    public void testChagngePosition() throws IOException {
+    public void testChangePosition() throws IOException {
         final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue89_patch.txt");
         final Patch<String> patch = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
         List<Integer> realRemoveListOne = Collections.singletonList(3);
@@ -147,7 +149,7 @@ public class GenerateUnifiedDiffTest {
 
     private void validateChangePosition(Patch<String> patch, int index, List<Integer> realRemoveList,
                                         List<Integer> realAddList ) {
-        final Chunk originChunk = patch.getDeltas().get(index).getSource();
+        final Chunk<String> originChunk = patch.getDeltas().get(index).getSource();
         List<Integer> removeList = originChunk.getChangePosition();
         assertEquals(realRemoveList.size(), removeList.size());
         for (Integer ele: realRemoveList) {
@@ -156,7 +158,7 @@ public class GenerateUnifiedDiffTest {
         for (Integer ele: removeList) {
             assertTrue(realAddList.contains(ele));
         }
-        final Chunk targetChunk = patch.getDeltas().get(index).getTarget();
+        final Chunk<String> targetChunk = patch.getDeltas().get(index).getTarget();
         List<Integer> addList = targetChunk.getChangePosition();
         assertEquals(realAddList.size(), addList.size());
         for (Integer ele: realAddList) {
@@ -190,5 +192,32 @@ public class GenerateUnifiedDiffTest {
         } catch (PatchFailedException e) {
             fail(e.getMessage());
         }
+    }
+    
+    
+    @Test
+    public void testFailingPatchByException() throws IOException {
+        final List<String> baseLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_base.txt");
+        final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
+        final Patch<String> p = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
+        
+        //make original not fitting
+        baseLines.set(40, baseLines.get(40) + " corrupted ");
+        
+        assertThrows(PatchFailedException.class, () -> DiffUtils.patch(baseLines, p));
+    }
+    
+    @Test
+    public void testWrongContextLength() throws IOException {
+        List<String> original = fileToLines(TestConstants.BASE_FOLDER_RESOURCES + "com/github/difflib/text/issue_119_original.txt");
+        List<String> revised = fileToLines(TestConstants.BASE_FOLDER_RESOURCES + "com/github/difflib/text/issue_119_revised.txt");
+
+        Patch<String> patch = DiffUtils.diff(original, revised);
+        List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff("a/$filename", "b/$filename",
+                original, patch, 3);
+        
+        //System.out.println(udiff.stream().collect(joining("\n")));
+        
+        assertThat(udiff).contains("@@ -1,4 +1,4 @@");
     }
 }
