@@ -1,5 +1,6 @@
-package com.github.difflib.patch;
+package com.github.difflib.algorithm.myers;
 
+import com.github.difflib.patch.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -15,14 +16,14 @@ import org.junit.jupiter.api.Test;
 
 import com.github.difflib.DiffUtils;
 
-public class PatchTest {
+public class WithMeyersDiffWithLinearSpacePatchTest {
 
     @Test
     public void testPatch_Insert() {
         final List<String> insertTest_from = Arrays.asList("hhh");
         final List<String> insertTest_to = Arrays.asList("hhh", "jjj", "kkk", "lll");
 
-        final Patch<String> patch = DiffUtils.diff(insertTest_from, insertTest_to);
+        final Patch<String> patch = DiffUtils.diff(insertTest_from, insertTest_to, new MeyersDiffWithLinearSpace<String>());
         try {
             assertEquals(insertTest_to, DiffUtils.patch(insertTest_from, patch));
         } catch (PatchFailedException e) {
@@ -35,7 +36,7 @@ public class PatchTest {
         final List<String> deleteTest_from = Arrays.asList("ddd", "fff", "ggg", "hhh");
         final List<String> deleteTest_to = Arrays.asList("ggg");
 
-        final Patch<String> patch = DiffUtils.diff(deleteTest_from, deleteTest_to);
+        final Patch<String> patch = DiffUtils.diff(deleteTest_from, deleteTest_to, new MeyersDiffWithLinearSpace<String>());
         try {
             assertEquals(deleteTest_to, DiffUtils.patch(deleteTest_from, patch));
         } catch (PatchFailedException e) {
@@ -48,7 +49,7 @@ public class PatchTest {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
-        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
+        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to, new MeyersDiffWithLinearSpace<String>());
         try {
             assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
         } catch (PatchFailedException e) {
@@ -61,7 +62,7 @@ public class PatchTest {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
-        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
+        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to, new MeyersDiffWithLinearSpace<String>());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(patch);
@@ -84,7 +85,7 @@ public class PatchTest {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
         final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
-        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
+        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to, new MeyersDiffWithLinearSpace<String>());
 
         changeTest_from.set(2, "CDC");
 
@@ -92,9 +93,9 @@ public class PatchTest {
 
         try {
             List<String> data = DiffUtils.patch(changeTest_from, patch);
-            assertEquals(9, data.size());
+            assertEquals(11, data.size());
             
-            assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
+            assertEquals(Arrays.asList("aaa", "bxb", "cxc", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
             
         } catch (PatchFailedException e) {
             fail(e.getMessage());
