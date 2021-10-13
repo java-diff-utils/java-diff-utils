@@ -25,6 +25,7 @@ kotlin {
     }
 
     js {
+        binaries.executable()
         nodejs()
         browser()
         compilations.all {
