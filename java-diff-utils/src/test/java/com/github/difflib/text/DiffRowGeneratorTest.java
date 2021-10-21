@@ -641,7 +641,7 @@ public class DiffRowGeneratorTest {
 
         assertThat(rows).extracting(item -> item.getTag().name()).containsExactly("CHANGE", "DELETE", "EQUAL", "CHANGE", "EQUAL");
     }
-    
+
     @Test
     public void testCorrectChangeIssue114_2() throws IOException {
         List<String> original = Arrays.asList("A", "B", "C", "D", "E");
@@ -662,7 +662,7 @@ public class DiffRowGeneratorTest {
         assertThat(rows).extracting(item -> item.getTag().name()).containsExactly("CHANGE", "DELETE", "EQUAL", "CHANGE", "EQUAL");
         assertThat(rows.get(1).toString()).isEqualTo("[DELETE,~B~,]");
     }
-    
+
     @Test
     public void testIssue119WrongContextLength() throws IOException {
         String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue_119_original.txt")).collect(joining("\n"));
@@ -682,5 +682,83 @@ public class DiffRowGeneratorTest {
         rows.stream()
                 .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
                 .forEach(System.out::println);
+    }
+
+    @Test
+    public void testIssue129WithDeltaDecompression() {
+        List<String> lines1 = Arrays.asList(
+                "apple1",
+                "apple2",
+                "apple3",
+                "A man named Frankenstein abc to Switzerland for cookies!",
+                "banana1",
+                "banana2",
+                "banana3");
+        List<String> lines2 = Arrays.asList(
+                "apple1",
+                "apple2",
+                "apple3",
+                "A man named Frankenstein",
+                "xyz",
+                "to Switzerland for cookies!",
+                "banana1",
+                "banana2",
+                "banana3");
+        int[] entry = {1};
+        String txt = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .oldTag((tag, isOpening) -> isOpening ? "==old" + tag + "==>" : "<==old==")
+                .newTag((tag, isOpening) -> isOpening ? "==new" + tag + "==>" : "<==new==")
+                .build()
+                .generateDiffRows(lines1, lines2)
+                .stream()
+                .map(row -> row.getTag().toString())
+                .collect(joining(" "));
+//                .forEachOrdered(row -> {
+//                    System.out.printf("%4d %-8s %-80s %-80s\n", entry[0]++,
+//                            row.getTag(), row.getOldLine(), row.getNewLine());
+//                });
+
+        assertThat(txt).isEqualTo("EQUAL EQUAL EQUAL CHANGE INSERT INSERT EQUAL EQUAL EQUAL");
+    }
+    
+    @Test
+    public void testIssue129SkipDeltaDecompression() {
+        List<String> lines1 = Arrays.asList(
+                "apple1",
+                "apple2",
+                "apple3",
+                "A man named Frankenstein abc to Switzerland for cookies!",
+                "banana1",
+                "banana2",
+                "banana3");
+        List<String> lines2 = Arrays.asList(
+                "apple1",
+                "apple2",
+                "apple3",
+                "A man named Frankenstein",
+                "xyz",
+                "to Switzerland for cookies!",
+                "banana1",
+                "banana2",
+                "banana3");
+        int[] entry = {1};
+        String txt = 
+                DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .decompressDeltas(false)
+                .oldTag((tag, isOpening) -> isOpening ? "==old" + tag + "==>" : "<==old==")
+                .newTag((tag, isOpening) -> isOpening ? "==new" + tag + "==>" : "<==new==")
+                .build()
+                .generateDiffRows(lines1, lines2)
+                .stream()
+                .map(row -> row.getTag().toString())
+                .collect(joining(" "));
+//                .forEachOrdered(row -> {
+//                    System.out.printf("%4d %-8s %-80s %-80s\n", entry[0]++,
+//                            row.getTag(), row.getOldLine(), row.getNewLine());
+//                });
+
+        assertThat(txt).isEqualTo("EQUAL EQUAL EQUAL CHANGE CHANGE CHANGE EQUAL EQUAL EQUAL");
     }
 }
