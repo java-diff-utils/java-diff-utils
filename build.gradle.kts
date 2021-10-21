@@ -25,7 +25,6 @@ kotlin {
     }
 
     js {
-        binaries.executable()
         nodejs()
         browser()
         compilations.all {
@@ -73,12 +72,12 @@ tasks {
     }
 
     val copyJS by registering(Copy::class) {
-        from(file("$buildDir/distributions/${project.name}.js"))
+        from(file("$buildDir/js/packages/${project.name}-js-legacy/kotlin/${project.name}-js-legacy.js"))
         into(file("$buildDir/node_module"))
     }
 
     val copySourceMap by registering(Copy::class) {
-        from(file("$buildDir/distributions/${project.name}.js.map"))
+        from(file("$buildDir/js/packages/${project.name}-js-legacy/kotlin/${project.name}-js-legacy.js.map"))
         into(file("$buildDir/node_module"))
     }
 

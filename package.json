@@ -2,7 +2,7 @@
   "name": "kotlin-diff-utils",
   "version": "0",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
-  "main": "kotlin-diff-utils.js",
+  "main": "kotlin-diff-utils-js-legacy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
