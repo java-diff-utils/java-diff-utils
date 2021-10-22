@@ -1,5 +1,5 @@
 {
-  "name": "kotlin-diff-utils",
+  "name": "kotlin-diff-utils-legacy.js",
   "version": "0",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
   "main": "kotlin-diff-utils-js-legacy.js",
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/GitLiveApp/kotlin-diff-utils"
   },
   "publishConfig": {
-    "registry":"https://registry.npmjs.org/"
+    "registry":"https://npm.pkg.github.com/"
   },
   "keywords": [
     "diffs",
