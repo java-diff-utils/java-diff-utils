@@ -20,44 +20,30 @@ package dev.gitlive.difflib.algorithm.myers
  *
  * @author [Juanco Anez](mailto:juanco@suigeneris.org)
  */
-class PathNode
-/**
- * Concatenates a new path node with an existing diffpath.
- *
- * @param i The position in the original sequence for the new node.
- * @param j The position in the revised sequence for the new node.
- * @param prev The previous node in the path.
- */
-(
-        /**
-         * Position in the original sequence.
-         */
-        val i: Int,
-        /**
-         * Position in the revised sequence.
-         */
-        val j: Int, val isSnake: Boolean,
-        /**
-         * Is this a bootstrap node?
-         *
-         *
-         * In bottstrap nodes one of the two corrdinates is less than zero.
-         *
-         * @return tru if this is a bootstrap node.
-         */
-        val isBootstrap: Boolean, prev: PathNode?) {
+class PathNode(
+    /**
+     * Position in the original sequence.
+     */
+    val i: Int,
+    /**
+     * Position in the revised sequence.
+     */
+    val j: Int, snake: Boolean,
+    /**
+     * Is this a bootstrap node?
+     *
+     *
+     * In bottstrap nodes one of the two corrdinates is less than zero.
+     *
+     * @return tru if this is a bootstrap node.
+     */
+    val isBootstrap: Boolean, prev: PathNode?
+) {
     /**
      * The previous node in the path.
      */
-    val prev: PathNode?
-
-    init {
-        if (isSnake) {
-            this.prev = prev
-        } else {
-            this.prev = prev?.previousSnake()
-        }
-    }
+    var prev: PathNode? = null
+    val isSnake: Boolean
 
     /**
      * Skips sequences of [PathNodes][PathNode] until a snake or bootstrap node is found, or the end of the
@@ -70,7 +56,7 @@ class PathNode
             return null
         }
         return if (!isSnake && prev != null) {
-            prev.previousSnake()
+            prev!!.previousSnake()
         } else this
     }
 
@@ -90,5 +76,21 @@ class PathNode
         }
         buf.append("]")
         return buf.toString()
+    }
+
+    /**
+     * Concatenates a new path node with an existing diffpath.
+     *
+     * @param i The position in the original sequence for the new node.
+     * @param j The position in the revised sequence for the new node.
+     * @param prev The previous node in the path.
+     */
+    init {
+        if (snake) {
+            this.prev = prev
+        } else {
+            this.prev = prev?.previousSnake()
+        }
+        isSnake = snake
     }
 }

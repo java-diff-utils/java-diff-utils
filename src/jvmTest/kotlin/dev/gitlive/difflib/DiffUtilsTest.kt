@@ -1,12 +1,6 @@
 package dev.gitlive.difflib
 
-import dev.gitlive.difflib.algorithm.DiffException
-import dev.gitlive.difflib.patch.ChangeDelta
-import dev.gitlive.difflib.patch.Chunk
-import dev.gitlive.difflib.patch.DeleteDelta
-import dev.gitlive.difflib.patch.AbstractDelta
-import dev.gitlive.difflib.patch.InsertDelta
-import dev.gitlive.difflib.patch.Patch
+import dev.gitlive.difflib.patch.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -31,8 +25,8 @@ class DiffUtilsTest {
     fun testDiff_Insert() {
         val patch = DiffUtils.diff(Arrays.asList("hhh"), Arrays.asList("hhh", "jjj", "kkk"))
         assertNotNull(patch)
-        assertEquals(1, patch.deltas.size.toLong())
-        val delta = patch.deltas[0]
+        assertEquals(1, patch.getDeltas().size.toLong())
+        val delta = patch.getDeltas()[0]
         assertTrue(delta is InsertDelta<*>)
         assertEquals(Chunk<String>(1, emptyList<String>()), delta.source)
         assertEquals(Chunk(1, Arrays.asList("jjj", "kkk")), delta.target)
@@ -43,8 +37,8 @@ class DiffUtilsTest {
     fun testDiff_Delete() {
         val patch = DiffUtils.diff(Arrays.asList("ddd", "fff", "ggg"), Arrays.asList("ggg"))
         assertNotNull(patch)
-        assertEquals(1, patch.deltas.size.toLong())
-        val delta = patch.deltas[0]
+        assertEquals(1, patch.getDeltas().size.toLong())
+        val delta = patch.getDeltas()[0]
         assertTrue(delta is DeleteDelta<*>)
         assertEquals(Chunk(0, Arrays.asList("ddd", "fff")), delta.source)
         assertEquals(Chunk<String>(0, emptyList<String>()), delta.target)
@@ -58,8 +52,8 @@ class DiffUtilsTest {
 
         val patch = DiffUtils.diff(changeTest_from, changeTest_to)
         assertNotNull(patch)
-        assertEquals(1, patch.deltas.size.toLong())
-        val delta = patch.deltas[0]
+        assertEquals(1, patch.getDeltas().size.toLong())
+        val delta = patch.getDeltas()[0]
         assertTrue(delta is ChangeDelta<*>)
         assertEquals(Chunk(1, Arrays.asList("bbb")), delta.source)
         assertEquals(Chunk(1, Arrays.asList("zzz")), delta.target)
@@ -70,7 +64,7 @@ class DiffUtilsTest {
     fun testDiff_EmptyList() {
         val patch = DiffUtils.diff(ArrayList(), ArrayList<String>())
         assertNotNull(patch)
-        assertEquals(0, patch.deltas.size.toLong())
+        assertEquals(0, patch.getDeltas().size.toLong())
     }
 
     @Test
@@ -78,8 +72,8 @@ class DiffUtilsTest {
     fun testDiff_EmptyListWithNonEmpty() {
         val patch = DiffUtils.diff(ArrayList(), Arrays.asList("aaa"))
         assertNotNull(patch)
-        assertEquals(1, patch.deltas.size.toLong())
-        val delta = patch.deltas[0]
+        assertEquals(1, patch.getDeltas().size.toLong())
+        val delta = patch.getDeltas()[0]
         assertTrue(delta is InsertDelta<*>)
     }
 
@@ -87,25 +81,25 @@ class DiffUtilsTest {
     @Throws(DiffException::class)
     fun testDiffInline() {
         val patch = DiffUtils.diffInline("", "test")
-        assertEquals(1, patch.deltas.size.toLong())
-        assertTrue(patch.deltas[0] is InsertDelta<*>)
-        assertEquals(0, patch.deltas[0].source.position.toLong())
-        assertEquals(0, patch.deltas[0].source.lines!!.size.toLong())
-        assertEquals("test", patch.deltas[0].target.lines!![0])
+        assertEquals(1, patch.getDeltas().size.toLong())
+        assertTrue(patch.getDeltas()[0] is InsertDelta<*>)
+        assertEquals(0, patch.getDeltas()[0].source.position.toLong())
+        assertEquals(0, patch.getDeltas()[0].source.lines!!.size.toLong())
+        assertEquals("test", patch.getDeltas()[0].target.lines!![0])
     }
 
     @Test
     @Throws(DiffException::class)
     fun testDiffInline2() {
         val patch = DiffUtils.diffInline("es", "fest")
-        assertEquals(2, patch.deltas.size.toLong())
-        assertTrue(patch.deltas[0] is InsertDelta<*>)
-        assertEquals(0, patch.deltas[0].source.position.toLong())
-        assertEquals(2, patch.deltas[1].source.position.toLong())
-        assertEquals(0, patch.deltas[0].source.lines!!.size.toLong())
-        assertEquals(0, patch.deltas[1].source.lines!!.size.toLong())
-        assertEquals("f", patch.deltas[0].target.lines!![0])
-        assertEquals("t", patch.deltas[1].target.lines!![0])
+        assertEquals(2, patch.getDeltas().size.toLong())
+        assertTrue(patch.getDeltas()[0] is InsertDelta<*>)
+        assertEquals(0, patch.getDeltas()[0].source.position.toLong())
+        assertEquals(2, patch.getDeltas()[1].source.position.toLong())
+        assertEquals(0, patch.getDeltas()[0].source.lines!!.size.toLong())
+        assertEquals(0, patch.getDeltas()[1].source.lines!!.size.toLong())
+        assertEquals("f", patch.getDeltas()[0].target.lines!![0])
+        assertEquals("t", patch.getDeltas()[1].target.lines!![0])
     }
 
 //    @Test
@@ -132,8 +126,8 @@ class DiffUtilsTest {
         val revised = Arrays.asList("line1", "line2-2", "line4")
 
         val patch = DiffUtils.diff(original, revised)
-        assertEquals(1, patch.deltas.size.toLong())
-        assertEquals("[ChangeDelta, position: 1, lines: [line2, line3] to [line2-2, line4]]", patch.deltas[0].toString())
+        assertEquals(1, patch.getDeltas().size.toLong())
+        assertEquals("[ChangeDelta, position: 1, lines: [line2, line3] to [line2-2, line4]]", patch.getDeltas()[0].toString())
     }
 
     /**

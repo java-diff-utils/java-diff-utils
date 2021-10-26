@@ -16,7 +16,18 @@
 package dev.gitlive.difflib.patch
 
 /**
- * Specifies the type of the delta.
+ * Specifies the type of the delta. There are three types of modifications from
+ * the original to get the revised text.
+ *
+ * CHANGE: a block of data of the original is replaced by another block of data.
+ * DELETE: a block of data of the original is removed
+ * INSERT: at a position of the original a block of data is inserted
+ *
+ * to be complete there is also
+ *
+ * EQUAL: a block of data of original and the revised text is equal
+ *
+ * which is no change at all.
  *
  */
 enum class DeltaType {
@@ -24,14 +35,17 @@ enum class DeltaType {
      * A change in the original.
      */
     CHANGE,
+
     /**
      * A delete from the original.
      */
     DELETE,
+
     /**
      * An insert into the original.
      */
     INSERT,
+
     /**
      * An do nothing.
      */

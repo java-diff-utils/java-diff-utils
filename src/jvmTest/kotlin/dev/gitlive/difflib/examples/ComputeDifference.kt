@@ -2,8 +2,8 @@ package dev.gitlive.difflib.examples
 
 import dev.gitlive.difflib.DiffUtils
 import dev.gitlive.difflib.TestConstants
-import dev.gitlive.difflib.algorithm.DiffException
 import dev.gitlive.difflib.patch.AbstractDelta
+import dev.gitlive.difflib.patch.DiffException
 import dev.gitlive.difflib.patch.Patch
 import java.io.File
 import java.io.IOException
@@ -23,7 +23,7 @@ object ComputeDifference {
         // Compute diff. Get the Patch object. Patch is the container for computed deltas.
         val patch = DiffUtils.diff(original, revised)
 
-        for (delta in patch.deltas) {
+        for (delta in patch.getDeltas()) {
             println(delta)
         }
     }

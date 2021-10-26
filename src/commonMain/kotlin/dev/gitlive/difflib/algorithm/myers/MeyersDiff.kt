@@ -17,23 +17,19 @@ package dev.gitlive.difflib.algorithm.myers
 
 import dev.gitlive.difflib.BiPredicate
 import dev.gitlive.difflib.algorithm.Change
+import dev.gitlive.difflib.algorithm.DiffAlgorithmFactory
 import dev.gitlive.difflib.algorithm.DiffAlgorithmI
 import dev.gitlive.difflib.algorithm.DiffAlgorithmListener
-import dev.gitlive.difflib.algorithm.DiffException
-import dev.gitlive.difflib.algorithm.DifferentiationFailedException
 import dev.gitlive.difflib.patch.DeltaType
-import dev.gitlive.difflib.patch.Patch
 
 /**
- * A clean-room implementation of Eugene Myers greedy differencing algorithm.
+ * A clean-room implementation of Eugene Meyers greedy differencing algorithm.
  */
-class MyersDiff<T> : DiffAlgorithmI<T> {
-
-    private val DEFAULT_EQUALIZER: BiPredicate<T, T> = { obj1, obj2 -> obj1 == obj2 }
+class MeyersDiff<T> : DiffAlgorithmI<T> {
     private val equalizer: BiPredicate<T, T>
 
     constructor() {
-        equalizer = DEFAULT_EQUALIZER
+        equalizer = { a: T, b: T -> a!! == b }
     }
 
     constructor(equalizer: BiPredicate<T, T>) {
@@ -45,7 +41,6 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
      *
      * Return empty diff if get the error while procession the difference.
      */
-//    @Throws(DiffException::class)
     override fun computeDiff(source: List<T>, target: List<T>, progress: DiffAlgorithmListener?): List<Change> {
         progress?.diffStart()
         val path = buildPath(source, target, progress)
@@ -55,26 +50,24 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
     }
 
     /**
-     * Computes the minimum diffpath that expresses de differences between the original and revised
-     * sequences, according to Gene Myers differencing algorithm.
+     * Computes the minimum diffpath that expresses de differences between the
+     * original and revised sequences, according to Gene Myers differencing
+     * algorithm.
      *
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A minimum [Path][PathNode] accross the differences graph.
      * @throws DifferentiationFailedException if a diff path could not be found.
      */
-//    @Throws(DifferentiationFailedException::class)
     private fun buildPath(orig: List<T>, rev: List<T>, progress: DiffAlgorithmListener?): PathNode {
 
         // these are local constants
         val N = orig.size
         val M = rev.size
-
         val MAX = N + M + 1
         val size = 1 + 2 * MAX
         val middle = size / 2
         val diagonal = arrayOfNulls<PathNode>(size)
-
         diagonal[middle + 1] = PathNode(0, -1, true, true, null)
         for (d in 0 until MAX) {
             progress?.diffStep(d, MAX)
@@ -83,34 +76,26 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
                 val kmiddle = middle + k
                 val kplus = kmiddle + 1
                 val kminus = kmiddle - 1
-                val prev: PathNode
+                var prev: PathNode?
                 var i: Int
-
                 if (k == -d || k != d && diagonal[kminus]!!.i < diagonal[kplus]!!.i) {
                     i = diagonal[kplus]!!.i
-                    prev = diagonal[kplus]!!
+                    prev = diagonal[kplus]
                 } else {
                     i = diagonal[kminus]!!.i + 1
-                    prev = diagonal[kminus]!!
+                    prev = diagonal[kminus]
                 }
-
                 diagonal[kminus] = null // no longer used
-
                 var j = i - k
-
                 var node = PathNode(i, j, false, false, prev)
-
                 while (i < N && j < M && equalizer(orig[i], rev[j])) {
                     i++
                     j++
                 }
-
                 if (i != node.i) {
                     node = PathNode(i, j, true, false, node)
                 }
-
                 diagonal[kmiddle] = node
-
                 if (i >= N && j >= M) {
                     return diagonal[kmiddle]!!
                 }
@@ -118,8 +103,7 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
             }
             diagonal[middle + d - 1] = null
         }
-        // According to Myers, this cannot happen
-        throw DifferentiationFailedException("could not find a diff path")
+        throw IllegalStateException("could not find a diff path")
     }
 
     /**
@@ -129,26 +113,22 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
      * @param orig The original sequence.
      * @param rev The revised sequence.
      * @return A [Patch] script corresponding to the path.
-     * @throws DifferentiationFailedException if a [Patch] could not be built from the given
-     * path.
+     * @throws DifferentiationFailedException if a [Patch] could not be
+     * built from the given path.
      */
     private fun buildRevision(actualPath: PathNode, orig: List<T>, rev: List<T>): List<Change> {
         var path: PathNode? = actualPath
-        val changes = ArrayList<Change>()
+        val changes: MutableList<Change> = ArrayList()
         if (path!!.isSnake) {
             path = path.prev
         }
-        while (path != null && path.prev != null && path.prev!!.j >= 0) {
-            if (path.isSnake) {
-                throw IllegalStateException("bad diffpath: found snake when looking for diff")
-            }
+        while (path?.prev != null && path.prev!!.j >= 0) {
+            check(!path.isSnake) { "bad diffpath: found snake when looking for diff" }
             val i = path.i
             val j = path.j
-
             path = path.prev
             val ianchor = path!!.i
             val janchor = path.j
-
             if (ianchor == i && janchor != j) {
                 changes.add(Change(DeltaType.INSERT, ianchor, i, janchor, j))
             } else if (ianchor != i && janchor == j) {
@@ -156,11 +136,28 @@ class MyersDiff<T> : DiffAlgorithmI<T> {
             } else {
                 changes.add(Change(DeltaType.CHANGE, ianchor, i, janchor, j))
             }
-
             if (path.isSnake) {
                 path = path.prev
             }
         }
         return changes
+    }
+
+    companion object {
+        /**
+         * Factory to create instances of this specific diff algorithm.
+         */
+        @kotlin.jvm.JvmStatic
+        fun factory(): DiffAlgorithmFactory {
+            return object : DiffAlgorithmFactory {
+                override fun <T> create(): DiffAlgorithmI<T> {
+                    return MeyersDiff()
+                }
+
+                override fun <T> create(equalizer: BiPredicate<T, T>): DiffAlgorithmI<T> {
+                    return MeyersDiff(equalizer)
+                }
+            }
+        }
     }
 }

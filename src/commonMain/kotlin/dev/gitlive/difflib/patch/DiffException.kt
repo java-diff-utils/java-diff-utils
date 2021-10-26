@@ -21,13 +21,10 @@ package dev.gitlive.difflib.patch
  * @author [Juanco Anez](mailto:juanco@suigeneris.org)
  */
 open class DiffException : Exception {
-
     constructor() {}
-
-    constructor(msg: String) : super(msg) {}
+    constructor(msg: String?) : super(msg) {}
 
     companion object {
-
-        private val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
     }
 }

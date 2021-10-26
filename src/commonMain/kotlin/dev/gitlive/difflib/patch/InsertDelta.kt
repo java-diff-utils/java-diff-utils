@@ -28,28 +28,30 @@ class InsertDelta<T>
  * @param original The original chunk. Must not be `null`.
  * @param revised The original chunk. Must not be `null`.
  */
-(original: Chunk<T>, revised: Chunk<T>) : AbstractDelta<T>(DeltaType.INSERT, original, revised) {
-
+    (original: Chunk<T>, revised: Chunk<T>) : AbstractDelta<T>(DeltaType.INSERT, original, revised) {
 //    @Throws(PatchFailedException::class)
-    override fun applyTo(target: MutableList<T>) {
-        verifyChunk(target)
-        val position = this.source.position
-        val lines = this.target.lines
-        for (i in lines!!.indices) {
+    protected override fun applyTo(target: MutableList<T>) {
+        val position = source.position
+        val lines: List<T> = this.target.lines
+        for (i in lines.indices) {
             target.add(position + i, lines[i])
         }
     }
 
-    override fun restore(t: MutableList<T>) {
-        val position = target.position
-        val size = target.size()
+    override fun restore(target: MutableList<T>) {
+        val position = this.target.position
+        val size = this.target.size()
         for (i in 0 until size) {
-            t.removeAt(position)
+            target.removeAt(position)
         }
     }
 
     override fun toString(): String {
         return ("[InsertDelta, position: " + source.position
                 + ", lines: " + target.lines + "]")
+    }
+
+    override fun withChunks(original: Chunk<T>, revised: Chunk<T>): AbstractDelta<T> {
+        return InsertDelta(original, revised)
     }
 }

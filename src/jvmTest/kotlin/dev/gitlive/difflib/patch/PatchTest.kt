@@ -1,7 +1,6 @@
 package dev.gitlive.difflib.patch
 
 import dev.gitlive.difflib.DiffUtils
-import dev.gitlive.difflib.algorithm.DiffException
 import java.util.Arrays
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
