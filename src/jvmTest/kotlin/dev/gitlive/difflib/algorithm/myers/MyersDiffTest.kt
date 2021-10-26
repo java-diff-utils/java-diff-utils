@@ -16,7 +16,6 @@
 package dev.gitlive.difflib.algorithm.myers
 
 import dev.gitlive.difflib.algorithm.DiffAlgorithmListener
-import dev.gitlive.difflib.algorithm.DiffException
 import dev.gitlive.difflib.patch.Patch
 import java.util.ArrayList
 import java.util.Arrays

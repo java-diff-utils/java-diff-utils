@@ -21,21 +21,22 @@ package dev.gitlive.difflib.text
  * @author [Dmitry Naumenko](dm.naumenko@gmail.com)
  */
 class DiffRow(
-        /**
-         * @return the tag
-         */
-        /**
-         * @param tag the tag to set
-         */
-        var tag: Tag?,
-        /**
-         * @return the oldLine
-         */
-        val oldLine: String?,
-        /**
-         * @return the newLine
-         */
-        val newLine: String?) {
+    /**
+     * @param tag the tag to set
+     */
+    var tag: Tag,
+    /**
+     * @return the oldLine
+     */
+    val oldLine: String,
+    /**
+     * @return the newLine
+     */
+    val newLine: String
+) {
+    /**
+     * @return the tag
+     */
 
     enum class Tag {
         INSERT, DELETE, CHANGE, EQUAL
@@ -55,12 +56,12 @@ class DiffRow(
         if (this::class != obj::class) {
             return false
         }
-        val other = obj as DiffRow?
+        val other = obj as DiffRow
         if (newLine == null) {
-            if (other!!.newLine != null) {
+            if (other.newLine != null) {
                 return false
             }
-        } else if (newLine != other!!.newLine) {
+        } else if (newLine != other.newLine) {
             return false
         }
         if (oldLine == null) {
@@ -81,6 +82,6 @@ class DiffRow(
     }
 
     override fun toString(): String {
-        return "[" + this.tag + "," + this.oldLine + "," + this.newLine + "]"
+        return "[" + tag + "," + oldLine + "," + newLine + "]"
     }
 }

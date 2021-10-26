@@ -21,39 +21,30 @@ package dev.gitlive.difflib.patch
  * @author [Dmitry Naumenko](dm.naumenko@gmail.com)
  * @param <T> The type of the compared elements in the data 'lines'.
 </T> */
-class ChangeDelta<T>
-/**
- * Creates a change delta with the two given chunks.
- *
- * @param source The source chunk. Must not be `null`.
- * @param target The target chunk. Must not be `null`.
- */
-(source: Chunk<T>, target: Chunk<T>) : AbstractDelta<T>(DeltaType.CHANGE, source, target) {
-
+class ChangeDelta<T>(source: Chunk<T>, target: Chunk<T>) : AbstractDelta<T>(DeltaType.CHANGE, source, target) {
 //    @Throws(PatchFailedException::class)
-    override fun applyTo(t: MutableList<T>) {
-        verifyChunk(t)
+    override fun applyTo(target: MutableList<T>) {
         val position = source.position
         val size = source.size()
         for (i in 0 until size) {
-            t.removeAt(position)
+            target.removeAt(position)
         }
         var i = 0
-        for (line in target.lines!!) {
-            t.add(position + i, line)
+        for (line in this.target.lines) {
+            target.add(position + i, line)
             i++
         }
     }
 
-    override fun restore(t: MutableList<T>) {
-        val position = target.position
-        val size = target.size()
+    override fun restore(target: MutableList<T>) {
+        val position = this.target.position
+        val size = this.target.size()
         for (i in 0 until size) {
-            t.removeAt(position)
+            target.removeAt(position)
         }
         var i = 0
-        for (line in source.lines!!) {
-            t.add(position + i, line)
+        for (line in source.lines) {
+            target.add(position + i, line)
             i++
         }
     }
@@ -62,4 +53,9 @@ class ChangeDelta<T>
         return ("[ChangeDelta, position: " + source.position + ", lines: "
                 + source.lines + " to " + target.lines + "]")
     }
+
+    override fun withChunks(original: Chunk<T>, revised: Chunk<T>): AbstractDelta<T> {
+        return ChangeDelta(original, revised)
+    }
+
 }

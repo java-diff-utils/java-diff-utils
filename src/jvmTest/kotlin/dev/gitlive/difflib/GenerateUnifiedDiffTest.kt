@@ -1,7 +1,6 @@
 package dev.gitlive.difflib
 
-import dev.gitlive.difflib.algorithm.DiffException
-import dev.gitlive.difflib.patch.Patch
+import dev.gitlive.difflib.patch.DiffException
 import dev.gitlive.difflib.patch.PatchFailedException
 import java.io.BufferedReader
 import java.io.FileNotFoundException

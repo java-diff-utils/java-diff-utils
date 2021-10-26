@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This is the new implementation of UnifiedDiff Tools. This version is multi file aware.
- *
- *
- * To read a unified diff file you should use [UnifiedDiffReader.parseUnifiedDiff].
- * You will get a [UnifiedDiff] that holds all informations about the
- * diffs and the files.
- *
- *
- * To process the UnifiedDiff use [UnifiedDiffWriter.write].
- */
 package dev.gitlive.difflib.unifieddiff
 
-import dev.gitlive.difflib.unifieddiff.UnifiedDiff
+/**
+ *
+ * @author Tobias Warneke (t.warneke@gmx.net)
+ */
+class UnifiedDiffParserException : RuntimeException {
+    constructor() {}
+    constructor(message: String?) : super(message) {}
+    constructor(message: String?, cause: Throwable?) : super(message, cause) {}
+    constructor(cause: Throwable?) : super(cause) {}
+}

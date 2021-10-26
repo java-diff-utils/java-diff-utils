@@ -1,6 +1,6 @@
 package dev.gitlive.difflib.text
 
-import dev.gitlive.difflib.algorithm.DiffException
+import dev.gitlive.difflib.patch.DiffException
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -161,6 +161,7 @@ class DiffRowGeneratorTest {
         val generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
+                .decompressDeltas(false)
                 .build()
         val rows = generator.generateDiffRows(split(first), split(second))
         print(rows)
@@ -347,6 +348,7 @@ class DiffRowGeneratorTest {
         val generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
+                .decompressDeltas(false)
                 .oldTag { f -> "~" }
                 .newTag { f -> "**" }
                 .build()
@@ -372,6 +374,7 @@ class DiffRowGeneratorTest {
         val generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
+                .decompressDeltas(false)
                 .oldTag { f -> "~" }
                 .newTag { f -> "**" }
                 .build()
@@ -391,6 +394,7 @@ class DiffRowGeneratorTest {
         val generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
+                .decompressDeltas(false)
                 .oldTag { f -> "~" }
                 .newTag { f -> "**" }
                 .build()

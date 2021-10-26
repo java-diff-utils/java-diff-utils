@@ -30,6 +30,5 @@ interface DiffAlgorithmListener {
      * @param max
      */
     fun diffStep(value: Int, max: Int)
-
     fun diffEnd()
 }

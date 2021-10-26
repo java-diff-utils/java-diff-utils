@@ -23,12 +23,10 @@ import dev.gitlive.difflib.patch.PatchFailedException
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 class UnifiedDiff {
-
     var header: String? = null
     var tail: String? = null
         private set
-    internal val files = ArrayList<UnifiedDiffFile>()
-
+    private val files: MutableList<UnifiedDiffFile> = ArrayList()
     fun addFile(file: UnifiedDiffFile) {
         files.add(file)
     }
@@ -37,23 +35,21 @@ class UnifiedDiff {
         return files
     }
 
-    fun setTailTxt(tailTxt: String) {
-        this.tail = tailTxt
+    fun setTailTxt(tailTxt: String?) {
+        tail = tailTxt
     }
 
 //    @Throws(PatchFailedException::class)
-    fun spplyPatchTo(findFile: Predicate<String>, originalLines: List<String>): List<String> {
-        val file = files.filter { diff -> findFile(diff.fromFile!!) }.firstOrNull()
-        return if (file != null) {
-            file.patch.applyTo(originalLines)
-        } else {
-            originalLines
-        }
+    fun applyPatchTo(findFile: Predicate<String>, originalLines: List<String>): List<String> {
+        val file = files.asSequence()
+            .filter { diff: UnifiedDiffFile -> findFile(diff.fromFile!!) }
+            .firstOrNull()
+        return file?.patch?.applyTo(originalLines) ?: originalLines
     }
 
     companion object {
-
-        fun from(header: String, tail: String, vararg files: UnifiedDiffFile): UnifiedDiff {
+        @kotlin.jvm.JvmStatic
+        fun from(header: String?, tail: String?, vararg files: UnifiedDiffFile): UnifiedDiff {
             val diff = UnifiedDiff()
             diff.header = header
             diff.setTailTxt(tail)

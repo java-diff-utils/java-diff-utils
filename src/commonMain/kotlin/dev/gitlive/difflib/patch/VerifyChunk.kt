@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2017 java-diff-utils.
+ * Copyright 2021 java-diff-utils.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.gitlive.difflib.algorithm
+package dev.gitlive.difflib.patch
 
 /**
- * Thrown whenever the differencing engine cannot produce the differences between two revisions of ta text.
  *
- * @see dev.gitlive.difflib.algorithm.myers.MyersDiff
- *
- * @see DiffAlgorithmI
+ * @author tw
  */
-class DifferentiationFailedException : DiffException {
-
-    constructor() {}
-
-    constructor(msg: String) : super(msg) {}
-
-    companion object {
-
-        private val serialVersionUID = 1L
-    }
+enum class VerifyChunk {
+    OK, POSITION_OUT_OF_TARGET, CONTENT_DOES_NOT_MATCH_TARGET
 }

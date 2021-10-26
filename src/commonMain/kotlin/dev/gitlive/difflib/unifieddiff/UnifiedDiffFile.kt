@@ -18,21 +18,29 @@ package dev.gitlive.difflib.unifieddiff
 import dev.gitlive.difflib.patch.Patch
 
 /**
+ * Data structure for one patched file from a unified diff file.
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 class UnifiedDiffFile {
-
     var diffCommand: String? = null
     var fromFile: String? = null
+    var fromTimestamp: String? = null
     var toFile: String? = null
+    var renameFrom: String? = null
+    var renameTo: String? = null
+    var toTimestamp: String? = null
     var index: String? = null
+    var newFileMode: String? = null
+    var deletedFileMode: String? = null
     var patch = Patch<String>()
         private set
+    var isNoNewLineAtTheEndOfTheFile = false
+    var similarityIndex: Int? = null
 
     companion object {
-
-        fun from(fromFile: String, toFile: String, patch: Patch<String>): UnifiedDiffFile {
+        @kotlin.jvm.JvmStatic
+        fun from(fromFile: String?, toFile: String?, patch: Patch<String>): UnifiedDiffFile {
             val file = UnifiedDiffFile()
             file.fromFile = fromFile
             file.toFile = toFile

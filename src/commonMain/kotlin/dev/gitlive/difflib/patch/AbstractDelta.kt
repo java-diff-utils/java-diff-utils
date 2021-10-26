@@ -27,15 +27,27 @@ abstract class AbstractDelta<T>(val type: DeltaType, val source: Chunk<T>, val t
      * @throws PatchFailedException
      */
 //    @Throws(PatchFailedException::class)
-    protected fun verifyChunk(target: List<T>) {
-        source.verify(target)
+    protected fun verifyChunkToFitTarget(target: List<T>): VerifyChunk {
+        return source.verifyChunk(target)
     }
 
 //    @Throws(PatchFailedException::class)
-    abstract fun applyTo(target: MutableList<T>)
+    fun verifyAntApplyTo(target: MutableList<T>): VerifyChunk {
+        val verify = verifyChunkToFitTarget(target)
+        if (verify == VerifyChunk.OK) {
+            applyTo(target)
+        }
+        return verify
+    }
 
+//    @Throws(PatchFailedException::class)
+    protected abstract fun applyTo(target: MutableList<T>)
     abstract fun restore(target: MutableList<T>)
 
+    /**
+     * Create a new delta of the actual instance with customized chunk data.
+     */
+    abstract fun withChunks(original: Chunk<T>, revised: Chunk<T>): AbstractDelta<T>
     override fun hashCode(): Int {
         return Triple(this.source, this.target, this.type).hashCode()
     }
@@ -50,15 +62,12 @@ abstract class AbstractDelta<T>(val type: DeltaType, val source: Chunk<T>, val t
         if (this::class != obj::class) {
             return false
         }
-        val other = obj as AbstractDelta<*>?
-        if (this.source != other!!.source) {
+        val other = obj as AbstractDelta<*>
+        if (source != other.source) {
             return false
         }
-        if (this.target != other.target) {
-            return false
-        }
-        return if (this.type != other.type) {
+        return if (target != other.target) {
             false
-        } else true
+        } else type == other.type
     }
 }

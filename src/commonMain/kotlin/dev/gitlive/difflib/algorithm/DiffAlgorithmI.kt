@@ -19,9 +19,9 @@ package dev.gitlive.difflib.algorithm
  * Interface of a diff algorithm.
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
- */
+ * @param <T> type of data that is diffed.
+</T> */
 interface DiffAlgorithmI<T> {
-
     /**
      * Computes the changeset to patch the source list to the target list.
      *
@@ -29,9 +29,7 @@ interface DiffAlgorithmI<T> {
      * @param target target data
      * @param progress progress listener
      * @return
-     * @throws DiffException
      */
-//    @Throws(DiffException::class)
     fun computeDiff(source: List<T>, target: List<T>, progress: DiffAlgorithmListener?): List<Change>
 
     /**
@@ -41,7 +39,6 @@ interface DiffAlgorithmI<T> {
      * @param target
      * @param progress
      * @return
-     * @throws dev.gitlive.difflib.algorithm.DiffException
      */
 //    @Throws(DiffException::class)
     fun computeDiff(source: Array<T>, target: Array<T>, progress: DiffAlgorithmListener?): List<Change> {

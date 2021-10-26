@@ -21,4 +21,18 @@ import dev.gitlive.difflib.patch.DeltaType
  *
  * @author [Tobias Warneke](t.warneke@gmx.net)
  */
-class Change(val deltaType: DeltaType, val startOriginal: Int, val endOriginal: Int, val startRevised: Int, val endRevised: Int)
+class Change(
+    val deltaType: DeltaType,
+    val startOriginal: Int,
+    val endOriginal: Int,
+    val startRevised: Int,
+    val endRevised: Int
+) {
+    fun withEndOriginal(endOriginal: Int): Change {
+        return Change(deltaType, startOriginal, endOriginal, startRevised, endRevised)
+    }
+
+    fun withEndRevised(endRevised: Int): Change {
+        return Change(deltaType, startOriginal, endOriginal, startRevised, endRevised)
+    }
+}

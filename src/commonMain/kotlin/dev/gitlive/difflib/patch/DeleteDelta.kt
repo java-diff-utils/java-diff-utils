@@ -28,11 +28,9 @@ class DeleteDelta<T>
  * @param original The original chunk. Must not be `null`.
  * @param revised The original chunk. Must not be `null`.
  */
-(original: Chunk<T>, revised: Chunk<T>) : AbstractDelta<T>(DeltaType.DELETE, original, revised) {
-
+    (original: Chunk<T>, revised: Chunk<T>) : AbstractDelta<T>(DeltaType.DELETE, original, revised) {
 //    @Throws(PatchFailedException::class)
-    override fun applyTo(target: MutableList<T>) {
-        verifyChunk(target)
+    protected override fun applyTo(target: MutableList<T>) {
         val position = source.position
         val size = source.size()
         for (i in 0 until size) {
@@ -42,8 +40,8 @@ class DeleteDelta<T>
 
     override fun restore(target: MutableList<T>) {
         val position = this.target.position
-        val lines = this.source.lines
-        for (i in lines!!.indices) {
+        val lines: List<T> = source.lines
+        for (i in lines.indices) {
             target.add(position + i, lines[i])
         }
     }
@@ -51,5 +49,9 @@ class DeleteDelta<T>
     override fun toString(): String {
         return ("[DeleteDelta, position: " + source.position + ", lines: "
                 + source.lines + "]")
+    }
+
+    override fun withChunks(original: Chunk<T>, revised: Chunk<T>): AbstractDelta<T> {
+        return DeleteDelta(original, revised)
     }
 }

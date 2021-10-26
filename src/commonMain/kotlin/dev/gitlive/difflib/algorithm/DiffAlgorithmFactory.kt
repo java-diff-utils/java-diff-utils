@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2017 java-diff-utils.
+ * Copyright 2021 java-diff-utils.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package dev.gitlive.difflib.algorithm
 
-open class DiffException : Exception {
+import dev.gitlive.difflib.BiPredicate
 
-    constructor()
-
-    constructor(msg: String) : super(msg)
-
-    companion object {
-
-        private val serialVersionUID = 1L
-    }
+/**
+ * Tool to create new instances of a diff algorithm. This one is only needed at the moment to
+ * set DiffUtils default diff algorithm.
+ * @author tw
+ */
+interface DiffAlgorithmFactory {
+    fun <T> create(): DiffAlgorithmI<T>
+    fun <T> create(equalizer: BiPredicate<T, T>): DiffAlgorithmI<T>
 }
