@@ -114,7 +114,7 @@ val javadocJar by tasks.creating(Jar::class) {
     archiveClassifier.value("javadoc")
 }
 
-var shouldSign = true
+var shouldSign = false
 
 tasks.withType<Sign>().configureEach {
     onlyIf { shouldSign }
