@@ -133,6 +133,14 @@ publishing {
                 password = project.findProperty("sonatypePassword") as String? ?: System.getenv("sonatypePassword")
             }
         }
+        maven {
+            name = "GitHubPackages"
+            url  = uri("https://maven.pkg.github.com/gitliveapp/packages")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
     }
 
     publications.all {

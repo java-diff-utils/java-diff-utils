@@ -11,7 +11,7 @@
     "url": "git+https://github.com/GitLiveApp/kotlin-diff-utils"
   },
   "publishConfig": {
-    "registry":"https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/"
   },
   "keywords": [
     "diffs",
