@@ -105,7 +105,8 @@ tasks {
     }
 
     val updateVersion by registering(Exec::class) {
-        commandLine("npm", "--allow-same-version", "--no-git-tag-version", "--prefix", projectDir, "version", "${project.property("version")}")
+        commandLine("npm", "--allow-same-version", "--no-git-tag-version", "--prefix", projectDir, "version",
+            (project.property("version") as String).replace("""[_;\",\[\]]""".toRegex(), "")
     }
 }
 
