@@ -108,6 +108,15 @@ tasks {
         commandLine("npm", "--allow-same-version", "--no-git-tag-version", "--prefix", projectDir, "version",
             (project.property("version") as String).replace("""[_;\",\[\]]""".toRegex(), ""))
     }
+
+    val prepareForGithubNpmPublish by registering(Copy::class) {
+        val from = file("package.json")
+        from.writeText(
+            from.readText()
+                .replace("https://registry.npmjs.org/","https://npm.pkg.github.com/")
+                .replace("\"name\": \"kotlin-diff-utils\",", "\"name\": \"@gitliveapp/kotlin-diff-utils\",")
+        )
+    }
 }
 
 val javadocJar by tasks.creating(Jar::class) {
