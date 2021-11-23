@@ -49,12 +49,13 @@ This is a test ~senctence~**for diffutils**.
 * producing human-readable differences
 * inline difference construction
 * Algorithms:
-  * Myer
+  * Meyers Standard Algorithm
+  * Meyers with linear space improvement
   * HistogramDiff using JGit Library
 
 ### Algorithms
 
-* Myer's diff
+* Meyer's diff
 * HistogramDiff
 
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.

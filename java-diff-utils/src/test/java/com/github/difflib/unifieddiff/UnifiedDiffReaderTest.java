@@ -364,4 +364,24 @@ public class UnifiedDiffReaderTest {
 //            });
 //        });
     }
+    
+    @Test
+    public void testParseIssue122() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue122.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(1);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("coders/wpg.c");
+    }
+    
+    @Test
+    public void testParseIssue123() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue123.diff"));
+
+        assertThat(diff.getFiles().size()).isEqualTo(2);
+
+        assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java");
+    }
 }

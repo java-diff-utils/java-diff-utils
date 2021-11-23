@@ -173,6 +173,7 @@ public final class DiffRowGenerator {
 
     private final boolean showInlineDiffs;
     private final boolean replaceOriginalLinefeedInChangesWithSpaces;
+    private final boolean decompressDeltas;
 
     private DiffRowGenerator(Builder builder) {
         showInlineDiffs = builder.showInlineDiffs;
@@ -182,6 +183,7 @@ public final class DiffRowGenerator {
         columnWidth = builder.columnWidth;
         mergeOriginalRevised = builder.mergeOriginalRevised;
         inlineDiffSplitter = builder.inlineDiffSplitter;
+        decompressDeltas = builder.decompressDeltas;
 
         if (builder.equalizer != null) {
             equalizer = builder.equalizer;
@@ -225,8 +227,14 @@ public final class DiffRowGenerator {
         int endPos = 0;
         final List<AbstractDelta<String>> deltaList = patch.getDeltas();
 
-        for (AbstractDelta<String> originalDelta : deltaList) {
-            for (AbstractDelta<String> delta : decompressDeltas(originalDelta)) {
+        if (decompressDeltas) {
+            for (AbstractDelta<String> originalDelta : deltaList) {
+                for (AbstractDelta<String> delta : decompressDeltas(originalDelta)) {
+                    endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta);
+                }
+            }
+        } else {
+            for (AbstractDelta<String> delta : deltaList) {
                 endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta);
             }
         }
@@ -442,6 +450,7 @@ public final class DiffRowGenerator {
 
         private boolean showInlineDiffs = false;
         private boolean ignoreWhiteSpaces = false;
+        private boolean decompressDeltas = true;
 
         private BiFunction<Tag, Boolean, String> oldTag
                 = (tag, f) -> f ? "<span class=\"editOldInline\">" : "</span>";
@@ -554,8 +563,9 @@ public final class DiffRowGenerator {
          * Set the column width of generated lines of original and revised
          * texts.
          *
-         * @param width the width to set. Making it < 0 doesn't make any sense.
-         * Default 80. @return builder with config of column width
+         * @param width the width to set. Making it &lt; 0 doesn't make any
+         * sense. Default 80.
+         * @return builder with config of column width
          */
         public Builder columnWidth(int width) {
             if (width >= 0) {
@@ -583,6 +593,19 @@ public final class DiffRowGenerator {
          */
         public Builder mergeOriginalRevised(boolean mergeOriginalRevised) {
             this.mergeOriginalRevised = mergeOriginalRevised;
+            return this;
+        }
+
+        /**
+         * Deltas could be in a state, that would produce some unreasonable
+         * results within an inline diff. So the deltas are decompressed into
+         * smaller parts and rebuild. But this could result in more differences.
+         *
+         * @param decompressDeltas
+         * @return
+         */
+        public Builder decompressDeltas(boolean decompressDeltas) {
+            this.decompressDeltas = decompressDeltas;
             return this;
         }
 

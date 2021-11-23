@@ -36,4 +36,12 @@ public class Change {
         this.startRevised = startRevised;
         this.endRevised = endRevised;
     }
+    
+    public Change withEndOriginal(int endOriginal) {
+        return new Change(deltaType, startOriginal, endOriginal, startRevised, endRevised);
+    }
+    
+    public Change withEndRevised(int endRevised) {
+        return new Change(deltaType, startOriginal, endOriginal, startRevised, endRevised);
+    }
 }

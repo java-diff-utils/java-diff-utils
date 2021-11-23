@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils-parent</artifactId>
-    <version>4.11-SNAPSHOT</version>
+    <version>4.12-SNAPSHOT</version>
     <name>java-diff-utils-parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -199,7 +199,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

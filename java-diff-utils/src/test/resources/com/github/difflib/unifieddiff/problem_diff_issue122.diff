@@ -1,0 +1,26 @@
+
+diff -r fcd3ed3394f6 -r 135bdcb88b8d coders/wpg.c
+--- a/coders/wpg.c	Sun Nov 05 01:11:09 2017 +0100
++++ b/coders/wpg.c	Sun Nov 05 01:35:28 2017 +0100
+@@ -340,12 +340,15 @@
+ 
+ 
+   if(RetVal==MagickFail)
++  {
+     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp);
++    return MagickFail;
++  }
+ 
+-  if (!SyncImagePixels(image))
++  if(!SyncImagePixels(image))
+   {
+     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"SyncImagePixels failed for row: %ld, bpp: %d", y, bpp);
+-    RetVal = MagickFail;
++    return MagickFail;
+   }
+           
+ return RetVal;
+
+
+
+
