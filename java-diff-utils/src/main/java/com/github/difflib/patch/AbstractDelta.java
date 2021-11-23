@@ -74,7 +74,10 @@ public abstract class AbstractDelta<T> implements Serializable {
      * Apply patch fuzzy.
      *
      * @param target the list this patch will be applied to
-     * @param fuzz the count of elements which ignores prefix and suffix
+     * @param fuzz the count of first/end elements which is not matched.
+     *             If this value is two, this function should skip applying first and last two elements of this patch.
+     *             If this is patch from 'ABCDEFG' to 'ABCHEFG' , this value is 2, the position is zero, 
+     *             and target is 'abCDEFg', after invocation of this method, the target should be 'abCHEFg'.
      * @param position the position this patch will be applied to. ignores {@code source.getPosition()}
      */
     @SuppressWarnings("RedundantThrows")
