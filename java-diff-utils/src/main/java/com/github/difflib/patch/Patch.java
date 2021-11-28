@@ -66,6 +66,117 @@ public final class Patch<T> implements Serializable {
         return result;
     }
 
+    private static class PatchApplyingContext<T> {
+        public final List<T> result;
+        public final int maxFuzz;
+
+        // the position last patch applied to.
+        public int lastPatchEnd = -1;
+
+        ///// passing values from find to apply
+        public int currentFuzz = 0;
+
+        public int defaultPosition;
+        public boolean beforeOutRange = false;
+        public boolean afterOutRange = false;
+
+        private PatchApplyingContext(List<T> result, int maxFuzz) {
+            this.result = result;
+            this.maxFuzz = maxFuzz;
+        }
+    }
+
+    public List<T> applyFuzzy(List<T> target, int maxFuzz) throws PatchFailedException {
+        PatchApplyingContext<T> ctx = new PatchApplyingContext<>(new ArrayList<>(target), maxFuzz);
+
+        // the difference between patch's position and actually applied position
+        int lastPatchDelta = 0;
+
+        for (AbstractDelta<T> delta : getDeltas()) {
+            ctx.defaultPosition = delta.getSource().getPosition() + lastPatchDelta;
+            int patchPosition = findPositionFuzzy(ctx, delta);
+            if (0 <= patchPosition) {
+                delta.applyFuzzyToAt(ctx.result, ctx.currentFuzz, patchPosition);
+                lastPatchDelta = patchPosition - delta.getSource().getPosition();
+                ctx.lastPatchEnd = delta.getSource().last() + lastPatchDelta;
+            } else {
+                conflictOutput.processConflict(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET, delta, ctx.result);
+            }
+        }
+
+        return ctx.result;
+    }
+
+    // negative for not found
+    private int findPositionFuzzy(PatchApplyingContext<T> ctx, AbstractDelta<T> delta) throws PatchFailedException {
+        for (int fuzz = 0; fuzz <= ctx.maxFuzz; fuzz++) {
+            ctx.currentFuzz = fuzz;
+            int foundPosition = findPositionWithFuzz(ctx, delta, fuzz);
+            if (foundPosition >= 0) {
+                return foundPosition;
+            }
+        }
+        return -1;
+    }
+
+    // negative for not found
+    private int findPositionWithFuzz(PatchApplyingContext<T> ctx, AbstractDelta<T> delta, int fuzz) throws PatchFailedException {
+        if (delta.getSource().verifyChunk(ctx.result, fuzz, ctx.defaultPosition) == VerifyChunk.OK) {
+            return ctx.defaultPosition;
+        }
+
+        ctx.beforeOutRange = false;
+        ctx.afterOutRange = false;
+
+        // moreDelta >= 0: just for overflow guard, not a normal condition
+        //noinspection OverflowingLoopIndex
+        for (int moreDelta = 0; moreDelta >= 0; moreDelta++) {
+            int pos = findPositionWithFuzzAndMoreDelta(ctx, delta, fuzz, moreDelta);
+            if (pos >= 0) {
+                return pos;
+            }
+            if (ctx.beforeOutRange && ctx.afterOutRange) {
+                break;
+            }
+        }
+
+        return -1;
+    }
+
+    // negative for not found
+    private int findPositionWithFuzzAndMoreDelta(PatchApplyingContext<T> ctx, AbstractDelta<T> delta, int fuzz, int moreDelta) throws PatchFailedException {
+        // range check: can't apply before end of last patch
+        if (!ctx.beforeOutRange) {
+            int beginAt = ctx.defaultPosition - moreDelta + fuzz;
+            // We can't apply patch before end of last patch.
+            if (beginAt <= ctx.lastPatchEnd) {
+                ctx.beforeOutRange = true;
+            }
+        }
+        // range check: can't apply after end of result
+        if (!ctx.afterOutRange) {
+            int beginAt = ctx.defaultPosition + moreDelta + delta.getSource().size() - fuzz;
+            // We can't apply patch before end of last patch.
+            if (ctx.result.size() < beginAt) {
+                ctx.afterOutRange = true;
+            }
+        }
+
+        if (!ctx.beforeOutRange) {
+            VerifyChunk before = delta.getSource().verifyChunk(ctx.result, fuzz, ctx.defaultPosition - moreDelta);
+            if (before == VerifyChunk.OK) {
+                return ctx.defaultPosition - moreDelta;
+            }
+        }
+        if (!ctx.afterOutRange) {
+            VerifyChunk after = delta.getSource().verifyChunk(ctx.result, fuzz, ctx.defaultPosition + moreDelta);
+            if (after == VerifyChunk.OK) {
+                return ctx.defaultPosition + moreDelta;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Standard Patch behaviour to throw an exception for pathching conflicts.
      */

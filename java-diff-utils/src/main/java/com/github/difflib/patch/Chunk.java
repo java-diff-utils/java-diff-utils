@@ -95,10 +95,28 @@ public final class Chunk<T> implements Serializable {
      * @throws com.github.difflib.patch.PatchFailedException
      */
     public VerifyChunk verifyChunk(List<T> target) throws PatchFailedException {
-        if (position > target.size() || last() > target.size()) {
+        return verifyChunk(target, 0, getPosition());
+    }
+
+    /**
+     * Verifies that this chunk's saved text matches the corresponding text in
+     * the given sequence.
+     *
+     * @param target the sequence to verify against.
+     * @param fuzz the count of ignored prefix/suffix
+     * @param position the position of target
+     * @throws com.github.difflib.patch.PatchFailedException
+     */
+    public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) throws PatchFailedException {
+        //noinspection UnnecessaryLocalVariable
+        int startIndex = fuzz;
+        int lastIndex = size() - fuzz;
+        int last = position + size() - 1;
+
+        if (position + fuzz > target.size() || last - fuzz > target.size()) {
             return VerifyChunk.POSITION_OUT_OF_TARGET;
         }
-        for (int i = 0; i < size(); i++) {
+        for (int i = startIndex; i < lastIndex; i++) {
             if (!target.get(position + i).equals(lines.get(i))) {
                 return VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET;
             }
