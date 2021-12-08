@@ -1,0 +1,109 @@
+From b53e612a2ab5ff15d14860e252f84c0f343fe93a Mon Sep 17 00:00:00 2001
+From: nmancus1 <nmancus1
+Date: Thu, 4 Jun 2020 11:46:34 -0400
+Subject: [PATCH] minor: Add input file for Java14 instanceof with pattern
+ matching (#7290)
+
+---
+ config/ant-phase-verify.xml                        |  2 +
+ .../InputJava14InstanceofWithPatternMatching.java  | 76 ++++++++++++++++++++++
+ 2 files changed, 78 insertions(+)
+ create mode 100644 src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/grammar/java14/InputJava14InstanceofWithPatternMatching.java
+
+diff --git a/config/ant-phase-verify.xml b/config/ant-phase-verify.xml
+index d27ffef..e0285ce 100644
+--- a/config/ant-phase-verify.xml
++++ b/config/ant-phase-verify.xml
+@@ -148,6 +148,8 @@
+          <exclude name="**/InputMainFrameModelIncorrectClass.java"/>
+          <exclude name="**/InputBeforeExecutionExclusionFileFilterIncorrectClass.java"/>
+          <exclude name="**/InputJavaParser.java"/>
++         <!-- until https://github.com/checkstyle/checkstyle/issues/7290 -->
++         <exclude name="**/InputJava14InstanceofWithPatternMatching.java"/>
+          <!-- Cannot parse until Java 14 support -->
+          <exclude name="**/InputJava14Records.java"/>
+         </fileset>
+diff --git a/src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/grammar/java14/InputJava14InstanceofWithPatternMatching.java b/src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/grammar/java14/InputJava14InstanceofWithPatternMatching.java
+new file mode 100644
+index 0000000..8fa3eba
+--- /dev/null
++++ b/src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/grammar/java14/InputJava14InstanceofWithPatternMatching.java
+@@ -0,0 +1,76 @@
++//non-compiled with javac: Compilable with Java14
++package com.puppycrawl.tools.checkstyle.grammar.java14;
++
++import java.util.Arrays;
++import java.util.Locale;
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++ ...... I removed it
++        }
++    }
++}
+--
+2.7.4
