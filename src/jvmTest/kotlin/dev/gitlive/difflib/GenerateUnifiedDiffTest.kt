@@ -1,17 +1,21 @@
 package dev.gitlive.difflib
 
+import dev.gitlive.difflib.DiffUtils.diff
+import dev.gitlive.difflib.DiffUtils.patch
+import dev.gitlive.difflib.UnifiedDiffUtils.generateUnifiedDiff
+import dev.gitlive.difflib.UnifiedDiffUtils.parseUnifiedDiff
 import dev.gitlive.difflib.patch.DiffException
+import dev.gitlive.difflib.patch.Patch
 import dev.gitlive.difflib.patch.PatchFailedException
+import org.junit.Assert.*
+import org.junit.Test
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
-import java.util.ArrayList
-import java.util.Arrays
+import java.util.*
 import java.util.stream.Collectors.joining
-import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
-import org.junit.Test
+
 
 class GenerateUnifiedDiffTest {
 
