@@ -44,15 +44,18 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.8")
             }
         }
         val jsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.8")
             }
         }
         val jvmMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
                 implementation(kotlin("stdlib-jdk8"))
             }
         }

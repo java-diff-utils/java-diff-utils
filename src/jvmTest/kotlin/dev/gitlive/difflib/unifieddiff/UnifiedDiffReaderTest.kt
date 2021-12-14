@@ -374,4 +374,23 @@ class UnifiedDiffReaderTest {
         Assertions.assertThat(diff.getFiles()).extracting<String, RuntimeException> { f: UnifiedDiffFile -> f.fromFile }
             .contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java")
     }
+
+    @Test
+    @Throws(IOException::class)
+    fun testAddingNewLine() {
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_added.diff") as InputStream
+        )
+        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        val file = diff.getFiles()[0]
+        Assertions.assertThat(file.renameFrom).isNull()
+        Assertions.assertThat(file.renameTo).isNull()
+        Assertions.assertThat(file.fromFile).isEqualTo("settings.gradle")
+        Assertions.assertThat(file.toFile).isEqualTo("settings.gradle")
+        val deltas = file.patch.getDeltas()
+        Assertions.assertThat(deltas.size).isEqualTo(1)
+        val delta = deltas[0]
+        Assertions.assertThat(delta.source.lines).isEqualTo(listOf("rootProject.name = \"sample-repo\""))
+        Assertions.assertThat(delta.target.lines).isEqualTo(listOf("rootProject.name = \"sample-repo\"", ""))
+    }
 }

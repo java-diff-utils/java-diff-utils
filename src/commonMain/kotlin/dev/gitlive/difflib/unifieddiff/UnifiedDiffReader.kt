@@ -9,8 +9,8 @@ import dev.gitlive.difflib.patch.Chunk
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-class UnifiedDiffReader internal constructor(reader: Reader) {
-    private val READER: InternalUnifiedDiffReader
+class UnifiedDiffReader internal constructor(lineReader: LineReader) {
+    private val nextLine: LineReader
     private val data = UnifiedDiff()
     private val DIFF_COMMAND: UnifiedDiffLine = UnifiedDiffLine(true, "^diff\\s") { match: MatchResult, line: String ->
         processDiff(
@@ -96,8 +96,8 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
     // [/^deleted file mode \d+$/, deleted_file], [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index],
     // [/^---\s/, from_file], [/^\+\+\+\s/, to_file], [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk],
     // [/^-/, del], [/^\+/, add], [/^\\ No newline at end of file$/, eof]];
-    private fun parse(): UnifiedDiff {
-        var line: String? = READER.fetchLine()
+    private suspend fun parse(): UnifiedDiff {
+        var line: String? = nextLine()
         while (line != null) {
             var headerTxt = ""
             while (line != null) {
@@ -116,7 +116,7 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
                     
                     """.trimIndent()
                 }
-                line = READER.fetchLine()
+                line = nextLine()
             }
             if ("" != headerTxt) {
                 data.header = headerTxt
@@ -133,17 +133,17 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
                     ) {
                         throw UnifiedDiffParserException("expected file start line not found")
                     }
-                    line = READER.fetchLine()
+                    line = nextLine()
                 }
             }
             if (line != null) {
                 processLine(line, CHUNK)
-                line = READER.fetchLine()
+                line = nextLine()
                 while (line != null) {
                     line = checkForNoNewLineAtTheEndOfTheFile(line)
                     if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
                         // To help debugging tests
-                        line = READER.fetchLine()
+                        line = nextLine()
                         if (line != null && line.isNotEmpty()) {
                             throw UnifiedDiffParserException("unlikely empty string found in CHUNK before: $line")
                         }
@@ -155,37 +155,38 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
                         finalizeChunk()
                         break
                     }
-                    line = READER.fetchLine()
+                    line = nextLine()
                 }
-                line = READER.fetchLine()
+                line = nextLine()
                 line = checkForNoNewLineAtTheEndOfTheFile(line)
             }
-            if (line == null || line!!.startsWith("--") && !line!!.startsWith("---")) {
+            if (line == null || line.startsWith("--") && !line.startsWith("---")) {
                 break
             }
         }
-        if (READER.ready()) {
-            var tailTxt = ""
-            while (READER.ready()) {
-                if (tailTxt.isNotEmpty()) {
-                    tailTxt += "\n"
-                }
-                tailTxt += READER.fetchLine()
+
+        var tailTxt = ""
+        line = nextLine()
+        while (line != null) {
+            if (tailTxt.isNotEmpty()) {
+                tailTxt += "\n"
             }
-            data.setTailTxt(tailTxt)
+            tailTxt += line
+            line = nextLine()
         }
+        data.setTailTxt(tailTxt)
         return data
     }
 
-    private fun checkForNoNewLineAtTheEndOfTheFile(line: String?): String? {
+    private suspend fun checkForNoNewLineAtTheEndOfTheFile(line: String?): String? {
         if ("\\ No newline at end of file" == line) {
             actualFile!!.isNoNewLineAtTheEndOfTheFile = true
-            return READER.fetchLine()
+            return nextLine()
         }
         return line
     }
 
-    private fun processLine(line: String?, vararg rules: UnifiedDiffLine): Boolean {
+    private suspend fun processLine(line: String?, vararg rules: UnifiedDiffLine): Boolean {
         if (line == null) {
             return false
         }
@@ -218,8 +219,8 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
         }
     }
 
-    private fun processDiff(match: MatchResult, line: String) {
-        val fromTo = parseFileNames(READER.lastLine())
+    private suspend fun processDiff(match: MatchResult, line: String) {
+        val fromTo = parseFileNames(nextLine())
         actualFile!!.fromFile = fromTo[0]
         actualFile!!.toFile = fromTo[1]
         actualFile!!.diffCommand = line
@@ -362,7 +363,7 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
             return pattern.containsMatchIn(line)
         }
 
-        fun processLine(line: String): Boolean {
+        suspend fun processLine(line: String): Boolean {
             return if (pattern.containsMatchIn(line)) {
                 command(pattern.find(line)!!, line)
                 true
@@ -370,7 +371,7 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
                 false
             }
         }
-
+        
         override fun toString(): String {
             return "UnifiedDiffLine{pattern=$pattern, stopsHeaderParsing=$isStopsHeaderParsing}"
         }
@@ -396,8 +397,8 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
          * @throws IOException
          * @throws UnifiedDiffParserException
          */
-        fun parseUnifiedDiff(stream: InputStream): UnifiedDiff {
-            val parser = UnifiedDiffReader(BufferedReader(InputStreamReader(stream)))
+        internal suspend fun parseUnifiedDiff(readLine: LineReader): UnifiedDiff {
+            val parser = UnifiedDiffReader(readLine)
             return parser.parse()
         }
 
@@ -407,25 +408,10 @@ class UnifiedDiffReader internal constructor(reader: Reader) {
     }
 
     init {
-        READER = InternalUnifiedDiffReader(reader)
+        nextLine = lineReader
     }
 }
 
-internal class InternalUnifiedDiffReader(reader: Reader): BufferedReader(reader) {
-    private var lastLine: String? = null
+expect abstract class InputStream
 
-    fun fetchLine(): String? {
-        lastLine = super.readLine()
-        return lastLine
-    }
-
-    override fun readLine(): String {
-        lastLine = super.readLine()
-        return lastLine()!!
-    }
-
-    fun lastLine(): String? {
-        return lastLine
-    }
-}
-
+expect fun UnifiedDiffReader.readLine(stream: InputStream): UnifiedDiff
