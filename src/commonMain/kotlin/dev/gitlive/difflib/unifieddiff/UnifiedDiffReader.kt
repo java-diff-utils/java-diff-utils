@@ -413,5 +413,4 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
 }
 
 expect abstract class InputStream
-
-expect fun UnifiedDiffReader.readLine(stream: InputStream): UnifiedDiff
+expect suspend fun UnifiedDiffReader.Companion.readLine(stream: InputStream): UnifiedDiff
