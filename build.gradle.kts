@@ -44,18 +44,18 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.8")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${project.property("coroutines.version")}")
             }
         }
         val jsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.8")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${project.property("coroutines.version")}")
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.property("coroutines.version")}")
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
@@ -63,6 +63,7 @@ kotlin {
             dependencies {
                 implementation("junit:junit:4.12")
                 implementation("org.assertj:assertj-core:3.11.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${project.property("coroutines.version")}")
             }
         }
     }
