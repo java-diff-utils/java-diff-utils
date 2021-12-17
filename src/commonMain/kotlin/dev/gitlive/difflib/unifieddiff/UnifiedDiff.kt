@@ -36,7 +36,7 @@ class UnifiedDiff {
     }
 
     fun setTailTxt(tailTxt: String?) {
-        tail = tailTxt
+        tail = tailTxt.takeUnless { it.isNullOrEmpty() }
     }
 
 //    @Throws(PatchFailedException::class)
