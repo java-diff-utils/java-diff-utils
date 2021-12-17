@@ -43,8 +43,15 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${project.property("coroutines.version")}")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
             }
         }
         val jsMain by getting {
@@ -61,6 +68,7 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
+                implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.12")
                 implementation("org.assertj:assertj-core:3.11.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${project.property("coroutines.version")}")
