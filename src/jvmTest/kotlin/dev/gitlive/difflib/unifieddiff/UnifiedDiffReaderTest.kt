@@ -16,44 +16,40 @@ package dev.gitlive.difflib.unifieddiff
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import dev.gitlive.difflib.InputStream
-import org.assertj.core.api.Assertions
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.io.IOException
-import java.util.regex.Pattern
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
+fun runTest(test: suspend () -> Unit) = runBlocking { test() }
 
 /**
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class UnifiedDiffReaderTest {
+    
     @Test
-    @Throws(IOException::class)
-    fun testSimpleParse() {
-        val diff =
-            UnifiedDiffReader.parseUnifiedDiff(
-                UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff") as InputStream
-            )
-        println(diff)
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
+    fun testSimpleParse() = runTest {
+        val diff = UnifiedDiffReader.readLine(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff") as InputStream
+        )
+        assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(3)
-        Assertions.assertThat(diff.tail).isEqualTo("2.17.1.windows.2\n")
+        assertEquals("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt", file1.fromFile)
+        assertEquals(3, file1.patch.getDeltas().size)
+        assertEquals("2.17.1.windows.2\n", diff.tail)
     }
 
     @Test
     fun testParseDiffBlock() {
         val files =
             UnifiedDiffReader.parseFileNames("diff --git a/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java b/src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java")
-        Assertions.assertThat(files).containsExactly(
-            "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java",
-            "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java"
-        )
+        assertEquals(2, files.size)
+        assertEquals(files[0], "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java")
+        assertEquals(files[1], "src/test/java/net/sf/jsqlparser/statement/select/SelectTest.java")
     }
 
     @Test
@@ -86,114 +82,101 @@ class UnifiedDiffReaderTest {
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testSimpleParse2() {
+    fun testSimpleParse2() = runTest {
         val diff =
-            UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReader.readLine(
                 UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff") as InputStream
             )
-        println(diff)
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
+        assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(3)
+        assertEquals("src/main/jjtree/net/sf/jsqlparser/parser/JSqlParserCC.jjt", file1.fromFile)
+        assertEquals(3, file1.patch.getDeltas().size)
         val first = file1.patch.getDeltas()[0]
-        Assertions.assertThat(first.source.size()).isGreaterThan(0)
-        Assertions.assertThat(first.target.size()).isGreaterThan(0)
-        Assertions.assertThat(diff.tail).isEqualTo("2.17.1.windows.2\n")
+        assertEquals(6, first.source.size())
+        assertEquals(7, first.target.size())
+        assertEquals("2.17.1.windows.2\n", diff.tail)
     }
 
     @Test
     fun testSimplePattern() {
-        val pattern = Pattern.compile("^\\+\\+\\+\\s")
-        val m = pattern.matcher("+++ revised.txt")
-        assertTrue(m.find())
+        val pattern = """^\+\+\+\s""".toRegex()
+        assertTrue(pattern.containsMatchIn("+++ revised.txt"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue46() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue46() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue46.diff") as InputStream
         )
-        println(diff)
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo(".vhd")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
-        Assertions.assertThat(diff.tail).isNull()
+        assertEquals(".vhd", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
+        assertEquals(null, diff.tail)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue33() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue33() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue33.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("Main.java")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
-        Assertions.assertThat(diff.tail).isNull()
-        Assertions.assertThat(diff.header).isNull()
+        assertEquals("Main.java", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
+        assertEquals(null, diff.tail)
+        assertEquals(null, diff.header)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue51() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue51() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue51.diff") as InputStream
         )
-        println(diff)
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
+        assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("f1")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
+        assertEquals("f1", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
         val file2 = diff.getFiles()[1]
-        Assertions.assertThat(file2.fromFile).isEqualTo("f2")
-        Assertions.assertThat(file2.patch.getDeltas().size).isEqualTo(1)
-        Assertions.assertThat(diff.tail).isNull()
+        assertEquals("f2", file2.fromFile)
+        assertEquals(1, file2.patch.getDeltas().size)
+        assertEquals(null, diff.tail)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue79() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue79() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue79.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("test/Issue.java")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(0)
-        Assertions.assertThat(diff.tail).isNull()
-        Assertions.assertThat(diff.header).isNull()
+        assertEquals("test/Issue.java", file1.fromFile)
+        assertEquals(0, file1.patch.getDeltas().size)
+        assertEquals(null, diff.tail)
+        assertEquals(null, diff.header)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue84() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue84() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue84.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
+        assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("config/ant-phase-verify.xml")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
+        assertEquals("config/ant-phase-verify.xml", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
         val file2 = diff.getFiles()[1]
-        Assertions.assertThat(file2.fromFile).isEqualTo("/dev/null")
-        Assertions.assertThat(file2.patch.getDeltas().size).isEqualTo(1)
-        Assertions.assertThat(diff.tail).isEqualTo("2.7.4")
-        Assertions.assertThat(diff.header)
-            .startsWith("From b53e612a2ab5ff15d14860e252f84c0f343fe93a Mon Sep 17 00:00:00 2001")
+        assertEquals("/dev/null", file2.fromFile)
+        assertEquals(1, file2.patch.getDeltas().size)
+        assertEquals("2.7.4", diff.tail)
+        assertTrue(diff.header!!.startsWith("From b53e612a2ab5ff15d14860e252f84c0f343fe93a Mon Sep 17 00:00:00 2001"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue85() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue85() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue85.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
         assertEquals(
@@ -203,7 +186,7 @@ class UnifiedDiffReaderTest {
         assertEquals("tests/test-check-pyflakes.t", file1.fromFile)
         assertEquals("tests/test-check-pyflakes.t", file1.toFile)
         assertEquals(1, file1.patch.getDeltas().size)
-        assertNull(diff.tail)
+        assertEquals(null, diff.tail)
     }
 
     @Test
@@ -212,12 +195,10 @@ class UnifiedDiffReaderTest {
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue98() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue98() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue98.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
         assertEquals(
@@ -225,172 +206,173 @@ class UnifiedDiffReaderTest {
             file1.deletedFileMode
         )
         assertEquals("src/test/java/se/bjurr/violations/lib/model/ViolationTest.java", file1.fromFile)
-        Assertions.assertThat(diff.tail).isEqualTo("2.25.1")
+        assertEquals("2.25.1", diff.tail)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue104() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue104() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_parsing_issue104.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(6)
+        assertEquals(6, diff.getFiles().size)
         val file = diff.getFiles()[2]
-        Assertions.assertThat(file.fromFile).isEqualTo("/dev/null")
-        Assertions.assertThat(file.toFile).isEqualTo("doc/samba_data_tool_path.xml.in")
-        Assertions.assertThat(file.patch.toString())
-            .isEqualTo("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}")
-        Assertions.assertThat(diff.tail).isEqualTo("2.14.4")
+        assertEquals("/dev/null", file.fromFile)
+        assertEquals("doc/samba_data_tool_path.xml.in", file.toFile)
+        assertEquals("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}", file.patch.toString())
+        assertEquals("2.14.4", diff.tail)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue107BazelDiff() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue107BazelDiff() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("01-bazel-strip-unused.patch_issue107.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(450)
+        assertEquals(450, diff.getFiles().size)
         val file = diff.getFiles()[0]
-        Assertions.assertThat(file.fromFile).isEqualTo("./src/main/java/com/amazonaws/AbortedException.java")
-        Assertions.assertThat(file.toFile)
-            .isEqualTo("/home/greg/projects/bazel/third_party/aws-sdk-auth-lite/src/main/java/com/amazonaws/AbortedException.java")
-        Assertions.assertThat(diff.getFiles().stream()
-            .filter { f: UnifiedDiffFile -> f.isNoNewLineAtTheEndOfTheFile }
-            .count())
-            .isEqualTo(48)
+        assertEquals("./src/main/java/com/amazonaws/AbortedException.java", file.fromFile)
+        assertEquals("/home/greg/projects/bazel/third_party/aws-sdk-auth-lite/src/main/java/com/amazonaws/AbortedException.java", file.toFile)
+        assertEquals(48, diff.getFiles().count { it.isNoNewLineAtTheEndOfTheFile })
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue107_2() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue107_2() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReader::class.java.getResourceAsStream("problem_diff_issue107.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
+        assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("Main.java")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
+        assertEquals("Main.java", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue107_3() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue107_3() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_3.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
-        Assertions.assertThat(file1.fromFile).isEqualTo("Billion laughs attack.md")
-        Assertions.assertThat(file1.patch.getDeltas().size).isEqualTo(1)
+        assertEquals("Billion laughs attack.md", file1.fromFile)
+        assertEquals(1, file1.patch.getDeltas().size)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue107_4() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue107_4() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_4.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(27)
-        Assertions.assertThat(diff.getFiles()).extracting<String, RuntimeException> { f: UnifiedDiffFile -> f.fromFile }
-            .contains("README.md")
+        assertEquals(27, diff.getFiles().size)
+        assertTrue(diff.getFiles().map { it.fromFile }.contains("README.md"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue107_5() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue107_5() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_5.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(22)
-        Assertions.assertThat(diff.getFiles()).extracting<String, RuntimeException> { f: UnifiedDiffFile -> f.fromFile }
-            .contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java")
+        assertEquals(22, diff.getFiles().size)
+        assertTrue(diff.getFiles().map { it.fromFile }.contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue110() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue110() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("0001-avahi-python-Use-the-agnostic-DBM-interface.patch") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(5)
+        assertEquals(5, diff.getFiles().size)
         val file = diff.getFiles()[4]
-        Assertions.assertThat(file.similarityIndex).isEqualTo(87)
-        Assertions.assertThat(file.renameFrom).isEqualTo("service-type-database/build-db.in")
-        Assertions.assertThat(file.renameTo).isEqualTo("service-type-database/build-db")
-        Assertions.assertThat(file.fromFile).isEqualTo("service-type-database/build-db.in")
-        Assertions.assertThat(file.toFile).isEqualTo("service-type-database/build-db")
+        assertEquals(87, file.similarityIndex)
+        assertEquals("service-type-database/build-db.in", file.renameFrom)
+        assertEquals("service-type-database/build-db", file.renameTo)
+        assertEquals("service-type-database/build-db.in", file.fromFile)
+        assertEquals("service-type-database/build-db", file.toFile)
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue117() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue117() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue117.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
-        Assertions.assertThat(diff.getFiles()[0].patch.getDeltas()[0].source.changePosition)
-            .containsExactly(24, 27)
-        Assertions.assertThat(diff.getFiles()[0].patch.getDeltas()[0].target.changePosition)
-            .containsExactly(24, 27)
-        Assertions.assertThat(diff.getFiles()[0].patch.getDeltas()[1].source.changePosition)
-            .containsExactly(64)
-        Assertions.assertThat(diff.getFiles()[0].patch.getDeltas()[1].target.changePosition)
-            .containsExactly(64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74)
+        assertEquals(2, diff.getFiles().size)
+        assertEquals(2, diff.getFiles()[0].patch.getDeltas().size)
+        
+        assertEquals(24, diff.getFiles()[0].patch.getDeltas()[0].source.changePosition!![0])
+        assertEquals(27, diff.getFiles()[0].patch.getDeltas()[0].source.changePosition!![1])
 
-//        diff.getFiles().forEach(f -> {
-//            System.out.println("File: " + f.getFromFile());
-//            f.getPatch().getDeltas().forEach(delta -> {
-//
-//                System.out.println(delta);
-//                System.out.println("Source: ");
-//                System.out.println(delta.getSource().getPosition());
-//                System.out.println(delta.getSource().getChangePosition());
-//
-//                System.out.println("Target: ");
-//                System.out.println(delta.getTarget().getPosition());
-//                System.out.println(delta.getTarget().getChangePosition());
-//            });
-//        });
+        assertEquals(24, diff.getFiles()[0].patch.getDeltas()[0].target.changePosition!![0])
+        assertEquals(27, diff.getFiles()[0].patch.getDeltas()[0].target.changePosition!![1])
+
+        assertEquals(64, diff.getFiles()[0].patch.getDeltas()[1].source.changePosition!![0])
+        assertEquals(64, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![0])
+        assertEquals(65, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![1])
+        assertEquals(66, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![2])
+        assertEquals(67, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![3])
+        assertEquals(68, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![4])
+        assertEquals(69, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![5])
+        assertEquals(70, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![6])
+        assertEquals(71, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![7])
+        assertEquals(72, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![8])
+        assertEquals(73, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![9])
+        assertEquals(74, diff.getFiles()[0].patch.getDeltas()[1].target.changePosition!![10])
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue122() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue122() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue122.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
-        Assertions.assertThat(diff.getFiles()).extracting<String, RuntimeException> { f: UnifiedDiffFile -> f.fromFile }
-            .contains("coders/wpg.c")
+        assertEquals(1, diff.getFiles().size)
+        assertTrue(diff.getFiles().map { it.fromFile }.contains("coders/wpg.c"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testParseIssue123() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testParseIssue123() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue123.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(2)
-        Assertions.assertThat(diff.getFiles()).extracting<String, RuntimeException> { f: UnifiedDiffFile -> f.fromFile }
-            .contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java")
+        assertEquals(2, diff.getFiles().size)
+        assertTrue(diff.getFiles().map { f: UnifiedDiffFile -> f.fromFile }.contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java"))
     }
 
     @Test
-    @Throws(IOException::class)
-    fun testAddingNewLine() {
-        val diff = UnifiedDiffReader.parseUnifiedDiff(
+    fun testAddingNewLine() = runTest {
+        val diff = UnifiedDiffReader.readLine(
             UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_added.diff") as InputStream
         )
-        Assertions.assertThat(diff.getFiles().size).isEqualTo(1)
+        assertEquals(1, diff.getFiles().size)
         val file = diff.getFiles()[0]
-        Assertions.assertThat(file.renameFrom).isNull()
-        Assertions.assertThat(file.renameTo).isNull()
-        Assertions.assertThat(file.fromFile).isEqualTo("settings.gradle")
-        Assertions.assertThat(file.toFile).isEqualTo("settings.gradle")
+        assertEquals(null, file.renameFrom)
+        assertEquals(null, file.renameTo)
+        assertEquals("settings.gradle", file.fromFile)
+        assertEquals("settings.gradle", file.toFile)
         val deltas = file.patch.getDeltas()
-        Assertions.assertThat(deltas.size).isEqualTo(1)
+        assertEquals(1, deltas.size)
         val delta = deltas[0]
-        Assertions.assertThat(delta.source.lines).isEqualTo(listOf("rootProject.name = \"sample-repo\""))
-        Assertions.assertThat(delta.target.lines).isEqualTo(listOf("rootProject.name = \"sample-repo\"", ""))
+        assertEquals(1, delta.source.lines.size)
+        assertEquals(2, delta.target.lines.size)
+        assertEquals("rootProject.name = \"sample-repo\"", delta.source.lines[0])
+        assertEquals("rootProject.name = \"sample-repo\"", delta.target.lines[0])
+        assertEquals("", delta.target.lines[1])
+    }
+
+    @Test
+    fun testRemovingNewLine() = runTest {
+        val diff = UnifiedDiffReader.readLine(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_removed.diff") as InputStream
+        )
+        assertEquals(1, diff.getFiles().size)
+        val file = diff.getFiles()[0]
+        assertEquals(null, file.renameFrom)
+        assertEquals(null, file.renameTo)
+        assertEquals("settings.gradle", file.fromFile)
+        assertEquals("settings.gradle", file.toFile)
+        val deltas = file.patch.getDeltas()
+        assertEquals(1, deltas.size)
+        val delta = deltas[0]
+        assertEquals(2, delta.source.lines.size)
+        assertEquals(1, delta.target.lines.size)
+        assertEquals("rootProject.name = \"sample-repo\"", delta.source.lines[0])
+        assertEquals("", delta.source.lines[1])
+        assertEquals("rootProject.name = \"sample-repo\"", delta.target.lines[0])
     }
 }
