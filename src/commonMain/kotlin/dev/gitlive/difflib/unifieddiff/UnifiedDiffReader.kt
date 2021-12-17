@@ -139,6 +139,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
             if (line != null) {
                 processLine(line, CHUNK)
                 line = nextLine()
+                var tempNewLine: String? = null
                 while (line != null) {
                     line = checkForNoNewLineAtTheEndOfTheFile(line)
                     if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
@@ -152,12 +153,22 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
                     if (originalTxt.size == old_size && revisedTxt.size == new_size
                         || old_size == 0 && new_size == 0 && originalTxt.size == old_ln && revisedTxt.size == new_ln
                     ) {
+                        tempNewLine = nextLine()
+                        if (NO_NEW_LINE_TEXT != tempNewLine && actualFile!!.isNoNewLineAtTheEndOfTheFile) {
+                            println("New line was added in the revised text")
+                            revisedTxt.add("")
+                            new_size++
+                        } else if (NO_NEW_LINE_TEXT == tempNewLine && !actualFile!!.isNoNewLineAtTheEndOfTheFile) {
+                            println("New line was added in the original text")
+                            originalTxt.add("")
+                            old_size++
+                        }
                         finalizeChunk()
                         break
                     }
                     line = nextLine()
                 }
-                line = nextLine()
+                line = tempNewLine ?: nextLine()
                 line = checkForNoNewLineAtTheEndOfTheFile(line)
             }
             if (line == null || line.startsWith("--") && !line.startsWith("---")) {
@@ -179,7 +190,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
     }
 
     private suspend fun checkForNoNewLineAtTheEndOfTheFile(line: String?): String? {
-        if ("\\ No newline at end of file" == line) {
+        if (NO_NEW_LINE_TEXT == line) {
             actualFile!!.isNoNewLineAtTheEndOfTheFile = true
             return nextLine()
         }
@@ -219,8 +230,8 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         }
     }
 
-    private suspend fun processDiff(match: MatchResult, line: String) {
-        val fromTo = parseFileNames(nextLine())
+    private fun processDiff(match: MatchResult, line: String) {
+        val fromTo = parseFileNames(line)
         actualFile!!.fromFile = fromTo[0]
         actualFile!!.toFile = fromTo[1]
         actualFile!!.diffCommand = line
@@ -240,6 +251,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
     private var new_size = 0
     private var delLineIdx = 0
     private var addLineIdx = 0
+    
     private fun finalizeChunk() {
         if (originalTxt.isNotEmpty() || revisedTxt.isNotEmpty()) {
             actualFile!!.patch.addDelta(
@@ -380,6 +392,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
     companion object {
         val UNIFIED_DIFF_CHUNK_REGEXP = """^@@\s+-(?:(\d+)(?:,(\d+))?)\s+\+(?:(\d+)(?:,(\d+))?)\s+@@""".toRegex()
         val TIMESTAMP_REGEXP = """(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.\d{3,})(?: [+-]\d+)?""".toRegex()
+        const val NO_NEW_LINE_TEXT = """\ No newline at end of file"""
 
         fun parseFileNames(line: String?): Array<String> {
             val split = line!!.split(" ").toTypedArray()
