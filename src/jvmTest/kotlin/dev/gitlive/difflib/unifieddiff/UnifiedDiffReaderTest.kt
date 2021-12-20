@@ -375,4 +375,53 @@ class UnifiedDiffReaderTest {
         assertEquals("", delta.source.lines[1])
         assertEquals("rootProject.name = \"sample-repo\"", delta.target.lines[0])
     }
+    
+    @Test
+    fun fullTest() = runTest {
+        val diff = UnifiedDiffReader.readLine(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("full_test.diff") as InputStream
+        )
+        assertEquals(1, diff.getFiles().size)
+        val file = diff.getFiles()[0]
+        assertEquals(null, file.renameFrom)
+        assertEquals(null, file.renameTo)
+        assertEquals("README.txt", file.fromFile)
+        assertEquals("README.txt", file.toFile)
+        val deltas = file.patch.getDeltas()
+        assertEquals(1, deltas.size)
+        val delta = deltas[0]
+        assertEquals(13, delta.source.lines.size)
+        assertEquals(14, delta.target.lines.size)
+
+        val beforeContent = "    // staged      unstaged  result      filename\n" +
+                "    // =========   ==========  ==========  ====================\n" +
+                "    // unmodified  modified    modified    UnmodModMod.kt\n" +
+                "    // unmodified  added       added       UnmodAddAdd.kt\n" +
+                "    // unmodified  deleted     deleted     UnmodDelDel.kt\n" +
+                "    // deleted     unmodified  deleted     DelUnmodDel.kt\n" +
+                "    // modified    unmodified  modified    ModUnmodMod.kt\n" +
+                "    // added       unmodified  added       AddUnmodAdd.kt\n" +
+                "    // modified    modified    modified    ModModMod.kt\n" +
+                "    // added       modified    added       AddModAdd.kt\n" +
+                "    // deleted     added       modified    DelAddMod.kt\n" +
+                "    // modified    deleted     deleted     ModDelDel.kt\n" +
+                "    // added       deleted     unmodified  AddDelUnmod.kt"
+        val afterContent = "    // staged      unstaged  result      filename\n" +
+                "    // =========   ==========  ==========  ====================\n" +
+                "    // =========   ==========  ==========  ====================\n" +
+                "    // =========   ==========  ==========  ====================\n" +
+                "    // unmodified  modified    modified    UnmodModMod.kt\n" +
+                "    // unmodified  added       added       UnmodAddAdd.kt\n" +
+                "    // modified    unmodified  modified    ModUnmodMod.kt\n" +
+                "    // added       unmodified  added       AddUnmodAdd.kt\n" +
+                "    // modified    modified    modified    ModModMod.kt\n" +
+                "    // modified    modified    modified    ModModMod.kt\n" +
+                "    // deleted     added       modified    DelAddMod.kt\n" +
+                "    // deleted     added       modified    DelAddMod.kt\n" +
+                "    // modified    deleted     deleted     ModDelDel.kt\n" +
+                "    // added       deleted     unmodified  AddDelUnmod.kt"
+        val unifiedAfterContent = file.patch.applyTo(beforeContent.split("\n")).joinToString("\n")
+
+        assertEquals(afterContent, unifiedAfterContent)
+    }
 }

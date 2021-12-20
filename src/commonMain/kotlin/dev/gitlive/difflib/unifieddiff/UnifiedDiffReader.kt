@@ -153,16 +153,18 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
                     if (originalTxt.size == old_size && revisedTxt.size == new_size
                         || old_size == 0 && new_size == 0 && originalTxt.size == old_ln && revisedTxt.size == new_ln
                     ) {
-                        tempNewLine = nextLine()
-                        if (NO_NEW_LINE_TEXT != tempNewLine && actualFile!!.isNoNewLineAtTheEndOfTheFile) {
-                            println("New line was added in the revised text")
-                            revisedTxt.add("")
-                            new_size++
-                        } else if (NO_NEW_LINE_TEXT == tempNewLine && !actualFile!!.isNoNewLineAtTheEndOfTheFile) {
-                            println("New line was added in the original text")
-                            originalTxt.add("")
-                            old_size++
+                        val isNormalLine = line?.let { NORMAL_LINE_TEXT.containsMatchIn(it) } ?: false
+                        if (!isNormalLine) {
+                            tempNewLine = nextLine()
+                            if (NO_NEW_LINE_TEXT != tempNewLine && actualFile!!.isNoNewLineAtTheEndOfTheFile) {
+                                revisedTxt.add("")
+                                new_size++
+                            } else if (NO_NEW_LINE_TEXT == tempNewLine && !actualFile!!.isNoNewLineAtTheEndOfTheFile) {
+                                originalTxt.add("")
+                                old_size++
+                            }
                         }
+                        
                         finalizeChunk()
                         break
                     }
@@ -392,6 +394,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
     companion object {
         val UNIFIED_DIFF_CHUNK_REGEXP = """^@@\s+-(?:(\d+)(?:,(\d+))?)\s+\+(?:(\d+)(?:,(\d+))?)\s+@@""".toRegex()
         val TIMESTAMP_REGEXP = """(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.\d{3,})(?: [+-]\d+)?""".toRegex()
+        val NORMAL_LINE_TEXT = """^\s""".toRegex()
         const val NO_NEW_LINE_TEXT = """\ No newline at end of file"""
 
         fun parseFileNames(line: String?): Array<String> {
