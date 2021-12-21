@@ -253,6 +253,8 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
     private var new_size = 0
     private var delLineIdx = 0
     private var addLineIdx = 0
+    private var additions = 0
+    private var deletions = 0
     
     private fun finalizeChunk() {
         if (originalTxt.isNotEmpty() || revisedTxt.isNotEmpty()) {
@@ -268,7 +270,11 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
             revisedTxt.clear()
             addLineIdxList.clear()
             delLineIdxList.clear()
+            actualFile!!.deletions = deletions
+            deletions = 0
             delLineIdx = 0
+            actualFile!!.additions = additions
+            additions = 0
             addLineIdx = 0
         }
     }
@@ -285,6 +291,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         val cline = line.substring(1)
         revisedTxt.add(cline)
         addLineIdx++
+        additions++
         addLineIdxList.add(new_ln - 1 + addLineIdx)
     }
 
@@ -292,6 +299,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         val cline = line.substring(1)
         originalTxt.add(cline)
         delLineIdx++
+        deletions++
         delLineIdxList.add(old_ln - 1 + delLineIdx)
     }
 

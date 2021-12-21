@@ -35,6 +35,8 @@ class UnifiedDiffFile {
     var deletedFileMode: String? = null
     var patch = Patch<String>()
         private set
+    var additions: Int? = null
+    var deletions: Int? = null
     var isNoNewLineAtTheEndOfTheFile = false
     var similarityIndex: Int? = null
 
