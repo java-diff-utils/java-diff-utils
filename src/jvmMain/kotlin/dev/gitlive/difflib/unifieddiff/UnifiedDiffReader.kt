@@ -1,11 +1,10 @@
 package dev.gitlive.difflib.unifieddiff
 
 import java.io.BufferedReader
+import java.io.InputStream
 import java.io.InputStreamReader
 
-actual typealias InputStream = java.io.InputStream
-
-actual suspend fun UnifiedDiffReader.Companion.readLine(stream: InputStream): UnifiedDiff {
+suspend fun UnifiedDiffReader.Companion.parseUnifiedDiff(stream: InputStream): UnifiedDiff {
     val reader = BufferedReader(InputStreamReader(stream))
     return parseUnifiedDiff { reader.readLine() }
 }

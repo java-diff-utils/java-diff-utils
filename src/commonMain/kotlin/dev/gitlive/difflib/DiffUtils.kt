@@ -27,7 +27,7 @@ internal typealias BiPredicate<T, R> = (T, R) -> Boolean
 internal typealias Consumer<T> = (T) -> Unit
 internal typealias Function<T, R> = (T) -> R
 internal typealias BiFunction<T, T2, R> = (T, T2) -> R
-internal typealias BiConsumer<T, U> = suspend (T, U) -> Unit
+internal typealias BiConsumer<T, U> = (T, U) -> Unit
 internal typealias LineReader = suspend () -> String?
 
 /**

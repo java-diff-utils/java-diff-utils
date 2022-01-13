@@ -6,10 +6,9 @@ import kotlin.js.json
 
 val readline by lazy { js("require")("readline") }
 
-actual abstract class InputStream (val buffer: dynamic)
 
-actual suspend fun UnifiedDiffReader.Companion.readLine(stream: InputStream): UnifiedDiff {
-    val rl = readline.createInterface(json("input" to stream.buffer))
+suspend fun UnifiedDiffReader.Companion.parseUnifiedDiff(buffer: dynamic): UnifiedDiff {
+    val rl = readline.createInterface(json("input" to buffer))
     val iterator = rl[js("Symbol").asyncIterator]()
     return parseUnifiedDiff {
         val promise = iterator.next() as Promise<String>

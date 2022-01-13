@@ -33,8 +33,8 @@ class UnifiedDiffReaderTest {
     
     @Test
     fun testSimpleParse() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -84,8 +84,8 @@ class UnifiedDiffReaderTest {
     @Test
     fun testSimpleParse2() = runTest {
         val diff =
-            UnifiedDiffReader.readLine(
-                UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff") as InputStream
+            UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest::class.java.getResourceAsStream("jsqlparser_patch_1.diff")!!
             )
         assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -105,8 +105,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue46() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue46.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue46.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -117,8 +117,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue33() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue33.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue33.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -130,8 +130,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue51() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue51.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue51.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -145,8 +145,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue79() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue79.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue79.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -158,8 +158,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue84() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue84.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue84.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -174,8 +174,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue85() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue85.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue85.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -196,8 +196,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue98() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue98.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue98.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -211,8 +211,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue104() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_parsing_issue104.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_parsing_issue104.diff")!!
         )
         assertEquals(6, diff.getFiles().size)
         val file = diff.getFiles()[2]
@@ -224,8 +224,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue107BazelDiff() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("01-bazel-strip-unused.patch_issue107.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("01-bazel-strip-unused.patch_issue107.diff")!!
         )
         assertEquals(450, diff.getFiles().size)
         val file = diff.getFiles()[0]
@@ -236,8 +236,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue107_2() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReader::class.java.getResourceAsStream("problem_diff_issue107.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReader::class.java.getResourceAsStream("problem_diff_issue107.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -247,8 +247,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue107_3() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_3.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_3.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file1 = diff.getFiles()[0]
@@ -258,8 +258,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue107_4() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_4.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_4.diff")!!
         )
         assertEquals(27, diff.getFiles().size)
         assertTrue(diff.getFiles().map { it.fromFile }.contains("README.md"))
@@ -267,8 +267,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue107_5() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_5.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue107_5.diff")!!
         )
         assertEquals(22, diff.getFiles().size)
         assertTrue(diff.getFiles().map { it.fromFile }.contains("rt/management/src/test/java/org/apache/cxf/management/jmx/MBServerConnectorFactoryTest.java"))
@@ -276,8 +276,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue110() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("0001-avahi-python-Use-the-agnostic-DBM-interface.patch") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("0001-avahi-python-Use-the-agnostic-DBM-interface.patch")!!
         )
         assertEquals(5, diff.getFiles().size)
         val file = diff.getFiles()[4]
@@ -290,8 +290,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue117() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue117.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue117.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         assertEquals(2, diff.getFiles()[0].patch.getDeltas().size)
@@ -318,8 +318,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue122() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue122.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue122.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         assertTrue(diff.getFiles().map { it.fromFile }.contains("coders/wpg.c"))
@@ -327,8 +327,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testParseIssue123() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue123.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("problem_diff_issue123.diff")!!
         )
         assertEquals(2, diff.getFiles().size)
         assertTrue(diff.getFiles().map { f: UnifiedDiffFile -> f.fromFile }.contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java"))
@@ -336,8 +336,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testAddingNewLine() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_added.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_added.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file = diff.getFiles()[0]
@@ -357,8 +357,8 @@ class UnifiedDiffReaderTest {
 
     @Test
     fun testRemovingNewLine() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_removed.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("new_line_removed.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file = diff.getFiles()[0]
@@ -378,8 +378,8 @@ class UnifiedDiffReaderTest {
     
     @Test
     fun fullTest() = runTest {
-        val diff = UnifiedDiffReader.readLine(
-            UnifiedDiffReaderTest::class.java.getResourceAsStream("full_test.diff") as InputStream
+        val diff = UnifiedDiffReader.parseUnifiedDiff(
+            UnifiedDiffReaderTest::class.java.getResourceAsStream("full_test.diff")!!
         )
         assertEquals(1, diff.getFiles().size)
         val file = diff.getFiles()[0]
