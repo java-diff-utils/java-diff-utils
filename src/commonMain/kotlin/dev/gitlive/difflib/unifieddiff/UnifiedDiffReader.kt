@@ -66,6 +66,9 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
             line
         )
     }
+    private val BINARY_FILE_CHANGED: UnifiedDiffLine = UnifiedDiffLine(true, "Binary files (.*) and (.*) differ") { match: MatchResult, line: String ->
+        processBinaryFileChange(match, line)
+    }
     private val CHUNK: UnifiedDiffLine = UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP) { match: MatchResult, chunkStart: String ->
         processChunk(
             match,
@@ -128,7 +131,8 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
                             line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
                             FROM_FILE, TO_FILE,
                             RENAME_FROM, RENAME_TO,
-                            NEW_FILE_MODE, DELETED_FILE_MODE
+                            NEW_FILE_MODE, DELETED_FILE_MODE,
+                            BINARY_FILE_CHANGED
                         )
                     ) {
                         throw UnifiedDiffParserException("expected file start line not found")
@@ -347,7 +351,11 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         actualFile!!.deletedFileMode = match.groupValues[1]
     }
 
-    private fun extractFileName(_line: String): String {
+    private fun processBinaryFileChange(match: MatchResult, line: String) {
+        // Nothing happens yet
+    }
+
+    private fun extractFileName(_line: String): String? {
         var line = _line
         if (TIMESTAMP_REGEXP.containsMatchIn(_line)) {
             line = line.substring(0, TIMESTAMP_REGEXP.find(_line)!!.range.first)
@@ -355,6 +363,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         line = line.split("\t").toTypedArray()[0]
         return line.substring(4).replaceFirst("^(a|b|old|new)(\\/)?".toRegex(), "")
             .trim { it <= ' ' }
+            .takeUnless { it == "/dev/null" }
     }
 
     private fun extractTimestamp(line: String): String? {
@@ -421,6 +430,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
          * @throws IOException
          * @throws UnifiedDiffParserException
          */
+        
         internal suspend fun parseUnifiedDiff(readLine: LineReader): UnifiedDiff {
             val parser = UnifiedDiffReader(readLine)
             return parser.parse()
