@@ -43,7 +43,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${project.property("coroutines.version")}")
             }
