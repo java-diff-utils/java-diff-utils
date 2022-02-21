@@ -12,11 +12,11 @@ import java.util.List;
 public class ComputeDifference {
 
     private static final String ORIGINAL = TestConstants.MOCK_FOLDER + "original.txt";
-    private static final String RIVISED = TestConstants.MOCK_FOLDER + "revised.txt";
+    private static final String REVISED = TestConstants.MOCK_FOLDER + "revised.txt";
 
     public static void main(String[] args) throws IOException {
         List<String> original = Files.readAllLines(new File(ORIGINAL).toPath());
-        List<String> revised = Files.readAllLines(new File(RIVISED).toPath());
+        List<String> revised = Files.readAllLines(new File(REVISED).toPath());
 
         // Compute diff. Get the Patch object. Patch is the container for computed deltas.
         Patch<String> patch = DiffUtils.diff(original, revised);
