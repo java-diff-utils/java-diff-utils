@@ -1,0 +1,11 @@
+--- a.txt
++++ a1.txt
+@@ -8,7 +8,7 @@
+     <Setting>
+         <Setting a>
+             <setting b>
+-                <value>23</value>
++                <value>24</value>
+             </setting b>
+             <setting c>
+                 <value>1</value>

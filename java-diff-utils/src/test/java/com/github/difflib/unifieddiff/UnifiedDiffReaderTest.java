@@ -384,4 +384,14 @@ public class UnifiedDiffReaderTest {
 
         assertThat(diff.getFiles()).extracting(f -> f.getFromFile()).contains("src/java/main/org/apache/zookeeper/server/FinalRequestProcessor.java");
     }
+
+    @Test
+    public void testParseIssue141() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue141.diff"));
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getFromFile()).isEqualTo("a.txt");
+        assertThat(file1.getToFile()).isEqualTo("a1.txt");
+    }
 }
