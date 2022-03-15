@@ -122,7 +122,7 @@ public class UnifiedDiffReaderTest {
         assertThat(diff.getFiles().size()).isEqualTo(1);
 
         UnifiedDiffFile file1 = diff.getFiles().get(0);
-        assertThat(file1.getFromFile()).isEqualTo(".vhd");
+        assertThat(file1.getFromFile()).isEqualTo("a.vhd");
         assertThat(file1.getPatch().getDeltas().size()).isEqualTo(1);
 
         assertThat(diff.getTail()).isNull();
