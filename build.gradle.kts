@@ -6,7 +6,7 @@ version = project.property("version") as String
 plugins {
     `maven-publish`
     signing
-    kotlin("multiplatform")
+    kotlin("multiplatform") version "1.5.32"
     kotlin("native.cocoapods")
 }
 
@@ -43,17 +43,17 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib")
             }
         }
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib-js:1.6.10")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8:1.6.10"))
+                implementation(kotlin("stdlib-jdk8"))
             }
         }
         val jvmTest by getting {
