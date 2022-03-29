@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'kotlin_diff_utils'
-    spec.version                  = '4.11.2-kotlin1.5.32'
+    spec.version                  = '4.11.3-kotlin1.5.32'
     spec.homepage                 = ''
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
     spec.authors                  = ''
