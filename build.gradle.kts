@@ -6,8 +6,8 @@ version = project.property("version") as String
 plugins {
     `maven-publish`
     signing
+    kotlin("multiplatform") version "1.5.32"
     kotlin("native.cocoapods")
-    kotlin("multiplatform")
 }
 
 repositories {
@@ -19,7 +19,7 @@ repositories {
 
 kotlin {
     jvm {
-        val main by compilations.getting {
+        compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
@@ -28,7 +28,7 @@ kotlin {
     }
 
     js {
-        val main by compilations.getting {
+        compilations.all {
             kotlinOptions {
                 sourceMap = true
                 sourceMapEmbedSources = "always"
