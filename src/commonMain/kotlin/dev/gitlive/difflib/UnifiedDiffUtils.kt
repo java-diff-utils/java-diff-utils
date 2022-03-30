@@ -190,7 +190,7 @@ object UnifiedDiffUtils {
                         )
                         ret.addAll(curBlock)
                         deltas.clear()
-                        deltas.add(nextDelta!!)
+                        deltas.add(nextDelta)
                     }
                     delta = nextDelta
                 }

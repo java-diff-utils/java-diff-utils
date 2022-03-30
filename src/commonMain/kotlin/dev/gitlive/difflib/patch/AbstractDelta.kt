@@ -52,17 +52,17 @@ abstract class AbstractDelta<T>(val type: DeltaType, val source: Chunk<T>, val t
         return Triple(this.source, this.target, this.type).hashCode()
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (this::class != obj::class) {
+        if (this::class != other::class) {
             return false
         }
-        val other = obj as AbstractDelta<*>
+        val other = other as AbstractDelta<*>
         if (source != other.source) {
             return false
         }

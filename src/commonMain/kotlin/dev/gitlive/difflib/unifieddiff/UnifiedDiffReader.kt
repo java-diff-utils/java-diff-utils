@@ -182,16 +182,18 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
             }
         }
 
-        var tailTxt = ""
         line = nextLine()
-        while (line != null) {
-            if (tailTxt.isNotEmpty()) {
-                tailTxt += "\n"
+        if(line != null) {
+            var tailTxt = ""
+            while (line != null) {
+                if (tailTxt.isNotEmpty()) {
+                    tailTxt += "\n"
+                }
+                tailTxt += line
+                line = nextLine()
             }
-            tailTxt += line
-            line = nextLine()
+            data.setTailTxt(tailTxt)
         }
-        data.setTailTxt(tailTxt)
         return data
     }
 

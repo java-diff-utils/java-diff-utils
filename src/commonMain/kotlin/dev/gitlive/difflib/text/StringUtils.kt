@@ -45,7 +45,6 @@ internal object StringUtils {
      * @param columnWidth the given column
      * @return the wrapped text
      */
-    @OptIn(ExperimentalStdlibApi::class)
     @kotlin.jvm.JvmStatic
     fun wrapText(line: String, columnWidth: Int): String {
         require(columnWidth >= 0) { "columnWidth may not be less 0" }

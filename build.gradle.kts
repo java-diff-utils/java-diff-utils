@@ -7,7 +7,6 @@ plugins {
     `maven-publish`
     signing
     kotlin("multiplatform") version "1.5.32"
-    kotlin("native.cocoapods") version "1.5.32"
 }
 
 repositories {

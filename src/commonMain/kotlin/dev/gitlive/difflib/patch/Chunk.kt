@@ -120,22 +120,18 @@ class Chunk<T> {
         return Triple(lines, position, size()).hashCode()
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (this::class != obj::class) {
+        if (this::class != other::class) {
             return false
         }
-        val other = obj as Chunk<*>?
-        if (lines == null) {
-            if (other!!.lines != null) {
-                return false
-            }
-        } else if (lines != other!!.lines) {
+        val other = other as Chunk<*>?
+        if (lines != other!!.lines) {
             return false
         }
         return position == other.position

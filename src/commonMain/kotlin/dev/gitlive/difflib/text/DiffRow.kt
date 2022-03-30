@@ -46,36 +46,24 @@ class DiffRow(
         return Triple(newLine, oldLine, tag).hashCode()
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (this::class != obj::class) {
+        if (this::class != other::class) {
             return false
         }
-        val other = obj as DiffRow
-        if (newLine == null) {
-            if (other.newLine != null) {
-                return false
-            }
-        } else if (newLine != other.newLine) {
+        val other = other as DiffRow
+        if (newLine != other.newLine) {
             return false
         }
-        if (oldLine == null) {
-            if (other.oldLine != null) {
-                return false
-            }
-        } else if (oldLine != other.oldLine) {
+        if (oldLine != other.oldLine) {
             return false
         }
-        if (tag == null) {
-            if (other.tag != null) {
-                return false
-            }
-        } else if (tag != other.tag) {
+        if (tag != other.tag) {
             return false
         }
         return true
