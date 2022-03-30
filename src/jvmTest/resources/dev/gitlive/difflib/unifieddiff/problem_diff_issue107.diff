@@ -1,0 +1,13 @@
+--- a/Main.java
++++ b/Main.java
+@@ -2,2 +2,3 @@ public class Main {
+     public static void main(String[] args) {
++        System.out.println("Hello, world!");
+     }
+\ No newline at end of file
+--- a/Main2.java
++++ b/Main2.java
+@@ -2,2 +2,3 @@ public class Main {
+     public static void main(String[] args) {
++        System.out.println("Hello, world!");
+     }

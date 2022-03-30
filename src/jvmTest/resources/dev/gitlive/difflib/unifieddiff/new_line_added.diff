@@ -1,0 +1,8 @@
+diff --git a/settings.gradle b/settings.gradle
+index ef3b8e2..ab30124 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -1 +1 @@
+-rootProject.name = "sample-repo"
+\ No newline at end of file
++rootProject.name = "sample-repo"

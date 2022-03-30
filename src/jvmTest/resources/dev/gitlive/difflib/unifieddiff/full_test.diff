@@ -1,0 +1,23 @@
+diff --git a/README.txt b/README.txt
+index 12e7a62..9a56db2 100644
+--- a/README.txt
++++ b/README.txt
+@@ -1,13 +1,14 @@
+     // staged      unstaged  result      filename
+     // =========   ==========  ==========  ====================
++    // =========   ==========  ==========  ====================
++    // =========   ==========  ==========  ====================
+     // unmodified  modified    modified    UnmodModMod.kt
+     // unmodified  added       added       UnmodAddAdd.kt
+-    // unmodified  deleted     deleted     UnmodDelDel.kt
+-    // deleted     unmodified  deleted     DelUnmodDel.kt
+     // modified    unmodified  modified    ModUnmodMod.kt
+     // added       unmodified  added       AddUnmodAdd.kt
+     // modified    modified    modified    ModModMod.kt
+-    // added       modified    added       AddModAdd.kt
++    // modified    modified    modified    ModModMod.kt
++    // deleted     added       modified    DelAddMod.kt
+     // deleted     added       modified    DelAddMod.kt
+     // modified    deleted     deleted     ModDelDel.kt
+     // added       deleted     unmodified  AddDelUnmod.kt
+\\ No newline at end of file

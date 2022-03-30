@@ -28,6 +28,8 @@ kotlin {
     }
 
     js {
+        browser()
+        nodejs()
         compilations.all {
             kotlinOptions {
                 sourceMap = true
@@ -37,8 +39,8 @@ kotlin {
         }
     }
 
-    iosArm64()
-    iosX64()
+//    iosArm64()
+//    iosX64()
 
     sourceSets {
         val commonMain by getting {
@@ -46,9 +48,16 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${project.property("kotlinx-coroutines.version")}")
             }
         }
         val jvmMain by getting {
@@ -58,8 +67,10 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
+                implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.12")
                 implementation("org.assertj:assertj-core:3.11.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.property("kotlinx-coroutines.version")}")
             }
         }
     }
