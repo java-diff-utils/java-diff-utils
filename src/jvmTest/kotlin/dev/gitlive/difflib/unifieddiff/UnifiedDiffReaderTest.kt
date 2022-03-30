@@ -16,7 +16,6 @@ package dev.gitlive.difflib.unifieddiff
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -28,7 +27,6 @@ fun runTest(test: suspend () -> Unit) = runBlocking { test() }
  *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 class UnifiedDiffReaderTest {
     
     @Test

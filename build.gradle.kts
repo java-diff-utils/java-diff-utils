@@ -28,6 +28,8 @@ kotlin {
     }
 
     js {
+        browser()
+        nodejs()
         compilations.all {
             kotlinOptions {
                 sourceMap = true
@@ -44,7 +46,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${project.property("coroutines.version")}")
             }
         }
         val commonTest by getting {
@@ -56,12 +57,11 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${project.property("coroutines.version")}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${project.property("kotlinx-coroutines.version")}")
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.property("coroutines.version")}")
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
@@ -70,7 +70,7 @@ kotlin {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.12")
                 implementation("org.assertj:assertj-core:3.11.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${project.property("coroutines.version")}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.property("kotlinx-coroutines.version")}")
             }
         }
     }
