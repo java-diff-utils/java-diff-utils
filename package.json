@@ -2,7 +2,7 @@
   "name": "@gitliveapp/kotlin-diff-utils",
   "version": "0",
   "description": "The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.",
-  "main": "kotlin-diff-utils.js",
+  "main": "kotlin-diff-utils-js-legacy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/GitLiveApp/kotlin-diff-utils#readme",
   "dependencies": {
-    "kotlin": "1.3.72"
+    "kotlin": "1.5.30"
   }
 }

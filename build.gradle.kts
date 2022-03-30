@@ -7,14 +7,13 @@ plugins {
     `maven-publish`
     signing
     kotlin("multiplatform") version "1.5.32"
-    kotlin("native.cocoapods")
+    kotlin("native.cocoapods") version "1.5.32"
 }
 
 repositories {
     mavenLocal()
     google()
     jcenter()
-    maven(url = "https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
 kotlin {
@@ -23,13 +22,13 @@ kotlin {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
-
         }
+        testRuns["test"].executionTask.configure { useJUnit() }
     }
 
     js {
-        browser()
         nodejs()
+        browser()
         compilations.all {
             kotlinOptions {
                 sourceMap = true
@@ -60,9 +59,9 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${project.property("kotlinx-coroutines.version")}")
             }
         }
+
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
             }
         }
         val jvmTest by getting {
@@ -82,18 +81,19 @@ fun SigningExtension.whenRequired(block: () -> Boolean) {
 }
 
 tasks {
+
     val copyPackageJson by registering(Copy::class) {
         from(file("package.json"))
         into(file("$buildDir/node_module"))
     }
 
     val copyJS by registering(Copy::class) {
-        from(file("$buildDir/classes/kotlin/js/main/${project.name}.js"))
+        from(file("$buildDir/js/packages/${project.name}-js-legacy/kotlin/${project.name}-js-legacy.js"))
         into(file("$buildDir/node_module"))
     }
 
     val copySourceMap by registering(Copy::class) {
-        from(file("$buildDir/classes/kotlin/js/main/${project.name}.js.map"))
+        from(file("$buildDir/js/packages/${project.name}-js-legacy/kotlin/${project.name}-js-legacy.js.map"))
         into(file("$buildDir/node_module"))
     }
 
@@ -128,6 +128,15 @@ tasks {
                 .replace("\"name\": \"kotlin-diff-utils\",", "\"name\": \"@gitliveapp/kotlin-diff-utils\",")
         )
     }
+
+    val prepareForGithubNpmPublish by registering(Copy::class) {
+        val from = file("package.json")
+        from.writeText(
+            from.readText()
+                .replace("https://registry.npmjs.org/","https://npm.pkg.github.com/")
+                .replace("\"name\": \"kotlin-diff-utils\",", "\"name\": \"@gitliveapp/kotlin-diff-utils\",")
+        )
+    }
 }
 
 val javadocJar by tasks.creating(Jar::class) {
@@ -147,6 +156,7 @@ tasks.named("publishToMavenLocal").configure {
 publishing {
     repositories {
         maven {
+            name = "sonatype"
             url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
             credentials {
                 username = project.findProperty("sonatypeUsername") as String? ?: System.getenv("sonatypeUsername")
@@ -207,6 +217,7 @@ publishing {
 }
 
 signing {
+    whenRequired { gradle.taskGraph.hasTask("publish") }
     val signingKey: String? by project
     val signingPassword: String? by project
     useInMemoryPgpKeys(signingKey, signingPassword)

@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 1.8
@@ -24,7 +24,7 @@ jobs:
       - name: Publish
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: publish
+          arguments: publishAllPublicationsToSonatypeRepository
         env:
           sonatypeUsername: ${{ secrets.SONATYPEUSERNAME }}
           sonatypePassword: ${{ secrets.SONATYPEPASSWORD }}
