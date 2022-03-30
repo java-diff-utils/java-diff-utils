@@ -355,7 +355,7 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         // Nothing happens yet
     }
 
-    private fun extractFileName(_line: String): String? {
+    private fun extractFileName(_line: String): String {
         var line = _line
         if (TIMESTAMP_REGEXP.containsMatchIn(_line)) {
             line = line.substring(0, TIMESTAMP_REGEXP.find(_line)!!.range.first)
@@ -363,7 +363,6 @@ class UnifiedDiffReader internal constructor(lineReader: LineReader) {
         line = line.split("\t").toTypedArray()[0]
         return line.substring(4).replaceFirst("^(a|b|old|new)(\\/)?".toRegex(), "")
             .trim { it <= ' ' }
-            .takeUnless { it == "/dev/null" }
     }
 
     private fun extractTimestamp(line: String): String? {
