@@ -353,7 +353,7 @@ public final class UnifiedDiffReader {
             line = line.substring(0, matcher.start());
         }
         line = line.split("\t")[0];
-        return line.substring(4).replaceFirst("^(a|b|old|new)(\\/)?", "")
+        return line.substring(4).replaceFirst("^(a|b|old|new)/", "")
                 .trim();
     }
 
