@@ -16,8 +16,10 @@
 package com.github.difflib.patch;
 
 import com.github.difflib.DiffUtils;
+import static com.github.difflib.patch.Patch.CONFLICT_PRODUCES_MERGE_CONFLICT;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.Test;
  * @author tw
  */
 public class PatchWithMeyerDiffTest {
+
     @Test
     public void testPatch_Change_withExceptionProcessor() {
         final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
@@ -47,5 +50,19 @@ public class PatchWithMeyerDiffTest {
         } catch (PatchFailedException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void testPatchThreeWayIssue138() throws PatchFailedException {
+        List<String> base = Arrays.asList("Imagine there's no heaven".split("\\s+"));
+        List<String> left = Arrays.asList("Imagine there's no HEAVEN".split("\\s+"));
+        List<String> right = Arrays.asList("IMAGINE there's no heaven".split("\\s+"));
+
+        Patch<String> rightPatch = DiffUtils.diff(base, right)
+                .withConflictOutput(CONFLICT_PRODUCES_MERGE_CONFLICT);
+
+        List<String> applied = rightPatch.applyTo(left);
+
+        assertEquals("IMAGINE there's no HEAVEN", applied.stream().collect(joining(" ")));
     }
 }

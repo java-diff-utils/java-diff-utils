@@ -761,4 +761,28 @@ public class DiffRowGeneratorTest {
 
         assertThat(txt).isEqualTo("EQUAL EQUAL EQUAL CHANGE CHANGE CHANGE EQUAL EQUAL EQUAL");
     }
+    
+    @Test
+    public void testIssue129SkipWhitespaceChanges() throws IOException {
+        String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue129_1.txt")).collect(joining("\n"));
+        String revised = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue129_2.txt")).collect(joining("\n"));
+
+        DiffRowGenerator generator = DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .ignoreWhiteSpaces(true)
+                .oldTag((tag, isOpening) -> isOpening ? "==old" + tag + "==>" : "<==old==")
+                .newTag((tag, isOpening) -> isOpening ? "==new" + tag + "==>" : "<==new==")
+                .build();
+        List<DiffRow> rows = generator.generateDiffRows(
+                Arrays.asList(original.split("\n")),
+                Arrays.asList(revised.split("\n")));
+
+        assertThat(rows).hasSize(13);
+        
+        rows.stream()
+                .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
+                .forEach(System.out::println);
+    }
 }
