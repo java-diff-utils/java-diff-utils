@@ -72,7 +72,7 @@ public final class Patch<T> implements Serializable {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            VerifyChunk valid = delta.verifyAntApplyTo(target);
+            VerifyChunk valid = delta.verifyAndApplyTo(target);
             if (valid != VerifyChunk.OK) {
                 conflictOutput.processConflict(valid, delta, target);
             }
