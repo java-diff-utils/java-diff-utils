@@ -233,19 +233,33 @@ public final class Patch<T> implements Serializable {
     }
 
     /**
-     * Restore the text to original. Opposite to applyTo() method.
+     * Creates a new list, containing the restored state of the given list.
+     * Opposite to {@link #applyTo(List)} method.
      *
-     * @param target the given target
-     * @return the restored text
+     * @param target The list to copy and apply changes to.
+     * @return A new list, containing the restored state.
      */
     public List<T> restore(List<T> target) {
         List<T> result = new ArrayList<>(target);
+        restoreToExisting(result);
+        return result;
+    }
+
+
+    /**
+     * Restores all changes within the given list.
+     * Opposite to {@link #applyToExisting(List)} method.
+     *
+     * @param target The list to restore changes in. This list has to be modifiable,
+     *               otherwise exceptions may be thrown, depending on the used type of list.
+     * @throws RuntimeException (or similar) if the list is not modifiable.
+     */
+    public void restoreToExisting(List<T> target) {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            delta.restore(result);
+            delta.restore(target);
         }
-        return result;
     }
 
     /**
