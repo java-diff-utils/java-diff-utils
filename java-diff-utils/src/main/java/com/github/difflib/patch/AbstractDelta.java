@@ -58,7 +58,7 @@ public abstract class AbstractDelta<T> implements Serializable {
         return getSource().verifyChunk(target);
     }
    
-    protected VerifyChunk verifyAntApplyTo(List<T> target) throws PatchFailedException {
+    protected VerifyChunk verifyAndApplyTo(List<T> target) throws PatchFailedException {
         final VerifyChunk verify = verifyChunkToFitTarget(target);
         if (verify == VerifyChunk.OK) {
             applyTo(target);

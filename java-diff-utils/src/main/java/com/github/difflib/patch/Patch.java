@@ -48,22 +48,35 @@ public final class Patch<T> implements Serializable {
     }
 
     /**
-     * Apply this patch to the given target
+     * Creates a new list, the patch is being applied to.
      *
-     * @return the patched text
-     * @throws PatchFailedException if can't apply patch
+     * @param target The list to apply the changes to.
+     * @return A new list containing the applied patch.
+     * @throws PatchFailedException if the patch cannot be applied
      */
     public List<T> applyTo(List<T> target) throws PatchFailedException {
         List<T> result = new ArrayList<>(target);
+        applyToExisting(result);
+        return result;
+    }
+
+    /**
+     * Applies the patch to the supplied list.
+     *
+     * @param target The list to apply the changes to. This list has to be modifiable,
+     *               otherwise exceptions may be thrown, depending on the used type of list.
+     * @throws PatchFailedException if the patch cannot be applied
+     * @throws RuntimeException (or similar) if the list is not modifiable.
+     */
+    public void applyToExisting(List<T> target) throws PatchFailedException {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            VerifyChunk valid = delta.verifyAntApplyTo(result);
+            VerifyChunk valid = delta.verifyAndApplyTo(target);
             if (valid != VerifyChunk.OK) {
-                conflictOutput.processConflict(valid, delta, result);
+                conflictOutput.processConflict(valid, delta, target);
             }
         }
-        return result;
     }
 
     private static class PatchApplyingContext<T> {
@@ -220,19 +233,33 @@ public final class Patch<T> implements Serializable {
     }
 
     /**
-     * Restore the text to original. Opposite to applyTo() method.
+     * Creates a new list, containing the restored state of the given list.
+     * Opposite to {@link #applyTo(List)} method.
      *
-     * @param target the given target
-     * @return the restored text
+     * @param target The list to copy and apply changes to.
+     * @return A new list, containing the restored state.
      */
     public List<T> restore(List<T> target) {
         List<T> result = new ArrayList<>(target);
+        restoreToExisting(result);
+        return result;
+    }
+
+
+    /**
+     * Restores all changes within the given list.
+     * Opposite to {@link #applyToExisting(List)} method.
+     *
+     * @param target The list to restore changes in. This list has to be modifiable,
+     *               otherwise exceptions may be thrown, depending on the used type of list.
+     * @throws RuntimeException (or similar) if the list is not modifiable.
+     */
+    public void restoreToExisting(List<T> target) {
         ListIterator<AbstractDelta<T>> it = getDeltas().listIterator(deltas.size());
         while (it.hasPrevious()) {
             AbstractDelta<T> delta = it.previous();
-            delta.restore(result);
+            delta.restore(target);
         }
-        return result;
     }
 
     /**
