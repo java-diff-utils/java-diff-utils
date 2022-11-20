@@ -27,17 +27,17 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
- * A clean-room implementation of Eugene Meyers greedy differencing algorithm.
+ * A clean-room implementation of Eugene Myers greedy differencing algorithm.
  */
-public final class MeyersDiff<T> implements DiffAlgorithmI<T> {
+public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 
     private final BiPredicate<T, T> equalizer;
 
-    public MeyersDiff() {
+    public MyersDiff() {
         equalizer = Object::equals;
     }
 
-    public MeyersDiff(final BiPredicate<T, T> equalizer) {
+    public MyersDiff(final BiPredicate<T, T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
@@ -187,13 +187,13 @@ public final class MeyersDiff<T> implements DiffAlgorithmI<T> {
             @Override
             public <T> DiffAlgorithmI<T> 
             create() {
-                return new MeyersDiff<T>();
+                return new MyersDiff<T>();
             }
 
             @Override
             public <T> DiffAlgorithmI<T> 
             create(BiPredicate < T, T > equalizer) {
-                return new MeyersDiff<T>(equalizer);
+                return new MyersDiff<T>(equalizer);
             }
         };
     }

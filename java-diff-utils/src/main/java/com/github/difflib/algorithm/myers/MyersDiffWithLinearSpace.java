@@ -30,15 +30,15 @@ import java.util.function.Consumer;
  *
  * @author tw
  */
-public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
+public class MyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 
     private final BiPredicate<T, T> equalizer;
 
-    public MeyersDiffWithLinearSpace() {
+    public MyersDiffWithLinearSpace() {
         equalizer = Object::equals;
     }
 
-    public MeyersDiffWithLinearSpace(final BiPredicate<T, T> equalizer) {
+    public MyersDiffWithLinearSpace(final BiPredicate<T, T> equalizer) {
         Objects.requireNonNull(equalizer, "equalizer must not be null");
         this.equalizer = equalizer;
     }
@@ -231,13 +231,13 @@ public class MeyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
             @Override
             public <T> DiffAlgorithmI<T> 
             create() {
-                return new MeyersDiffWithLinearSpace<T>();
+                return new MyersDiffWithLinearSpace<T>();
             }
 
             @Override
             public <T> DiffAlgorithmI<T> 
             create(BiPredicate < T, T > equalizer) {
-                return new MeyersDiffWithLinearSpace<T>(equalizer);
+                return new MyersDiffWithLinearSpace<T>(equalizer);
             }
         };
     }

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author tw
  */
-public class PatchWithMeyerDiffTest {
+public class PatchWithMyerDiffTest {
 
     @Test
     public void testPatch_Change_withExceptionProcessor() {

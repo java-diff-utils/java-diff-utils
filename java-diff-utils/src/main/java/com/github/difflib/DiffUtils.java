@@ -18,7 +18,7 @@ package com.github.difflib;
 import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.myers.MeyersDiff;
+import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
@@ -37,7 +37,7 @@ public final class DiffUtils {
     /**
      * This factory generates the DEFAULT_DIFF algorithm for all these routines.
      */
-    static DiffAlgorithmFactory DEFAULT_DIFF = MeyersDiff.factory();
+    static DiffAlgorithmFactory DEFAULT_DIFF = MyersDiff.factory();
 
     public static void withDefaultDiffAlgorithmFactory(DiffAlgorithmFactory factory) {
         DEFAULT_DIFF = factory;
@@ -95,7 +95,7 @@ public final class DiffUtils {
             return DiffUtils.diff(source, target,
                     DEFAULT_DIFF.create(equalizer));
         }
-        return DiffUtils.diff(source, target, new MeyersDiff<>());
+        return DiffUtils.diff(source, target, new MyersDiff<>());
     }
 
     public static <T> Patch<T> diff(List<T> original, List<T> revised,

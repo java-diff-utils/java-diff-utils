@@ -16,8 +16,8 @@
 package com.github.difflib.patch;
 
 import com.github.difflib.DiffUtils;
-import com.github.difflib.algorithm.myers.MeyersDiff;
-import com.github.difflib.algorithm.myers.MeyersDiffWithLinearSpace;
+import com.github.difflib.algorithm.myers.MyersDiff;
+import com.github.difflib.algorithm.myers.MyersDiffWithLinearSpace;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -30,16 +30,16 @@ import org.junit.jupiter.api.Test;
  *
  * @author tw
  */
-public class PatchWithMeyerDiffWithLinearSpaceTest {
+public class PatchWithMyerDiffWithLinearSpaceTest {
 
     @BeforeAll
     public static void setupClass() {
-        DiffUtils.withDefaultDiffAlgorithmFactory(MeyersDiffWithLinearSpace.factory());
+        DiffUtils.withDefaultDiffAlgorithmFactory(MyersDiffWithLinearSpace.factory());
     }
 
     @AfterAll
     public static void resetClass() {
-        DiffUtils.withDefaultDiffAlgorithmFactory(MeyersDiff.factory());
+        DiffUtils.withDefaultDiffAlgorithmFactory(MyersDiff.factory());
     }
 
     @Test

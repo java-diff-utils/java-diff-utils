@@ -14,8 +14,8 @@ import java.util.List;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.algorithm.DiffAlgorithmFactory;
-import com.github.difflib.algorithm.myers.MeyersDiff;
-import com.github.difflib.algorithm.myers.MeyersDiffWithLinearSpace;
+import com.github.difflib.algorithm.myers.MyersDiff;
+import com.github.difflib.algorithm.myers.MyersDiffWithLinearSpace;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,14 +25,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class PatchWithAllDiffAlgorithmsTest {
 
     private static Stream<Arguments> provideAlgorithms() {
-        return Stream.of(
-                Arguments.of(MeyersDiff.factory()), 
-                Arguments.of(MeyersDiffWithLinearSpace.factory()));
+        return Stream.of(Arguments.of(MyersDiff.factory()), 
+                Arguments.of(MyersDiffWithLinearSpace.factory()));
     }
     
     @AfterAll
     public static void afterAll() {
-        DiffUtils.withDefaultDiffAlgorithmFactory(MeyersDiff.factory());
+        DiffUtils.withDefaultDiffAlgorithmFactory(MyersDiff.factory());
     }
 
     @ParameterizedTest

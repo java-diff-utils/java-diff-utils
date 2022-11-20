@@ -30,13 +30,13 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author tw
  */
-public class MeyersDiffWithLinearSpaceTest {
+public class MyersDiffWithLinearSpaceTest {
     
     @Test
     public void testDiffMyersExample1Forward() {
         List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
         List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
-        final Patch<String> patch = Patch.generate(original, revised, new MeyersDiffWithLinearSpace<String>().computeDiff(original, revised, null));
+        final Patch<String> patch = Patch.generate(original, revised, new MyersDiffWithLinearSpace<String>().computeDiff(original, revised, null));
         assertNotNull(patch);
         System.out.println(patch);
         assertEquals(5, patch.getDeltas().size());
@@ -50,7 +50,7 @@ public class MeyersDiffWithLinearSpaceTest {
         
         List<String> logdata = new ArrayList<>();
         final Patch<String> patch = Patch.generate(original, revised, 
-                new MeyersDiffWithLinearSpace<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
+                new MyersDiffWithLinearSpace<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
             @Override
             public void diffStart() {
                 logdata.add("start");
@@ -84,7 +84,7 @@ public class MeyersDiffWithLinearSpaceTest {
                     .collect(toList());
          
         long start = System.currentTimeMillis();
-        Patch<String> diff = DiffUtils.diff(old, newl, new MeyersDiffWithLinearSpace<String>());
+        Patch<String> diff = DiffUtils.diff(old, newl, new MyersDiffWithLinearSpace<String>());
         long end = System.currentTimeMillis();
         System.out.println("Finished in " + (end - start) + "ms and resulted " + diff.getDeltas().size() + " deltas");
     }

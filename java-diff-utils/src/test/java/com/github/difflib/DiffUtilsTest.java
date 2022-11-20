@@ -132,7 +132,7 @@ public class DiffUtilsTest {
     }
 
     /**
-     * To test this, the greedy meyer algorithm is not suitable.
+     * To test this, the greedy Myer algorithm is not suitable.
      */
     @Test
     @Disabled
