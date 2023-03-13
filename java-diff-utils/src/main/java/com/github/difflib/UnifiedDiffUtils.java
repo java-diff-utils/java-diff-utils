@@ -19,11 +19,11 @@ import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -312,5 +312,142 @@ public final class UnifiedDiffUtils {
     }
 
     private UnifiedDiffUtils() {
+    }
+
+    /**
+     * Compare the differences between two files and return to the original file and diff format
+     *
+     * (This method compares the original file with the comparison file to obtain a diff, and inserts the diff into the corresponding position of the original file.
+     * You can see all the differences and unmodified places from the original file.
+     * Also, this will be very easy and useful for making side-by-side comparison display applications,
+     * for example, if you use diff2html (https://github.com/rtfpessoa/diff2html#usage)
+     * Wait for tools to display your differences on html pages, you only need to insert the return value into your js code)
+     *
+     * @param original Original file content
+     * @param revised  revised file content
+     *
+     */
+    public static List<String> generateOriginalAndDiff(List<String> original, List<String> revised) {
+        return generateOriginalAndDiff(original, revised, null, null);
+    }
+
+
+    /**
+     * Compare the differences between two files and return to the original file and diff format
+     *
+     * (This method compares the original file with the comparison file to obtain a diff, and inserts the diff into the corresponding position of the original file.
+     * You can see all the differences and unmodified places from the original file.
+     * Also, this will be very easy and useful for making side-by-side comparison display applications,
+     * for example, if you use diff2html (https://github.com/rtfpessoa/diff2html#usage)
+     * Wait for tools to display your differences on html pages, you only need to insert the return value into your js code)
+     *
+     * @param original         Original file content
+     * @param revised          revised file content
+     * @param originalFileName Original file name
+     * @param revisedFileName  revised file name
+     */
+    public static List<String> generateOriginalAndDiff(List<String> original, List<String> revised, String originalFileName, String revisedFileName) {
+        originalFileName = originalFileName == null ? "original" : originalFileName;
+        revisedFileName = revisedFileName == null ? "revised" : revisedFileName;
+        Patch<String> patch = com.github.difflib.DiffUtils.diff(original, revised);
+        List<String> unifiedDiff = generateUnifiedDiff(originalFileName, revisedFileName, original, patch, 0);
+        if (unifiedDiff.size() == 0) {
+            unifiedDiff.add("--- " + originalFileName);
+            unifiedDiff.add("+++ " + revisedFileName);
+            unifiedDiff.add("@@ -0,0 +0,0 @@");
+        } else if (unifiedDiff.size() >= 3 && !unifiedDiff.get(2).contains("@@ -1,")) {
+            unifiedDiff.set(1, unifiedDiff.get(1));
+            unifiedDiff.add(2, "@@ -0,0 +0,0 @@");
+        }
+        List<String> original1 = original.stream().map(v -> " " + v).collect(Collectors.toList());
+        return insertOrig(original1, unifiedDiff);
+    }
+
+
+    //Insert the diff format to the original file
+    private static List<String> insertOrig(List<String> original, List<String> unifiedDiff) {
+        List<String> result = new ArrayList<>();
+        List<List<String>> diffList = new ArrayList<>();
+        List<String> d = new ArrayList<>();
+        for (int i = 0; i < unifiedDiff.size(); i++) {
+            String u = unifiedDiff.get(i);
+            if (u.startsWith("@@") && !"@@ -0,0 +0,0 @@".equals(u) && !u.contains("@@ -1,")) {
+                List<String> twoList = new ArrayList<>();
+                twoList.addAll(d);
+                diffList.add(twoList);
+                d.clear();
+                d.add(u);
+                continue;
+            }
+            if (i == unifiedDiff.size() - 1) {
+                d.add(u);
+                List<String> twoList = new ArrayList<>();
+                twoList.addAll(d);
+                diffList.add(twoList);
+                d.clear();
+                break;
+            }
+            d.add(u);
+        }
+        for (int i = 0; i < diffList.size(); i++) {
+            List<String> diff = diffList.get(i);
+            List<String> nexDiff = i == diffList.size() - 1 ? null : diffList.get(i + 1);
+            String simb = i == 0 ? diff.get(2) : diff.get(0);
+            String nexSimb = nexDiff == null ? null : nexDiff.get(0);
+            insert(result, diff);
+            Map<String, Integer> map = getRowMap(simb);
+            if (null != nexSimb) {
+                Map<String, Integer> nexMap = getRowMap(nexSimb);
+                int start = 0;
+                if (map.get("orgRow") != 0) {
+                    start = map.get("orgRow") + map.get("orgDel") - 1;
+                }
+                int end = nexMap.get("revRow") - 2;
+                insert(result, getOrigList(original, start, end));
+            }
+
+            if (simb.contains("@@ -1,") && null == nexSimb && map.get("orgDel") != original.size()) {
+                insert(result, getOrigList(original, 0, original.size() - 1));
+            } else if (null == nexSimb && (map.get("orgRow") + map.get("orgDel") - 1) < original.size()) {
+                int start = (map.get("orgRow") + map.get("orgDel") - 1);
+                start = start == -1 ? 0 : start;
+                insert(result, getOrigList(original, start, original.size() - 1));
+            }
+        }
+        return result;
+    }
+
+    //Insert the unchanged content in the source file into result
+    private static void insert(List<String> result, List<String> noChangeContent) {
+        for (String ins : noChangeContent) {
+            result.add(ins);
+        }
+    }
+
+    //Parse the line containing @@ to get the modified line number to delete or add a few lines
+    private static Map<String, Integer> getRowMap(String str) {
+        Map<String, Integer> map = new HashMap<>();
+        if (str.startsWith("@@")) {
+            String[] sp = str.split(" ");
+            String org = sp[1];
+            String[] orgSp = org.split(",");
+            map.put("orgRow", Integer.valueOf(orgSp[0].substring(1)));
+            map.put("orgDel", Integer.valueOf(orgSp[1]));
+            String[] revSp = org.split(",");
+            map.put("revRow", Integer.valueOf(revSp[0].substring(1)));
+            map.put("revAdd", Integer.valueOf(revSp[1]));
+        }
+        return map;
+    }
+
+    //Get the specified part of the line from the original file
+    private static List<String> getOrigList(List<String> original1, int start, int end) {
+        List<String> list = new ArrayList<>();
+        if (original1.size() >= 1 && start <= end && end < original1.size()) {
+            for (; start <= end; start++) {
+                list.add(original1.get(start));
+            }
+        }
+        return list;
     }
 }
