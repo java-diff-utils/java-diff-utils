@@ -351,9 +351,13 @@ public final class UnifiedDiffUtils {
      * @param revisedFileName  revised file name
      */
     public static List<String> generateOriginalAndDiff(List<String> original, List<String> revised, String originalFileName, String revisedFileName) {
-        originalFileName = originalFileName == null ? "original" : originalFileName;
-        revisedFileName = revisedFileName == null ? "revised" : revisedFileName;
-        Patch<String> patch = com.github.difflib.DiffUtils.diff(original, revised);
+        if (originalFileName == null) {
+            originalFileName = "original";
+        }
+        if (revisedFileName == null) {
+            revisedFileName = "revised";
+        }
+        Patch<String> patch = DiffUtils.diff(original, revised);
         List<String> unifiedDiff = generateUnifiedDiff(originalFileName, revisedFileName, original, patch, 0);
         if (unifiedDiff.isEmpty()) {
             unifiedDiff.add("--- " + originalFileName);
@@ -366,7 +370,6 @@ public final class UnifiedDiffUtils {
         List<String> originalWithPrefix = original.stream().map(v -> " " + v).collect(Collectors.toList());
         return insertOrig(originalWithPrefix, unifiedDiff);
     }
-
 
     //Insert the diff format to the original file
     private static List<String> insertOrig(List<String> original, List<String> unifiedDiff) {
