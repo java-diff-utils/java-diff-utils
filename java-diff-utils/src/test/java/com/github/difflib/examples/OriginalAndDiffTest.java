@@ -34,6 +34,4 @@ public class OriginalAndDiffTest {
         }
         return lines;
     }
-
-
 }

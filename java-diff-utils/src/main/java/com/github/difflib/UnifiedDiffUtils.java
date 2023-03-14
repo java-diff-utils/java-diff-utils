@@ -20,7 +20,11 @@ import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -351,7 +355,7 @@ public final class UnifiedDiffUtils {
         revisedFileName = revisedFileName == null ? "revised" : revisedFileName;
         Patch<String> patch = com.github.difflib.DiffUtils.diff(original, revised);
         List<String> unifiedDiff = generateUnifiedDiff(originalFileName, revisedFileName, original, patch, 0);
-        if (unifiedDiff.size() == 0) {
+        if (unifiedDiff.isEmpty()) {
             unifiedDiff.add("--- " + originalFileName);
             unifiedDiff.add("+++ " + revisedFileName);
             unifiedDiff.add("@@ -0,0 +0,0 @@");
@@ -359,8 +363,8 @@ public final class UnifiedDiffUtils {
             unifiedDiff.set(1, unifiedDiff.get(1));
             unifiedDiff.add(2, "@@ -0,0 +0,0 @@");
         }
-        List<String> original1 = original.stream().map(v -> " " + v).collect(Collectors.toList());
-        return insertOrig(original1, unifiedDiff);
+        List<String> originalWithPrefix = original.stream().map(v -> " " + v).collect(Collectors.toList());
+        return insertOrig(originalWithPrefix, unifiedDiff);
     }
 
 
@@ -368,27 +372,33 @@ public final class UnifiedDiffUtils {
     private static List<String> insertOrig(List<String> original, List<String> unifiedDiff) {
         List<String> result = new ArrayList<>();
         List<List<String>> diffList = new ArrayList<>();
-        List<String> d = new ArrayList<>();
+        List<String> diff = new ArrayList<>();
         for (int i = 0; i < unifiedDiff.size(); i++) {
             String u = unifiedDiff.get(i);
             if (u.startsWith("@@") && !"@@ -0,0 +0,0 @@".equals(u) && !u.contains("@@ -1,")) {
                 List<String> twoList = new ArrayList<>();
-                twoList.addAll(d);
+                twoList.addAll(diff);
                 diffList.add(twoList);
-                d.clear();
-                d.add(u);
+                diff.clear();
+                diff.add(u);
                 continue;
             }
             if (i == unifiedDiff.size() - 1) {
-                d.add(u);
+                diff.add(u);
                 List<String> twoList = new ArrayList<>();
-                twoList.addAll(d);
+                twoList.addAll(diff);
                 diffList.add(twoList);
-                d.clear();
+                diff.clear();
                 break;
             }
-            d.add(u);
+            diff.add(u);
         }
+        insertOrig(diffList,result,original);
+        return result;
+    }
+
+    //Insert the diff format to the original file
+    private static void insertOrig(List<List<String>> diffList, List<String> result,List<String> original) {
         for (int i = 0; i < diffList.size(); i++) {
             List<String> diff = diffList.get(i);
             List<String> nexDiff = i == diffList.size() - 1 ? null : diffList.get(i + 1);
@@ -405,7 +415,6 @@ public final class UnifiedDiffUtils {
                 int end = nexMap.get("revRow") - 2;
                 insert(result, getOrigList(original, start, end));
             }
-
             if (simb.contains("@@ -1,") && null == nexSimb && map.get("orgDel") != original.size()) {
                 insert(result, getOrigList(original, 0, original.size() - 1));
             } else if (null == nexSimb && (map.get("orgRow") + map.get("orgDel") - 1) < original.size()) {
@@ -414,7 +423,6 @@ public final class UnifiedDiffUtils {
                 insert(result, getOrigList(original, start, original.size() - 1));
             }
         }
-        return result;
     }
 
     //Insert the unchanged content in the source file into result
@@ -441,11 +449,11 @@ public final class UnifiedDiffUtils {
     }
 
     //Get the specified part of the line from the original file
-    private static List<String> getOrigList(List<String> original1, int start, int end) {
+    private static List<String> getOrigList(List<String> originalWithPrefix, int start, int end) {
         List<String> list = new ArrayList<>();
-        if (original1.size() >= 1 && start <= end && end < original1.size()) {
+        if (originalWithPrefix.size() >= 1 && start <= end && end < originalWithPrefix.size()) {
             for (; start <= end; start++) {
-                list.add(original1.get(start));
+                list.add(originalWithPrefix.get(start));
             }
         }
         return list;
