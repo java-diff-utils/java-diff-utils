@@ -12,15 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class OriginalAndDiffTest {
 
     @Test
-    public void testGenerateOriginalAndDiff() throws  IOException {
-        List<String> origLines = fileToLines(TestConstants.MOCK_FOLDER + "original.txt");
-        List<String> revLines = fileToLines(TestConstants.MOCK_FOLDER + "revised.txt");
+    public void testGenerateOriginalAndDiff()  {
+        List<String> origLines = null;
+        List<String> revLines = null;
+        try {
+            origLines = fileToLines(TestConstants.MOCK_FOLDER + "original.txt");
+            revLines = fileToLines(TestConstants.MOCK_FOLDER + "revised.txt");
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
 
-        List<String> originalAndDiff = UnifiedDiffUtils.generateOriginalAndDiff(origLines,revLines);
+        List<String> originalAndDiff = UnifiedDiffUtils.generateOriginalAndDiff(origLines, revLines);
         System.out.println(originalAndDiff.stream().collect(joining("\n")));
     }
 

@@ -351,17 +351,19 @@ public final class UnifiedDiffUtils {
      * @param revisedFileName  revised file name
      */
     public static List<String> generateOriginalAndDiff(List<String> original, List<String> revised, String originalFileName, String revisedFileName) {
-        if (originalFileName == null) {
-            originalFileName = "original";
+        String originalFileNameTemp = originalFileName;
+        String revisedFileNameTemp = originalFileName;
+        if (originalFileNameTemp == null) {
+            originalFileNameTemp = "original";
         }
-        if (revisedFileName == null) {
-            revisedFileName = "revised";
+        if (revisedFileNameTemp == null) {
+            revisedFileNameTemp = "revised";
         }
         Patch<String> patch = DiffUtils.diff(original, revised);
-        List<String> unifiedDiff = generateUnifiedDiff(originalFileName, revisedFileName, original, patch, 0);
+        List<String> unifiedDiff = generateUnifiedDiff(originalFileNameTemp, revisedFileNameTemp, original, patch, 0);
         if (unifiedDiff.isEmpty()) {
-            unifiedDiff.add("--- " + originalFileName);
-            unifiedDiff.add("+++ " + revisedFileName);
+            unifiedDiff.add("--- " + originalFileNameTemp);
+            unifiedDiff.add("+++ " + revisedFileNameTemp);
             unifiedDiff.add("@@ -0,0 +0,0 @@");
         } else if (unifiedDiff.size() >= 3 && !unifiedDiff.get(2).contains("@@ -1,")) {
             unifiedDiff.set(1, unifiedDiff.get(1));
@@ -396,12 +398,12 @@ public final class UnifiedDiffUtils {
             }
             diff.add(u);
         }
-        insertOrig(diffList,result,original);
+        insertOrig(diffList, result, original);
         return result;
     }
 
     //Insert the diff format to the original file
-    private static void insertOrig(List<List<String>> diffList, List<String> result,List<String> original) {
+    private static void insertOrig(List<List<String>> diffList, List<String> result, List<String> original) {
         for (int i = 0; i < diffList.size(); i++) {
             List<String> diff = diffList.get(i);
             List<String> nexDiff = i == diffList.size() - 1 ? null : diffList.get(i + 1);
@@ -421,7 +423,7 @@ public final class UnifiedDiffUtils {
             if (simb.contains("@@ -1,") && null == nexSimb && map.get("orgDel") != original.size()) {
                 insert(result, getOrigList(original, 0, original.size() - 1));
             } else if (null == nexSimb && (map.get("orgRow") + map.get("orgDel") - 1) < original.size()) {
-                int start = (map.get("orgRow") + map.get("orgDel") - 1);
+                int start = map.get("orgRow") + map.get("orgDel") - 1;
                 start = start == -1 ? 0 : start;
                 insert(result, getOrigList(original, start, original.size() - 1));
             }
@@ -455,8 +457,9 @@ public final class UnifiedDiffUtils {
     private static List<String> getOrigList(List<String> originalWithPrefix, int start, int end) {
         List<String> list = new ArrayList<>();
         if (originalWithPrefix.size() >= 1 && start <= end && end < originalWithPrefix.size()) {
-            for (; start <= end; start++) {
-                list.add(originalWithPrefix.get(start));
+            int startTemp = start;
+            for (; startTemp <= end; startTemp++) {
+                list.add(originalWithPrefix.get(startTemp));
             }
         }
         return list;
