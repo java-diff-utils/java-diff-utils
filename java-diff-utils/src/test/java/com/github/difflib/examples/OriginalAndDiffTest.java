@@ -31,6 +31,21 @@ public class OriginalAndDiffTest {
         System.out.println(originalAndDiff.stream().collect(joining("\n")));
     }
 
+    @Test
+    public void testGenerateOriginalAndDiffFirstLineChange()  {
+        List<String> origLines = null;
+        List<String> revLines = null;
+        try {
+            origLines = fileToLines(TestConstants.MOCK_FOLDER + "issue_170_original.txt");
+            revLines = fileToLines(TestConstants.MOCK_FOLDER + "issue_170_revised.txt");
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+
+        List<String> originalAndDiff = UnifiedDiffUtils.generateOriginalAndDiff(origLines, revLines);
+        System.out.println(originalAndDiff.stream().collect(joining("\n")));
+    }
+
     public static List<String> fileToLines(String filename) throws FileNotFoundException, IOException {
         List<String> lines = new ArrayList<>();
         String line = "";
