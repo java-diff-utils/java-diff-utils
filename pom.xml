@@ -10,7 +10,7 @@
         <module>java-diff-utils</module>
         <module>java-diff-utils-jgit</module>
     </modules>
-    <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
+    <description>The DiffUtils library for computing diffs, applying patches, generating side-by-side view in Java.</description>
     <url>https://github.com/java-diff-utils/java-diff-utils</url>
     <inceptionYear>2009</inceptionYear> 
 	
