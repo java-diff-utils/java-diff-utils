@@ -36,7 +36,7 @@ DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")      //introduce markdown style for strikethrough
+                .oldTag(f -> "~~")     //introduce markdown style for strikethrough
                 .newTag(f -> "**")     //introduce markdown style for bold
                 .build();
 
@@ -48,7 +48,7 @@ List<DiffRow> rows = generator.generateDiffRows(
 System.out.println(rows.get(0).getOldLine());
 ```
 
-This is a test ~senctence~**for diffutils**.
+This is a test ~~senctence~~**for diffutils**.
 
 **Producing a side by side view of computed differences.**
 
@@ -56,7 +56,7 @@ This is a test ~senctence~**for diffutils**.
 DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")
+                .oldTag(f -> "~~")
                 .newTag(f -> "**")
                 .build();
 List<DiffRow> rows = generator.generateDiffRows(
@@ -70,11 +70,11 @@ for (DiffRow row : rows) {
 }
 ```
 
-|original|new|
-|--------|---|
-|This is a test ~senctence~.|This is a test **for diffutils**.|
-|This is the second line.|This is the second line.|
-|~And here is the finish.~||
+| original                      |new|
+|-------------------------------|---|
+| This is a test ~~senctence~~. |This is a test **for diffutils**.|
+| This is the second line.      |This is the second line.|
+| ~~And here is the finish.~~   ||
 
 ## Main Features
 
