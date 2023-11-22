@@ -85,13 +85,13 @@ for (DiffRow row : rows) {
 * producing human-readable differences
 * inline difference construction
 * Algorithms:
-  * Meyers Standard Algorithm
-  * Meyers with linear space improvement
+  * Myers Standard Algorithm
+  * Myers with linear space improvement
   * HistogramDiff using JGit Library
 
 ### Algorithms
 
-* Meyer's diff
+* Myer's diff
 * HistogramDiff
 
 But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
