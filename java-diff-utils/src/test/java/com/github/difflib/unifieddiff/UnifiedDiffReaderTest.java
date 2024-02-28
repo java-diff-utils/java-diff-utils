@@ -396,7 +396,7 @@ public class UnifiedDiffReaderTest {
     }
 
     @Test
-    public void testParseIssue182_add() throws IOException {
+    public void testParseIssue182add() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_add.diff"));
 
@@ -406,7 +406,7 @@ public class UnifiedDiffReaderTest {
     }
 
     @Test
-    public void testParseIssue182_delete() throws IOException {
+    public void testParseIssue182delete() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_delete.diff"));
 
@@ -416,7 +416,7 @@ public class UnifiedDiffReaderTest {
     }
 
     @Test
-    public void testParseIssue182_edit() throws IOException {
+    public void testParseIssue182edit() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_edit.diff"));
 
@@ -426,7 +426,7 @@ public class UnifiedDiffReaderTest {
     }
 
     @Test
-    public void testParseIssue182_mode() throws IOException {
+    public void testParseIssue182mode() throws IOException {
         UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
                 UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_mode.diff"));
 
