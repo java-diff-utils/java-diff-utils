@@ -394,4 +394,45 @@ public class UnifiedDiffReaderTest {
         assertThat(file1.getFromFile()).isEqualTo("a.txt");
         assertThat(file1.getToFile()).isEqualTo("a1.txt");
     }
+
+    @Test
+    public void testParseIssue182_add() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_add.diff"));
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getBinaryAdded()).isEqualTo("some-image.png");
+    }
+
+    @Test
+    public void testParseIssue182_delete() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_delete.diff"));
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getBinaryDeleted()).isEqualTo("some-image.png");
+    }
+
+    @Test
+    public void testParseIssue182_edit() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_edit.diff"));
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getBinaryEdited()).isEqualTo("some-image.png");
+    }
+
+    @Test
+    public void testParseIssue182_mode() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_issue182_mode.diff"));
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getOldMode()).isEqualTo("100644");
+        assertThat(file1.getNewMode()).isEqualTo("100755");
+    }
 }

@@ -55,7 +55,11 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
 
     private final UnifiedDiffLine DELETED_FILE_MODE = new UnifiedDiffLine(true, "^deleted\\sfile\\smode\\s(\\d+)", this::processDeletedFileMode);
-
+    private final UnifiedDiffLine OLD_MODE = new UnifiedDiffLine(true, "^old\\smode\\s(\\d+)", this::processOldMode);
+    private final UnifiedDiffLine NEW_MODE = new UnifiedDiffLine(true, "^new\\smode\\s(\\d+)", this::processNewMode);
+    private final UnifiedDiffLine BINARY_ADDED = new UnifiedDiffLine(true, "^Binary\\sfiles\\s/dev/null\\sand\\sb/(.+)\\sdiffer", this::processBinaryAdded);
+    private final UnifiedDiffLine BINARY_DELETED = new UnifiedDiffLine(true, "^Binary\\sfiles\\sa/(.+)\\sand\\s/dev/null\\sdiffer", this::processBinaryDeleted);
+    private final UnifiedDiffLine BINARY_EDITED = new UnifiedDiffLine(true, "^Binary\\sfiles\\sa/(.+)\\sand\\sb/(.+)\\sdiffer", this::processBinaryEdited);
     private final UnifiedDiffLine CHUNK = new UnifiedDiffLine(false, UNIFIED_DIFF_CHUNK_REGEXP, this::processChunk);
     private final UnifiedDiffLine LINE_NORMAL = new UnifiedDiffLine("^\\s", this::processNormalLine);
     private final UnifiedDiffLine LINE_DEL = new UnifiedDiffLine("^-", this::processDelLine);
@@ -99,8 +103,10 @@ public final class UnifiedDiffReader {
                 if (validLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
                             FROM_FILE, TO_FILE,
                             RENAME_FROM, RENAME_TO,
-                            NEW_FILE_MODE, DELETED_FILE_MODE, 
-                            CHUNK)) {
+                            NEW_FILE_MODE, DELETED_FILE_MODE,
+                            OLD_MODE, NEW_MODE,
+                            BINARY_ADDED, BINARY_DELETED,
+                            BINARY_EDITED, CHUNK)) {
                     break;
                 } else {
                     headerTxt += line + "\n";
@@ -116,7 +122,10 @@ public final class UnifiedDiffReader {
                     if (!processLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
                             FROM_FILE, TO_FILE,
                             RENAME_FROM, RENAME_TO,
-                            NEW_FILE_MODE, DELETED_FILE_MODE)) {
+                            NEW_FILE_MODE, DELETED_FILE_MODE,
+                            OLD_MODE, NEW_MODE,
+                            BINARY_ADDED , BINARY_DELETED,
+                            BINARY_EDITED)) {
                         throw new UnifiedDiffParserException("expected file start line not found");
                     }
                     line = READER.readLine();
@@ -344,6 +353,26 @@ public final class UnifiedDiffReader {
     private void processDeletedFileMode(MatchResult match, String line) {
         //initFileIfNecessary();
         actualFile.setDeletedFileMode(match.group(1));
+    }
+
+    private void processOldMode(MatchResult match, String line) {
+        actualFile.setOldMode(match.group(1));
+    }
+
+    private void processNewMode(MatchResult match, String line) {
+        actualFile.setNewMode(match.group(1));
+    }
+
+    private void processBinaryAdded(MatchResult match, String line) {
+        actualFile.setBinaryAdded(match.group(1));
+    }
+
+    private void processBinaryDeleted(MatchResult match, String line) {
+        actualFile.setBinaryDeleted(match.group(1));
+    }
+
+    private void processBinaryEdited(MatchResult match, String line) {
+        actualFile.setBinaryEdited(match.group(1));
     }
 
     private String extractFileName(String _line) {

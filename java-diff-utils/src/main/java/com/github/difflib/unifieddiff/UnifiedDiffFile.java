@@ -33,7 +33,12 @@ public final class UnifiedDiffFile {
     private String toTimestamp;
     private String index;
     private String newFileMode;
+    private String oldMode;
+    private String newMode;
     private String deletedFileMode;
+    private String binaryAdded;
+    private String binaryDeleted;
+    private String binaryEdited;
     private Patch<String> patch = new Patch<>();
     private boolean noNewLineAtTheEndOfTheFile = false;
     private Integer similarityIndex;
@@ -136,6 +141,46 @@ public final class UnifiedDiffFile {
 
     public void setDeletedFileMode(String deletedFileMode) {
         this.deletedFileMode = deletedFileMode;
+    }
+
+    public String getOldMode() {
+        return oldMode;
+    }
+
+    public void setOldMode(String oldMode) {
+        this.oldMode = oldMode;
+    }
+
+    public String getNewMode() {
+        return newMode;
+    }
+
+    public void setNewMode(String newMode) {
+        this.newMode = newMode;
+    }
+
+    public String getBinaryAdded() {
+        return binaryAdded;
+    }
+
+    public void setBinaryAdded(String binaryAdded) {
+        this.binaryAdded = binaryAdded;
+    }
+
+    public String getBinaryDeleted() {
+        return binaryDeleted;
+    }
+
+    public void setBinaryDeleted(String binaryDeleted) {
+        this.binaryDeleted = binaryDeleted;
+    }
+
+    public String getBinaryEdited() {
+        return binaryEdited;
+    }
+
+    public void setBinaryEdited(String binaryEdited) {
+        this.binaryEdited = binaryEdited;
     }
 
     public boolean isNoNewLineAtTheEndOfTheFile() {
