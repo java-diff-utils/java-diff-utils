@@ -761,29 +761,9 @@ index 0000000000..9757827e0f
 +  }
 +}
 diff --git a/pgjdbc/src/main/java/org/postgresql/ssl/jdbc4/LazyKeyManager.java b/pgjdbc/src/main/java/org/postgresql/ssl/LazyKeyManager.java
-similarity index 99%
+similarity index 100%
 rename from pgjdbc/src/main/java/org/postgresql/ssl/jdbc4/LazyKeyManager.java
 rename to pgjdbc/src/main/java/org/postgresql/ssl/LazyKeyManager.java
-index 4585f1a968..be4db4153b 100644
---- a/pgjdbc/src/main/java/org/postgresql/ssl/jdbc4/LazyKeyManager.java
-+++ b/pgjdbc/src/main/java/org/postgresql/ssl/LazyKeyManager.java
-@@ -3,7 +3,7 @@
-  * See the LICENSE file in the project root for more information.
-  */
- 
--package org.postgresql.ssl.jdbc4;
-+package org.postgresql.ssl;
- 
- import org.postgresql.util.GT;
- import org.postgresql.util.PSQLException;
-@@ -222,6 +222,7 @@ public PrivateKey getPrivateKey(String alias) {
-           }
-           try {
-             PBEKeySpec pbeKeySpec = new PBEKeySpec(pwdcb.getPassword());
-+            pwdcb.clearPassword();
-             // Now create the Key from the PBEKeySpec
-             SecretKeyFactory skFac = SecretKeyFactory.getInstance(ePKInfo.getAlgName());
-             Key pbeKey = skFac.generateSecret(pbeKeySpec);
 diff --git a/pgjdbc/src/main/java/org/postgresql/ssl/LibPQFactory.java b/pgjdbc/src/main/java/org/postgresql/ssl/LibPQFactory.java
 new file mode 100644
 index 0000000000..c0c34bd274
