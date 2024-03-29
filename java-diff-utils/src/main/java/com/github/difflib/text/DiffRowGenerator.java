@@ -492,11 +492,10 @@ public final class DiffRowGenerator {
         }
 
         /**
-         * Give the originial old and new text lines to Diffrow without any
-         * additional processing and without any tags to highlight the change.
+         * Report all lines without markup on the old or new text.
          *
          * @param val the value to set. Default: false.
-         * @return builder with configured reportLinesUnWrapped parameter
+         * @return builder with configured reportLinesUnchanged parameter
          */
         public Builder reportLinesUnchanged(final boolean val) {
             reportLinesUnchanged = val;
