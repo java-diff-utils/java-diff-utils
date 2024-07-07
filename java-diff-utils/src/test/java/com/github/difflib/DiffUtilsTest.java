@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -226,5 +228,15 @@ public class DiffUtilsTest {
         assertTrue(delta instanceof ChangeDelta);
         assertEquals(new Chunk<>(3, Arrays.asList("brown")), delta.getSource());
         assertEquals(new Chunk<>(3, Arrays.asList("down")), delta.getTarget());
+    }
+    
+    @Test
+    public void testDiffPatchIssue189Problem() throws IOException {
+        String original = new String(Files.readAllBytes(Paths.get("target/test-classes/com/github/difflib/text/issue_189_insert_original.txt")));
+        String revised = new String(Files.readAllBytes(Paths.get("target/test-classes/com/github/difflib/text/issue_189_insert_revised.txt")));
+        
+        Patch patch = DiffUtils.diff(Arrays.asList(original.split("\n")), Arrays.asList(revised.split("\n")));
+        
+        assertEquals(1, patch.getDeltas().size());
     }
 }
