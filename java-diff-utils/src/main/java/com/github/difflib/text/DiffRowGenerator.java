@@ -67,7 +67,7 @@ public final class DiffRowGenerator {
         return list;
     };
 
-    public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#]");
+    public static final Pattern SPLIT_BY_WORD_PATTERN = Pattern.compile("\\s+|[,.\\[\\](){}/\\\\*+\\-#<>;:&\\']+");
 
     /**
      * Splitting lines by word to achieve word by word diff checking.
