@@ -1,7 +1,12 @@
 package com.github.difflib.text;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.myers.MyersDiffWithLinearSpace;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -721,7 +726,7 @@ public class DiffRowGeneratorTest {
 
         assertThat(txt).isEqualTo("EQUAL EQUAL EQUAL CHANGE INSERT INSERT EQUAL EQUAL EQUAL");
     }
-    
+
     @Test
     public void testIssue129SkipDeltaDecompression() {
         List<String> lines1 = Arrays.asList(
@@ -743,17 +748,17 @@ public class DiffRowGeneratorTest {
                 "banana2",
                 "banana3");
         int[] entry = {1};
-        String txt = 
-                DiffRowGenerator.create()
-                .showInlineDiffs(true)
-                .decompressDeltas(false)
-                .oldTag((tag, isOpening) -> isOpening ? "==old" + tag + "==>" : "<==old==")
-                .newTag((tag, isOpening) -> isOpening ? "==new" + tag + "==>" : "<==new==")
-                .build()
-                .generateDiffRows(lines1, lines2)
-                .stream()
-                .map(row -> row.getTag().toString())
-                .collect(joining(" "));
+        String txt
+                = DiffRowGenerator.create()
+                        .showInlineDiffs(true)
+                        .decompressDeltas(false)
+                        .oldTag((tag, isOpening) -> isOpening ? "==old" + tag + "==>" : "<==old==")
+                        .newTag((tag, isOpening) -> isOpening ? "==new" + tag + "==>" : "<==new==")
+                        .build()
+                        .generateDiffRows(lines1, lines2)
+                        .stream()
+                        .map(row -> row.getTag().toString())
+                        .collect(joining(" "));
 //                .forEachOrdered(row -> {
 //                    System.out.printf("%4d %-8s %-80s %-80s\n", entry[0]++,
 //                            row.getTag(), row.getOldLine(), row.getNewLine());
@@ -761,7 +766,7 @@ public class DiffRowGeneratorTest {
 
         assertThat(txt).isEqualTo("EQUAL EQUAL EQUAL CHANGE CHANGE CHANGE EQUAL EQUAL EQUAL");
     }
-    
+
     @Test
     public void testIssue129SkipWhitespaceChanges() throws IOException {
         String original = Files.lines(Paths.get("target/test-classes/com/github/difflib/text/issue129_1.txt")).collect(joining("\n"));
@@ -780,9 +785,33 @@ public class DiffRowGeneratorTest {
                 Arrays.asList(revised.split("\n")));
 
         assertThat(rows).hasSize(13);
-        
+
         rows.stream()
                 .filter(item -> item.getTag() != DiffRow.Tag.EQUAL)
                 .forEach(System.out::println);
     }
+
+    @Test
+    public void testIssue188HangOnExamples() throws IOException, URISyntaxException {        
+        try (FileSystem zipFs = FileSystems.newFileSystem(Paths.get("target/test-classes/com/github/difflib/text/test.zip"), null);) {
+            List<String> original = Files.readAllLines(zipFs.getPath("old.html"));
+            List<String> revised = Files.readAllLines(zipFs.getPath("new.html"));
+
+            DiffRowGenerator generator = DiffRowGenerator.create()
+                    .lineNormalizer(line -> line)
+                    .showInlineDiffs(true)
+                    .mergeOriginalRevised(true)
+                    .inlineDiffByWord(true)
+                    .decompressDeltas(true)
+                    .oldTag(f -> f ? "<s style=\"background-color: #bbbbbb\">" : "</s>")
+                    .newTag(f -> f ? "<b style=\"background-color: #aaffaa\">" : "</b>")
+                    .build();
+
+            //List<DiffRow> rows = generator.generateDiffRows(original, revised);
+            List<DiffRow> rows = generator.generateDiffRows(original, DiffUtils.diff(original, revised, new MyersDiffWithLinearSpace<>() ));
+        
+            System.out.println(rows);
+        }
+    }
 }
+
