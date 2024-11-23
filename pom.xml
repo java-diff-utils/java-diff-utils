@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils-parent</artifactId>
-    <version>4.15-SNAPSHOT</version>
+    <version>4.14-SNAPSHOT</version>
     <name>java-diff-utils-parent</name>
     <packaging>pom</packaging>
     <modules>
