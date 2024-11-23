@@ -81,12 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <!-- 
-                dont switch to version 3.0.1, that makes the strange certificate problems 
-                start maven release with -Dmaven.wagon.http.ssl.allowall=true since JDK 1.8
-                does not have a complete truststore
-                --> 
-                <version>3.0.0-M7</version>
+                <version>2.5.3</version>
                 <configuration>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
@@ -110,22 +105,8 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.1</version>
+                <version>3.1.1</version>
                 <configuration>
                     <additionalparam>${javadoc.opts}</additionalparam>
                     <doclint>none</doclint>
@@ -219,7 +200,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
