@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public final class UnifiedDiffUtils {
 
     private static final Pattern UNIFIED_DIFF_CHUNK_REGEXP = Pattern
-            .compile("^@@\\s+-(?:(\\d+)(?:,(\\d+))?)\\s+\\+(?:(\\d+)(?:,(\\d+))?)\\s+@@$");
+            .compile("^@@\\s+-(\\d+)(?:,(\\d+))?\\s+\\+(\\d+)(?:,(\\d+))?\\s+@@.*$");
     private static final String NULL_FILE_INDICATOR = "/dev/null";
 
     /**
