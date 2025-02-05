@@ -24,6 +24,8 @@ import com.github.difflib.patch.DeltaType;
 import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
+import com.github.difflib.text.deltamerge.DeltaMergeUtils;
+import com.github.difflib.text.deltamerge.InlineDeltaMergeInfo;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -74,6 +76,14 @@ public final class DiffRowGenerator {
      */
     public static final Function<String, List<String>> SPLITTER_BY_WORD = line -> splitStringPreserveDelimiter(line, SPLIT_BY_WORD_PATTERN);
     public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+
+    public static final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> DEFAULT_INLINE_DELTA_MERGER = InlineDeltaMergeInfo::getDeltas;
+
+    /**
+     * Merge diffs which are separated by equalities consisting of whitespace only.
+     */
+    public static final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> WHITESPACE_EQUALITIES_MERGER = deltaMergeInfo -> DeltaMergeUtils
+            .mergeInlineDeltas(deltaMergeInfo, (equalities -> equalities.stream().allMatch(String::isBlank)));
 
     public static Builder create() {
         return new Builder();
@@ -170,6 +180,7 @@ public final class DiffRowGenerator {
     private final boolean reportLinesUnchanged;
     private final Function<String, String> lineNormalizer;
     private final Function<String, String> processDiffs;
+    private final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> inlineDeltaMerger;
 
     private final boolean showInlineDiffs;
     private final boolean replaceOriginalLinefeedInChangesWithSpaces;
@@ -194,11 +205,13 @@ public final class DiffRowGenerator {
         reportLinesUnchanged = builder.reportLinesUnchanged;
         lineNormalizer = builder.lineNormalizer;
         processDiffs = builder.processDiffs;
+        inlineDeltaMerger = builder.inlineDeltaMerger;
 
         replaceOriginalLinefeedInChangesWithSpaces = builder.replaceOriginalLinefeedInChangesWithSpaces;
 
         Objects.requireNonNull(inlineDiffSplitter);
         Objects.requireNonNull(lineNormalizer);
+        Objects.requireNonNull(inlineDeltaMerger);
     }
 
     /**
@@ -370,7 +383,10 @@ public final class DiffRowGenerator {
         origList = inlineDiffSplitter.apply(joinedOrig);
         revList = inlineDiffSplitter.apply(joinedRev);
 
-        List<AbstractDelta<String>> inlineDeltas = DiffUtils.diff(origList, revList, equalizer).getDeltas();
+        List<AbstractDelta<String>> originalInlineDeltas = DiffUtils.diff(origList, revList, equalizer)
+                .getDeltas();
+        List<AbstractDelta<String>> inlineDeltas = inlineDeltaMerger
+                .apply(new InlineDeltaMergeInfo(originalInlineDeltas, origList, revList));
 
         Collections.reverse(inlineDeltas);
         for (AbstractDelta<String> inlineDelta : inlineDeltas) {
@@ -465,6 +481,7 @@ public final class DiffRowGenerator {
         private Function<String, String> processDiffs = null;
         private BiPredicate<String, String> equalizer = null;
         private boolean replaceOriginalLinefeedInChangesWithSpaces = false;
+        private Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> inlineDeltaMerger = DEFAULT_INLINE_DELTA_MERGER;
 
         private Builder() {
         }
@@ -671,6 +688,18 @@ public final class DiffRowGenerator {
          */
         public Builder replaceOriginalLinefeedInChangesWithSpaces(boolean replace) {
             this.replaceOriginalLinefeedInChangesWithSpaces = replace;
+            return this;
+        }
+
+        /**
+         * Provide an inline delta merger for use case specific delta optimizations.
+         *
+         * @param inlineDeltaMerger
+         * @return
+         */
+        public Builder inlineDeltaMerger(
+                Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> inlineDeltaMerger) {
+            this.inlineDeltaMerger = inlineDeltaMerger;
             return this;
         }
     }

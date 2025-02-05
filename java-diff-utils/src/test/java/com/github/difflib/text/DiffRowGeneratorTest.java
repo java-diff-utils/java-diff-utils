@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -19,6 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.text.deltamerge.DeltaMergeUtils;
+import com.github.difflib.text.deltamerge.InlineDeltaMergeInfo;
 
 public class DiffRowGeneratorTest {
 
@@ -791,6 +796,47 @@ public class DiffRowGeneratorTest {
                 .forEach(System.out::println);
     }
 
+    @Test
+    public void testGeneratorWithWhitespaceDeltaMerge() {
+        final DiffRowGenerator generator = DiffRowGenerator.create().showInlineDiffs(true).mergeOriginalRevised(true)
+                .inlineDiffByWord(true).oldTag(f -> "~").newTag(f -> "**") //
+                .lineNormalizer(StringUtils::htmlEntites) // do not replace tabs
+                .inlineDeltaMerger(DiffRowGenerator.WHITESPACE_EQUALITIES_MERGER).build();
+
+        assertInlineDiffResult(generator, "No diff", "No diff", "No diff");
+        assertInlineDiffResult(generator, " x whitespace before diff", " y whitespace before diff",
+                " ~x~**y** whitespace before diff");
+        assertInlineDiffResult(generator, "Whitespace after diff x ", "Whitespace after diff y ",
+                "Whitespace after diff ~x~**y** ");
+        assertInlineDiffResult(generator, "Diff x x between", "Diff y y between", "Diff ~x x~**y y** between");
+        assertInlineDiffResult(generator, "Hello \t world", "Hi \t universe", "~Hello \t world~**Hi \t universe**");
+        assertInlineDiffResult(generator, "The quick brown fox jumps over the lazy dog", "A lazy dog jumps over a fox",
+                "~The quick brown fox ~**A lazy dog **jumps over ~the lazy dog~**a fox**");
+    }
+
+    @Test
+    public void testGeneratorWithMergingDeltasForShortEqualities() {
+        final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> shortEqualitiesMerger = deltaMergeInfo -> DeltaMergeUtils
+                .mergeInlineDeltas(deltaMergeInfo,
+                        (equalities -> equalities.stream().mapToInt(String::length).sum() < 6));
+
+        final DiffRowGenerator generator = DiffRowGenerator.create().showInlineDiffs(true).mergeOriginalRevised(true)
+                .inlineDiffByWord(true).oldTag(f -> "~").newTag(f -> "**").inlineDeltaMerger(shortEqualitiesMerger)
+                .build();
+
+        assertInlineDiffResult(generator, "No diff", "No diff", "No diff");
+        assertInlineDiffResult(generator, "aaa bbb ccc", "xxx bbb zzz", "~aaa bbb ccc~**xxx bbb zzz**");
+        assertInlineDiffResult(generator, "aaa bbbb ccc", "xxx bbbb zzz", "~aaa~**xxx** bbbb ~ccc~**zzz**");
+    }
+
+    private void assertInlineDiffResult(DiffRowGenerator generator, String original, String revised, String expected) {
+        final List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(original), Arrays.asList(revised));
+        print(rows);
+
+        assertEquals(1, rows.size());
+        assertEquals(expected, rows.get(0).getOldLine().toString());
+    }
+  
     @Test
     public void testIssue188HangOnExamples() throws IOException, URISyntaxException {        
         try (FileSystem zipFs = FileSystems.newFileSystem(Paths.get("target/test-classes/com/github/difflib/text/test.zip"), null);) {
