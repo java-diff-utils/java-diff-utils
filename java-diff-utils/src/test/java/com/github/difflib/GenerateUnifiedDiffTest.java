@@ -51,8 +51,14 @@ public class GenerateUnifiedDiffTest {
     @Test
     public void testGenerateUnifiedDiffWithoutAnyDeltas() {
         List<String> test = Arrays.asList("abc");
-        Patch<String> patch = DiffUtils.diff(test, test);
-        UnifiedDiffUtils.generateUnifiedDiff("abc", "abc", test, patch, 0);
+        List<String> testRevised = Arrays.asList("abc2");
+        Patch<String> patch = DiffUtils.diff(test, testRevised);
+        String unifiedDiffTxt = String.join("\n", UnifiedDiffUtils.generateUnifiedDiff("abc1", "abc2", test, patch, 0));
+        System.out.println(unifiedDiffTxt);
+        
+        assertThat(unifiedDiffTxt)
+                .as("original filename should be abc1").contains("--- abc1")
+                .as("revised filename should be abc2").contains("+++ abc2");
     }
 
     @Test

@@ -352,7 +352,7 @@ public final class UnifiedDiffUtils {
      */
     public static List<String> generateOriginalAndDiff(List<String> original, List<String> revised, String originalFileName, String revisedFileName) {
         String originalFileNameTemp = originalFileName;
-        String revisedFileNameTemp = originalFileName;
+        String revisedFileNameTemp = revisedFileName;
         if (originalFileNameTemp == null) {
             originalFileNameTemp = "original";
         }
