@@ -818,7 +818,7 @@ public class DiffRowGeneratorTest {
     public void testGeneratorWithMergingDeltasForShortEqualities() {
         final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> shortEqualitiesMerger = deltaMergeInfo -> DeltaMergeUtils
                 .mergeInlineDeltas(deltaMergeInfo,
-                        (equalities -> equalities.stream().mapToInt(String::length).sum() < 6));
+                        equalities -> equalities.stream().mapToInt(String::length).sum() < 6);
 
         final DiffRowGenerator generator = DiffRowGenerator.create().showInlineDiffs(true).mergeOriginalRevised(true)
                 .inlineDiffByWord(true).oldTag(f -> "~").newTag(f -> "**").inlineDeltaMerger(shortEqualitiesMerger)

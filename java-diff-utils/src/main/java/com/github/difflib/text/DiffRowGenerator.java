@@ -83,7 +83,7 @@ public final class DiffRowGenerator {
      * Merge diffs which are separated by equalities consisting of whitespace only.
      */
     public static final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> WHITESPACE_EQUALITIES_MERGER = deltaMergeInfo -> DeltaMergeUtils
-            .mergeInlineDeltas(deltaMergeInfo, (equalities -> equalities.stream().allMatch(String::isBlank)));
+            .mergeInlineDeltas(deltaMergeInfo, equalities -> equalities.stream().allMatch(s -> s==null || s.replaceAll("\\s+", "").equals("")));
 
     public static Builder create() {
         return new Builder();

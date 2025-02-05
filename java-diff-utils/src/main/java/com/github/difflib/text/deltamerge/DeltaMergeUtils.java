@@ -40,7 +40,7 @@ final public class DeltaMergeUtils {
         final List<AbstractDelta<String>> newDeltas = new ArrayList<>();
         newDeltas.add(originalDeltas.get(0));
         for (int i = 1; i < originalDeltas.size(); i++) {
-            final AbstractDelta<String> previousDelta = newDeltas.getLast();
+            final AbstractDelta<String> previousDelta = newDeltas.get(newDeltas.size()-1);
             final AbstractDelta<String> currentDelta = originalDeltas.get(i);
 
             final List<String> equalities = deltaMergeInfo.getOrigList().subList(
@@ -64,7 +64,7 @@ final public class DeltaMergeUtils {
                         new Chunk<>(previousDelta.getSource().getPosition(), allSourceLines),
                         new Chunk<>(previousDelta.getTarget().getPosition(), allTargetLines));
 
-                newDeltas.removeLast();
+                newDeltas.remove(newDeltas.size()-1);
                 newDeltas.add(replacement);
             } else {
                 newDeltas.add(currentDelta);
