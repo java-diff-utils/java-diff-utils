@@ -187,13 +187,13 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
             @Override
             public <T> DiffAlgorithmI<T> 
             create() {
-                return new MyersDiff<T>();
+                return new MyersDiff<>();
             }
 
             @Override
             public <T> DiffAlgorithmI<T> 
             create(BiPredicate < T, T > equalizer) {
-                return new MyersDiff<T>(equalizer);
+                return new MyersDiff<>(equalizer);
             }
         };
     }

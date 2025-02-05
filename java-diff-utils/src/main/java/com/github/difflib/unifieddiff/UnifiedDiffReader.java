@@ -51,6 +51,9 @@ public final class UnifiedDiffReader {
     private final UnifiedDiffLine TO_FILE = new UnifiedDiffLine(true, "^\\+\\+\\+\\s", this::processToFile);
     private final UnifiedDiffLine RENAME_FROM = new UnifiedDiffLine(true, "^rename\\sfrom\\s(.+)$", this::processRenameFrom);
     private final UnifiedDiffLine RENAME_TO = new UnifiedDiffLine(true, "^rename\\sto\\s(.+)$", this::processRenameTo);
+    
+    private final UnifiedDiffLine COPY_FROM = new UnifiedDiffLine(true, "^copy\\sfrom\\s(.+)$", this::processCopyFrom);
+    private final UnifiedDiffLine COPY_TO = new UnifiedDiffLine(true, "^copy\\sto\\s(.+)$", this::processCopyTo);
 
     private final UnifiedDiffLine NEW_FILE_MODE = new UnifiedDiffLine(true, "^new\\sfile\\smode\\s(\\d+)", this::processNewFileMode);
 
@@ -103,6 +106,7 @@ public final class UnifiedDiffReader {
                 if (validLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
                             FROM_FILE, TO_FILE,
                             RENAME_FROM, RENAME_TO,
+                                  COPY_FROM, COPY_TO,
                             NEW_FILE_MODE, DELETED_FILE_MODE,
                             OLD_MODE, NEW_MODE,
                             BINARY_ADDED, BINARY_DELETED,
@@ -122,6 +126,7 @@ public final class UnifiedDiffReader {
                     if (!processLine(line, DIFF_COMMAND, SIMILARITY_INDEX, INDEX,
                             FROM_FILE, TO_FILE,
                             RENAME_FROM, RENAME_TO,
+                            COPY_FROM, COPY_TO,
                             NEW_FILE_MODE, DELETED_FILE_MODE,
                             OLD_MODE, NEW_MODE,
                             BINARY_ADDED , BINARY_DELETED,
@@ -343,6 +348,14 @@ public final class UnifiedDiffReader {
 
     private void processRenameTo(MatchResult match, String line) {
         actualFile.setRenameTo(match.group(1));
+    }
+    
+    private void processCopyFrom(MatchResult match, String line) {
+        actualFile.setCopyFrom(match.group(1));
+    }
+
+    private void processCopyTo(MatchResult match, String line) {
+        actualFile.setCopyTo(match.group(1));
     }
 
     private void processNewFileMode(MatchResult match, String line) {

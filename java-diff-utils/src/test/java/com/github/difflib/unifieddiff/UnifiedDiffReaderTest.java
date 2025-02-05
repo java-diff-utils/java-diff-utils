@@ -435,4 +435,15 @@ public class UnifiedDiffReaderTest {
         assertThat(file1.getOldMode()).isEqualTo("100644");
         assertThat(file1.getNewMode()).isEqualTo("100755");
     }
+    
+    @Test
+    public void testParseIssue193Copy() throws IOException {
+        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(
+                UnifiedDiffReaderTest.class.getResourceAsStream("problem_diff_parsing_issue193.diff"));
+
+        UnifiedDiffFile file1 = diff.getFiles().get(0);
+
+        assertThat(file1.getCopyFrom()).isEqualTo("modules/configuration/config/web/pcf/account/AccountContactCV.pcf");
+        assertThat(file1.getCopyTo()).isEqualTo("modules/configuration/config/web/pcf/account/AccountContactCV.default.pcf");
+    }
 }

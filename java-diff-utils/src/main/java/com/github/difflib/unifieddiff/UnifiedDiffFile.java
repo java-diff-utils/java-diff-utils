@@ -30,6 +30,8 @@ public final class UnifiedDiffFile {
     private String toFile;
     private String renameFrom;
     private String renameTo;
+    private String copyFrom;
+    private String copyTo;
     private String toTimestamp;
     private String index;
     private String newFileMode;
@@ -117,6 +119,22 @@ public final class UnifiedDiffFile {
 
     public void setRenameTo(String renameTo) {
         this.renameTo = renameTo;
+    }
+
+    public String getCopyFrom() {
+        return copyFrom;
+    }
+
+    public void setCopyFrom(String copyFrom) {
+        this.copyFrom = copyFrom;
+    }
+
+    public String getCopyTo() {
+        return copyTo;
+    }
+
+    public void setCopyTo(String copyTo) {
+        this.copyTo = copyTo;
     }
 
     public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {

@@ -1,0 +1,26 @@
+diff --git src://modules/configuration/config/web/pcf/account/AccountContactCV.pcf dst://modules/configuration/config/web/pcf/account/AccountContactCV.default.pcf
+similarity index 99%
+copy from modules/configuration/config/web/pcf/account/AccountContactCV.pcf
+copy to modules/configuration/config/web/pcf/account/AccountContactCV.default.pcf
+index 13efef5778..1a08b0befc 100644
+--- src://modules/configuration/config/web/pcf/account/AccountContactCV.pcf
++++ dst://modules/configuration/config/web/pcf/account/AccountContactCV.default.pcf
+@@ -1,16 +1,17 @@
+ <?xml version="1.0"?>
+ <PCF
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+   <CardViewPanel
+-    id="AccountContactCV">
++    id="AccountContactCV"
++    mode="default">
+     <Require
+       name="acctContact"
+       type="AccountContact"/>
+     <Require
+       name="showAddressTools"
+       type="boolean"/>
+     <Require
+       name="showRolesTab"
+       type="boolean"/>
+     <Variable

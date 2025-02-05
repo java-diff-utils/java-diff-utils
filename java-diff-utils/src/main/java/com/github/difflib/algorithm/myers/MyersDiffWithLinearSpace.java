@@ -231,13 +231,13 @@ public class MyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
             @Override
             public <T> DiffAlgorithmI<T> 
             create() {
-                return new MyersDiffWithLinearSpace<T>();
+                return new MyersDiffWithLinearSpace<>();
             }
 
             @Override
             public <T> DiffAlgorithmI<T> 
             create(BiPredicate < T, T > equalizer) {
-                return new MyersDiffWithLinearSpace<T>(equalizer);
+                return new MyersDiffWithLinearSpace<>(equalizer);
             }
         };
     }
