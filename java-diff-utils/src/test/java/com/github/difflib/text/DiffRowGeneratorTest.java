@@ -839,7 +839,7 @@ public class DiffRowGeneratorTest {
   
     @Test
     public void testIssue188HangOnExamples() throws IOException, URISyntaxException {        
-        try (FileSystem zipFs = FileSystems.newFileSystem(Paths.get("target/test-classes/com/github/difflib/text/test.zip"), null);) {
+        try (FileSystem zipFs = FileSystems.newFileSystem(Paths.get("target/test-classes/com/github/difflib/text/test.zip"), (ClassLoader) null);) {
             List<String> original = Files.readAllLines(zipFs.getPath("old.html"));
             List<String> revised = Files.readAllLines(zipFs.getPath("new.html"));
 
