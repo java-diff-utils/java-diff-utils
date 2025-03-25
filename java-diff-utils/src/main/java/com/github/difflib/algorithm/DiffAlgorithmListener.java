@@ -24,7 +24,7 @@ public interface DiffAlgorithmListener {
     
     /**
      * This is a step within the diff algorithm. Due to different implementations the value
-     * is not strict incrementing to the max and is not garantee to reach the max. It could
+     * is not strict incrementing to the max and is not guarantee to reach the max. It could
      * stop before.
      * @param value
      * @param max 

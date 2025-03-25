@@ -26,7 +26,7 @@ import java.util.Objects;
  *
  * <p>
  * Text is represented as <code>Object[]</code> because the diff engine is
- * capable of handling more than plain ascci. In fact, arrays or lists of any
+ * capable of handling more than plain ascii. In fact, arrays or lists of any
  * type that implements {@link java.lang.Object#hashCode hashCode()} and
  * {@link java.lang.Object#equals equals()} correctly can be subject to
  * differencing using this library.
