@@ -224,7 +224,7 @@ public final class Patch<T> implements Serializable {
     private ConflictOutput<T> conflictOutput = CONFLICT_PRODUCES_EXCEPTION;
 
     /**
-     * Alter normal conflict output behaviour to e.g. inclide some conflict
+     * Alter normal conflict output behaviour to e.g. include some conflict
      * statements in the result, like git does it.
      */
     public Patch withConflictOutput(ConflictOutput<T> conflictOutput) {
