@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.github.java-diff-utils</groupId>
     <artifactId>java-diff-utils-parent</artifactId>
-    <version>4.16</version>
+    <version>4.17-SNAPSHOT</version>
   </parent>
   <groupId>io.github.java-diff-utils</groupId>
   <artifactId>java-diff-utils</artifactId>

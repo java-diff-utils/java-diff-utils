@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.java-diff-utils</groupId>
   <artifactId>java-diff-utils-parent</artifactId>
-  <version>4.16</version>
+  <version>4.17-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>java-diff-utils-parent</name>
   <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
@@ -37,7 +37,7 @@
   <scm>
     <connection>scm:git:https://github.com/java-diff-utils/java-diff-utils.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:java-diff-utils/java-diff-utils.git</developerConnection>
-    <tag>java-diff-utils-parent-4.16</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/java-diff-utils/java-diff-utils.git</url>
   </scm>
   <issueManagement>
@@ -132,28 +132,28 @@
           <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
           <checkstyleRules>
             <module name="Checker">
-              <module name="SuppressWarningsFilter"/>
+              <module name="SuppressWarningsFilter" />
               <module name="TreeWalker">
-                <module name="SuppressionCommentFilter"/>
-                <module name="AvoidNestedBlocks"/>
-                <module name="ConstantName"/>
-                <module name="EmptyCatchBlock"/>
-                <module name="EmptyStatement"/>
-                <module name="MissingOverride"/>
-                <module name="MultipleVariableDeclarations"/>
-                <module name="ParameterAssignment"/>
-                <module name="StringLiteralEquality"/>
-                <module name="RedundantImport"/>
-                <module name="UnusedImports"/>
+                <module name="SuppressionCommentFilter" />
+                <module name="AvoidNestedBlocks" />
+                <module name="ConstantName" />
+                <module name="EmptyCatchBlock" />
+                <module name="EmptyStatement" />
+                <module name="MissingOverride" />
+                <module name="MultipleVariableDeclarations" />
+                <module name="ParameterAssignment" />
+                <module name="StringLiteralEquality" />
+                <module name="RedundantImport" />
+                <module name="UnusedImports" />
 
-                <module name="WhitespaceAfter"/>
+                <module name="WhitespaceAfter" />
 
-                <module name="NeedBraces"/>
-                <module name="UnnecessaryParentheses"/>
-                <module name="LeftCurly"/>
-                <module name="RightCurly"/>
+                <module name="NeedBraces" />
+                <module name="UnnecessaryParentheses" />
+                <module name="LeftCurly" />
+                <module name="RightCurly" />
 
-                <module name="SuppressWarningsHolder"/>
+                <module name="SuppressWarningsHolder" />
               </module>
             </module>
           </checkstyleRules>
@@ -191,7 +191,7 @@
         <version>2.30.0</version>
         <configuration>
           <java>
-            <palantirJavaFormat/>
+            <palantirJavaFormat />
             <indent>
               <tabs>true</tabs>
               <spacesPerTab>2</spacesPerTab>
