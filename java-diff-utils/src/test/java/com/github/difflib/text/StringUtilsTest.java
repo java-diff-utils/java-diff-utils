@@ -15,8 +15,9 @@
  */
 package com.github.difflib.text;
 
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -25,38 +26,36 @@ import org.junit.jupiter.api.Test;
  */
 public class StringUtilsTest {
 
-    /**
-     * Test of htmlEntites method, of class StringUtils.
-     */
-    @Test
-    public void testHtmlEntites() {
-        assertEquals("&lt;test&gt;", StringUtils.htmlEntites("<test>"));
-    }
+		/**
+		 * Test of htmlEntites method, of class StringUtils.
+		 */
+		@Test
+		public void testHtmlEntites() {
+				assertEquals("&lt;test&gt;", StringUtils.htmlEntites("<test>"));
+		}
 
-    /**
-     * Test of normalize method, of class StringUtils.
-     */
-    @Test
-    public void testNormalize_String() {
-        assertEquals("    test", StringUtils.normalize("\ttest"));
-    }
+		/**
+		 * Test of normalize method, of class StringUtils.
+		 */
+		@Test
+		public void testNormalize_String() {
+				assertEquals("    test", StringUtils.normalize("\ttest"));
+		}
 
-    /**
-     * Test of wrapText method, of class StringUtils.
-     */
-    @Test
-    public void testWrapText_String_int() {
-        assertEquals("te<br/>st", StringUtils.wrapText("test", 2));
-        assertEquals("tes<br/>t", StringUtils.wrapText("test", 3));
-        assertEquals("test", StringUtils.wrapText("test", 10));
-        assertEquals(".\uD800\uDC01<br/>.", StringUtils.wrapText(".\uD800\uDC01.", 2));
-        assertEquals("..<br/>\uD800\uDC01", StringUtils.wrapText("..\uD800\uDC01", 3));
-    }
+		/**
+		 * Test of wrapText method, of class StringUtils.
+		 */
+		@Test
+		public void testWrapText_String_int() {
+				assertEquals("te<br/>st", StringUtils.wrapText("test", 2));
+				assertEquals("tes<br/>t", StringUtils.wrapText("test", 3));
+				assertEquals("test", StringUtils.wrapText("test", 10));
+				assertEquals(".\uD800\uDC01<br/>.", StringUtils.wrapText(".\uD800\uDC01.", 2));
+				assertEquals("..<br/>\uD800\uDC01", StringUtils.wrapText("..\uD800\uDC01", 3));
+		}
 
-    @Test
-    public void testWrapText_String_int_zero() {
-        Assertions.assertThrows(IllegalArgumentException.class, 
-                () -> StringUtils.wrapText("test", -1));
-    }
-
+		@Test
+		public void testWrapText_String_int_zero() {
+				Assertions.assertThrows(IllegalArgumentException.class, () -> StringUtils.wrapText("test", -1));
+		}
 }

@@ -18,12 +18,12 @@ package com.github.difflib.algorithm;
 import java.util.function.BiPredicate;
 
 /**
- * Tool to create new instances of a diff algorithm. This one is only needed at the moment to 
+ * Tool to create new instances of a diff algorithm. This one is only needed at the moment to
  * set DiffUtils default diff algorithm.
  * @author tw
  */
 public interface DiffAlgorithmFactory {
-    <T> DiffAlgorithmI<T> create();
-    
-    <T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer);
+		<T> DiffAlgorithmI<T> create();
+
+		<T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer);
 }

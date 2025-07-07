@@ -27,52 +27,54 @@ import java.util.function.Predicate;
  */
 public final class UnifiedDiff {
 
-    private String header;
-    private String tail;
-    private final List<UnifiedDiffFile> files = new ArrayList<>();
+		private String header;
+		private String tail;
+		private final List<UnifiedDiffFile> files = new ArrayList<>();
 
-    public String getHeader() {
-        return header;
-    }
+		public String getHeader() {
+				return header;
+		}
 
-    public void setHeader(String header) {
-        this.header = header;
-    }
+		public void setHeader(String header) {
+				this.header = header;
+		}
 
-    void addFile(UnifiedDiffFile file) {
-        files.add(file);
-    }
+		void addFile(UnifiedDiffFile file) {
+				files.add(file);
+		}
 
-    public List<UnifiedDiffFile> getFiles() {
-        return Collections.unmodifiableList(files);
-    }
+		public List<UnifiedDiffFile> getFiles() {
+				return Collections.unmodifiableList(files);
+		}
 
-    void setTailTxt(String tailTxt) {
-        this.tail = tailTxt;
-    }
+		void setTailTxt(String tailTxt) {
+				this.tail = tailTxt;
+		}
 
-    public String getTail() {
-        return tail;
-    }
+		public String getTail() {
+				return tail;
+		}
 
-    public List<String> applyPatchTo(Predicate<String> findFile, List<String> originalLines) throws PatchFailedException {
-        UnifiedDiffFile file = files.stream()
-                .filter(diff -> findFile.test(diff.getFromFile()))
-                .findFirst().orElse(null);
-        if (file != null) {
-            return file.getPatch().applyTo(originalLines);
-        } else {
-            return originalLines;
-        }
-    }
+		public List<String> applyPatchTo(Predicate<String> findFile, List<String> originalLines)
+						throws PatchFailedException {
+				UnifiedDiffFile file = files.stream()
+								.filter(diff -> findFile.test(diff.getFromFile()))
+								.findFirst()
+								.orElse(null);
+				if (file != null) {
+						return file.getPatch().applyTo(originalLines);
+				} else {
+						return originalLines;
+				}
+		}
 
-    public static UnifiedDiff from(String header, String tail, UnifiedDiffFile... files) {
-        UnifiedDiff diff = new UnifiedDiff();
-        diff.setHeader(header);
-        diff.setTailTxt(tail);
-        for (UnifiedDiffFile file : files) {
-            diff.addFile(file);
-        }
-        return diff;
-    }
+		public static UnifiedDiff from(String header, String tail, UnifiedDiffFile... files) {
+				UnifiedDiff diff = new UnifiedDiff();
+				diff.setHeader(header);
+				diff.setTailTxt(tail);
+				for (UnifiedDiffFile file : files) {
+						diff.addFile(file);
+				}
+				return diff;
+		}
 }

@@ -15,6 +15,8 @@
  */
 package com.github.difflib.unifieddiff;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
 import java.io.ByteArrayInputStream;
@@ -28,7 +30,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,49 +38,51 @@ import org.junit.jupiter.api.Test;
  */
 public class UnifiedDiffWriterTest {
 
-    public UnifiedDiffWriterTest() {
-    }
+		public UnifiedDiffWriterTest() {}
 
-    @Test
-    public void testWrite() throws URISyntaxException, IOException {
-        String str = readFile(UnifiedDiffReaderTest.class.getResource("jsqlparser_patch_1.diff").toURI(), Charset.defaultCharset());
-        UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
+		@Test
+		public void testWrite() throws URISyntaxException, IOException {
+				String str = readFile(
+								UnifiedDiffReaderTest.class
+												.getResource("jsqlparser_patch_1.diff")
+												.toURI(),
+								Charset.defaultCharset());
+				UnifiedDiff diff = UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(str.getBytes()));
 
-        StringWriter writer = new StringWriter();
-        UnifiedDiffWriter.write(diff, f -> Collections.emptyList(), writer, 5);
-        System.out.println(writer.toString());
-    }
-    
-    /**
-     * Issue 47
-     */
-    @Test
-    public void testWriteWithNewFile() throws URISyntaxException, IOException {
-        
-        List<String> original = new ArrayList<>();
-        List<String> revised = new ArrayList<>();
+				StringWriter writer = new StringWriter();
+				UnifiedDiffWriter.write(diff, f -> Collections.emptyList(), writer, 5);
+				System.out.println(writer.toString());
+		}
 
-        revised.add("line1");
-        revised.add("line2");
+		/**
+		 * Issue 47
+		 */
+		@Test
+		public void testWriteWithNewFile() throws URISyntaxException, IOException {
 
-        Patch<String> patch = DiffUtils.diff(original, revised);
-        UnifiedDiff diff = new UnifiedDiff();
-        diff.addFile( UnifiedDiffFile.from(null, "revised", patch) );
+				List<String> original = new ArrayList<>();
+				List<String> revised = new ArrayList<>();
 
-        StringWriter writer = new StringWriter();
-        UnifiedDiffWriter.write(diff, f -> original, writer, 5);
-        System.out.println(writer.toString());
-        
-        String[] lines = writer.toString().split("\\n");
-        
-        assertEquals("--- /dev/null", lines[0]);
-        assertEquals("+++ revised", lines[1]);
-        assertEquals("@@ -0,0 +1,2 @@", lines[2]);
-    }
+				revised.add("line1");
+				revised.add("line2");
 
-    static String readFile(URI path, Charset encoding)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-    }
+				Patch<String> patch = DiffUtils.diff(original, revised);
+				UnifiedDiff diff = new UnifiedDiff();
+				diff.addFile(UnifiedDiffFile.from(null, "revised", patch));
+
+				StringWriter writer = new StringWriter();
+				UnifiedDiffWriter.write(diff, f -> original, writer, 5);
+				System.out.println(writer.toString());
+
+				String[] lines = writer.toString().split("\\n");
+
+				assertEquals("--- /dev/null", lines[0]);
+				assertEquals("+++ revised", lines[1]);
+				assertEquals("@@ -0,0 +1,2 @@", lines[2]);
+		}
+
+		static String readFile(URI path, Charset encoding) throws IOException {
+				byte[] encoded = Files.readAllBytes(Paths.get(path));
+				return new String(encoded, encoding);
+		}
 }

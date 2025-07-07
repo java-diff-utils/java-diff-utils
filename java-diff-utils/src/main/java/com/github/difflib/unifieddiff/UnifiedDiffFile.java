@@ -18,194 +18,194 @@ package com.github.difflib.unifieddiff;
 import com.github.difflib.patch.Patch;
 
 /**
- * Data structure for one patched file from a unified diff file. 
- * 
+ * Data structure for one patched file from a unified diff file.
+ *
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public final class UnifiedDiffFile {
 
-    private String diffCommand;
-    private String fromFile;
-    private String fromTimestamp;
-    private String toFile;
-    private String renameFrom;
-    private String renameTo;
-    private String copyFrom;
-    private String copyTo;
-    private String toTimestamp;
-    private String index;
-    private String newFileMode;
-    private String oldMode;
-    private String newMode;
-    private String deletedFileMode;
-    private String binaryAdded;
-    private String binaryDeleted;
-    private String binaryEdited;
-    private Patch<String> patch = new Patch<>();
-    private boolean noNewLineAtTheEndOfTheFile = false;
-    private Integer similarityIndex;
+		private String diffCommand;
+		private String fromFile;
+		private String fromTimestamp;
+		private String toFile;
+		private String renameFrom;
+		private String renameTo;
+		private String copyFrom;
+		private String copyTo;
+		private String toTimestamp;
+		private String index;
+		private String newFileMode;
+		private String oldMode;
+		private String newMode;
+		private String deletedFileMode;
+		private String binaryAdded;
+		private String binaryDeleted;
+		private String binaryEdited;
+		private Patch<String> patch = new Patch<>();
+		private boolean noNewLineAtTheEndOfTheFile = false;
+		private Integer similarityIndex;
 
-    public String getDiffCommand() {
-        return diffCommand;
-    }
+		public String getDiffCommand() {
+				return diffCommand;
+		}
 
-    public void setDiffCommand(String diffCommand) {
-        this.diffCommand = diffCommand;
-    }
+		public void setDiffCommand(String diffCommand) {
+				this.diffCommand = diffCommand;
+		}
 
-    public String getFromFile() {
-        return fromFile;
-    }
+		public String getFromFile() {
+				return fromFile;
+		}
 
-    public void setFromFile(String fromFile) {
-        this.fromFile = fromFile;
-    }
+		public void setFromFile(String fromFile) {
+				this.fromFile = fromFile;
+		}
 
-    public String getToFile() {
-        return toFile;
-    }
+		public String getToFile() {
+				return toFile;
+		}
 
-    public void setToFile(String toFile) {
-        this.toFile = toFile;
-    }
+		public void setToFile(String toFile) {
+				this.toFile = toFile;
+		}
 
-    public void setIndex(String index) {
-        this.index = index;
-    }
+		public void setIndex(String index) {
+				this.index = index;
+		}
 
-    public String getIndex() {
-        return index;
-    }
+		public String getIndex() {
+				return index;
+		}
 
-    public Patch<String> getPatch() {
-        return patch;
-    }
+		public Patch<String> getPatch() {
+				return patch;
+		}
 
-    public String getFromTimestamp() {
-        return fromTimestamp;
-    }
+		public String getFromTimestamp() {
+				return fromTimestamp;
+		}
 
-    public void setFromTimestamp(String fromTimestamp) {
-        this.fromTimestamp = fromTimestamp;
-    }
+		public void setFromTimestamp(String fromTimestamp) {
+				this.fromTimestamp = fromTimestamp;
+		}
 
-    public String getToTimestamp() {
-        return toTimestamp;
-    }
+		public String getToTimestamp() {
+				return toTimestamp;
+		}
 
-    public void setToTimestamp(String toTimestamp) {
-        this.toTimestamp = toTimestamp;
-    }
+		public void setToTimestamp(String toTimestamp) {
+				this.toTimestamp = toTimestamp;
+		}
 
-    public Integer getSimilarityIndex() {
-        return similarityIndex;
-    }
+		public Integer getSimilarityIndex() {
+				return similarityIndex;
+		}
 
-    public void setSimilarityIndex(Integer similarityIndex) {
-        this.similarityIndex = similarityIndex;
-    }
+		public void setSimilarityIndex(Integer similarityIndex) {
+				this.similarityIndex = similarityIndex;
+		}
 
-    public String getRenameFrom() {
-        return renameFrom;
-    }
+		public String getRenameFrom() {
+				return renameFrom;
+		}
 
-    public void setRenameFrom(String renameFrom) {
-        this.renameFrom = renameFrom;
-    }
+		public void setRenameFrom(String renameFrom) {
+				this.renameFrom = renameFrom;
+		}
 
-    public String getRenameTo() {
-        return renameTo;
-    }
+		public String getRenameTo() {
+				return renameTo;
+		}
 
-    public void setRenameTo(String renameTo) {
-        this.renameTo = renameTo;
-    }
+		public void setRenameTo(String renameTo) {
+				this.renameTo = renameTo;
+		}
 
-    public String getCopyFrom() {
-        return copyFrom;
-    }
+		public String getCopyFrom() {
+				return copyFrom;
+		}
 
-    public void setCopyFrom(String copyFrom) {
-        this.copyFrom = copyFrom;
-    }
+		public void setCopyFrom(String copyFrom) {
+				this.copyFrom = copyFrom;
+		}
 
-    public String getCopyTo() {
-        return copyTo;
-    }
+		public String getCopyTo() {
+				return copyTo;
+		}
 
-    public void setCopyTo(String copyTo) {
-        this.copyTo = copyTo;
-    }
+		public void setCopyTo(String copyTo) {
+				this.copyTo = copyTo;
+		}
 
-    public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {
-        UnifiedDiffFile file = new UnifiedDiffFile();
-        file.setFromFile(fromFile);
-        file.setToFile(toFile);
-        file.patch = patch;
-        return file;
-    }
+		public static UnifiedDiffFile from(String fromFile, String toFile, Patch<String> patch) {
+				UnifiedDiffFile file = new UnifiedDiffFile();
+				file.setFromFile(fromFile);
+				file.setToFile(toFile);
+				file.patch = patch;
+				return file;
+		}
 
-    public void setNewFileMode(String newFileMode) {
-        this.newFileMode = newFileMode;
-    }
-    
-    public String getNewFileMode() {
-        return newFileMode;
-    }
+		public void setNewFileMode(String newFileMode) {
+				this.newFileMode = newFileMode;
+		}
 
-    public String getDeletedFileMode() {
-        return deletedFileMode;
-    }
+		public String getNewFileMode() {
+				return newFileMode;
+		}
 
-    public void setDeletedFileMode(String deletedFileMode) {
-        this.deletedFileMode = deletedFileMode;
-    }
+		public String getDeletedFileMode() {
+				return deletedFileMode;
+		}
 
-    public String getOldMode() {
-        return oldMode;
-    }
+		public void setDeletedFileMode(String deletedFileMode) {
+				this.deletedFileMode = deletedFileMode;
+		}
 
-    public void setOldMode(String oldMode) {
-        this.oldMode = oldMode;
-    }
+		public String getOldMode() {
+				return oldMode;
+		}
 
-    public String getNewMode() {
-        return newMode;
-    }
+		public void setOldMode(String oldMode) {
+				this.oldMode = oldMode;
+		}
 
-    public void setNewMode(String newMode) {
-        this.newMode = newMode;
-    }
+		public String getNewMode() {
+				return newMode;
+		}
 
-    public String getBinaryAdded() {
-        return binaryAdded;
-    }
+		public void setNewMode(String newMode) {
+				this.newMode = newMode;
+		}
 
-    public void setBinaryAdded(String binaryAdded) {
-        this.binaryAdded = binaryAdded;
-    }
+		public String getBinaryAdded() {
+				return binaryAdded;
+		}
 
-    public String getBinaryDeleted() {
-        return binaryDeleted;
-    }
+		public void setBinaryAdded(String binaryAdded) {
+				this.binaryAdded = binaryAdded;
+		}
 
-    public void setBinaryDeleted(String binaryDeleted) {
-        this.binaryDeleted = binaryDeleted;
-    }
+		public String getBinaryDeleted() {
+				return binaryDeleted;
+		}
 
-    public String getBinaryEdited() {
-        return binaryEdited;
-    }
+		public void setBinaryDeleted(String binaryDeleted) {
+				this.binaryDeleted = binaryDeleted;
+		}
 
-    public void setBinaryEdited(String binaryEdited) {
-        this.binaryEdited = binaryEdited;
-    }
+		public String getBinaryEdited() {
+				return binaryEdited;
+		}
 
-    public boolean isNoNewLineAtTheEndOfTheFile() {
-        return noNewLineAtTheEndOfTheFile;
-    }
+		public void setBinaryEdited(String binaryEdited) {
+				this.binaryEdited = binaryEdited;
+		}
 
-    public void setNoNewLineAtTheEndOfTheFile(boolean noNewLineAtTheEndOfTheFile) {
-        this.noNewLineAtTheEndOfTheFile = noNewLineAtTheEndOfTheFile;
-    }
+		public boolean isNoNewLineAtTheEndOfTheFile() {
+				return noNewLineAtTheEndOfTheFile;
+		}
+
+		public void setNoNewLineAtTheEndOfTheFile(boolean noNewLineAtTheEndOfTheFile) {
+				this.noNewLineAtTheEndOfTheFile = noNewLineAtTheEndOfTheFile;
+		}
 }

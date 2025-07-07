@@ -35,71 +35,71 @@ import org.eclipse.jgit.diff.SequenceComparator;
  */
 public class HistogramDiff<T> implements DiffAlgorithmI<T> {
 
-    @Override
-    public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
-        Objects.requireNonNull(source, "source list must not be null");
-        Objects.requireNonNull(target, "target list must not be null");
-        if (progress != null) {
-            progress.diffStart();
-        }
-        EditList diffList = new EditList();
-        diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff().diff(new DataListComparator<>(progress), new DataList<>(source), new DataList<>(target)));
-        List<Change> patch = new ArrayList<>();
-        for (Edit edit : diffList) {
-            DeltaType type = DeltaType.EQUAL;
-            switch (edit.getType()) {
-                case DELETE:
-                    type = DeltaType.DELETE;
-                    break;
-                case INSERT:
-                    type = DeltaType.INSERT;
-                    break;
-                case REPLACE:
-                    type = DeltaType.CHANGE;
-                    break;
-            }
-            patch.add(new Change(type, edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
-        }
-        if (progress != null) {
-            progress.diffEnd();
-        }
-        return patch;
-    }
+		@Override
+		public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
+				Objects.requireNonNull(source, "source list must not be null");
+				Objects.requireNonNull(target, "target list must not be null");
+				if (progress != null) {
+						progress.diffStart();
+				}
+				EditList diffList = new EditList();
+				diffList.addAll(new org.eclipse.jgit.diff.HistogramDiff()
+								.diff(new DataListComparator<>(progress), new DataList<>(source), new DataList<>(target)));
+				List<Change> patch = new ArrayList<>();
+				for (Edit edit : diffList) {
+						DeltaType type = DeltaType.EQUAL;
+						switch (edit.getType()) {
+								case DELETE:
+										type = DeltaType.DELETE;
+										break;
+								case INSERT:
+										type = DeltaType.INSERT;
+										break;
+								case REPLACE:
+										type = DeltaType.CHANGE;
+										break;
+						}
+						patch.add(new Change(type, edit.getBeginA(), edit.getEndA(), edit.getBeginB(), edit.getEndB()));
+				}
+				if (progress != null) {
+						progress.diffEnd();
+				}
+				return patch;
+		}
 }
 
 class DataListComparator<T> extends SequenceComparator<DataList<T>> {
 
-    private final DiffAlgorithmListener progress;
+		private final DiffAlgorithmListener progress;
 
-    public DataListComparator(DiffAlgorithmListener progress) {
-        this.progress = progress;
-    }
+		public DataListComparator(DiffAlgorithmListener progress) {
+				this.progress = progress;
+		}
 
-    @Override
-    public boolean equals(DataList<T> original, int orgIdx, DataList<T> revised, int revIdx) {
-        if (progress != null) {
-            progress.diffStep(orgIdx + revIdx, original.size() + revised.size());
-        }
-        return original.data.get(orgIdx).equals(revised.data.get(revIdx));
-    }
+		@Override
+		public boolean equals(DataList<T> original, int orgIdx, DataList<T> revised, int revIdx) {
+				if (progress != null) {
+						progress.diffStep(orgIdx + revIdx, original.size() + revised.size());
+				}
+				return original.data.get(orgIdx).equals(revised.data.get(revIdx));
+		}
 
-    @Override
-    public int hash(DataList<T> s, int i) {
-        return s.data.get(i).hashCode();
-    }
-
+		@Override
+		public int hash(DataList<T> s, int i) {
+				return s.data.get(i).hashCode();
+		}
 }
 
 class DataList<T> extends Sequence {
 
-    final List<T> data;
+		final List<T> data;
 
-    public DataList(List<T> data) {
-        this.data = data;
-    }
+		public DataList(List<T> data) {
+				this.data = data;
+		}
 
-    @Override
-    public int size() {
-        return data.size();
-    }
+		@Override
+		public int size() {
+				return data.size();
+		}
 }

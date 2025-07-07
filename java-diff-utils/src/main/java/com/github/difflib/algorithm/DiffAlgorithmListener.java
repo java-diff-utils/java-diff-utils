@@ -20,15 +20,16 @@ package com.github.difflib.algorithm;
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public interface DiffAlgorithmListener {
-    void diffStart();
-    
-    /**
-     * This is a step within the diff algorithm. Due to different implementations the value
-     * is not strict incrementing to the max and is not guarantee to reach the max. It could
-     * stop before.
-     * @param value
-     * @param max 
-     */
-    void diffStep(int value, int max);
-    void diffEnd();
+		void diffStart();
+
+		/**
+		 * This is a step within the diff algorithm. Due to different implementations the value
+		 * is not strict incrementing to the max and is not guarantee to reach the max. It could
+		 * stop before.
+		 * @param value
+		 * @param max
+		 */
+		void diffStep(int value, int max);
+
+		void diffEnd();
 }

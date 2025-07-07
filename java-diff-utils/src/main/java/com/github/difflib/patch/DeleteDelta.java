@@ -25,42 +25,42 @@ import java.util.List;
  */
 public final class DeleteDelta<T> extends AbstractDelta<T> {
 
-    /**
-     * Creates a change delta with the two given chunks.
-     *
-     * @param original The original chunk. Must not be {@code null}.
-     * @param revised The original chunk. Must not be {@code null}.
-     */
-    public DeleteDelta(Chunk<T> original, Chunk<T> revised) {
-        super(DeltaType.DELETE, original, revised);
-    }
+		/**
+		 * Creates a change delta with the two given chunks.
+		 *
+		 * @param original The original chunk. Must not be {@code null}.
+		 * @param revised The original chunk. Must not be {@code null}.
+		 */
+		public DeleteDelta(Chunk<T> original, Chunk<T> revised) {
+				super(DeltaType.DELETE, original, revised);
+		}
 
-    @Override
-    protected void applyTo(List<T> target) throws PatchFailedException {
-        int position = getSource().getPosition();
-        int size = getSource().size();
-        for (int i = 0; i < size; i++) {
-            target.remove(position);
-        }
-    }
+		@Override
+		protected void applyTo(List<T> target) throws PatchFailedException {
+				int position = getSource().getPosition();
+				int size = getSource().size();
+				for (int i = 0; i < size; i++) {
+						target.remove(position);
+				}
+		}
 
-    @Override
-    protected void restore(List<T> target) {
-        int position = this.getTarget().getPosition();
-        List<T> lines = this.getSource().getLines();
-        for (int i = 0; i < lines.size(); i++) {
-            target.add(position + i, lines.get(i));
-        }
-    }
+		@Override
+		protected void restore(List<T> target) {
+				int position = this.getTarget().getPosition();
+				List<T> lines = this.getSource().getLines();
+				for (int i = 0; i < lines.size(); i++) {
+						target.add(position + i, lines.get(i));
+				}
+		}
 
-    @Override
-    public String toString() {
-        return "[DeleteDelta, position: " + getSource().getPosition() + ", lines: "
-                + getSource().getLines() + "]";
-    }
-    
-    @Override
-    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-        return new DeleteDelta<T>(original, revised);
-    }
+		@Override
+		public String toString() {
+				return "[DeleteDelta, position: " + getSource().getPosition() + ", lines: "
+								+ getSource().getLines() + "]";
+		}
+
+		@Override
+		public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+				return new DeleteDelta<T>(original, revised);
+		}
 }

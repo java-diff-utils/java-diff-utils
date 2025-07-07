@@ -23,34 +23,32 @@ import java.util.List;
  */
 public class EqualDelta<T> extends AbstractDelta<T> {
 
-    public EqualDelta(Chunk<T> source, Chunk<T> target) {
-        super(DeltaType.EQUAL, source, target);
-    }
+		public EqualDelta(Chunk<T> source, Chunk<T> target) {
+				super(DeltaType.EQUAL, source, target);
+		}
 
-    @Override
-    protected void applyTo(List<T> target) throws PatchFailedException {
-    }
+		@Override
+		protected void applyTo(List<T> target) throws PatchFailedException {}
 
-    @Override
-    protected void restore(List<T> target) {
-    }
+		@Override
+		protected void restore(List<T> target) {}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void applyFuzzyToAt(List<T> target, int fuzz, int delta) {
-        // equals so no operations
-    }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void applyFuzzyToAt(List<T> target, int fuzz, int delta) {
+				// equals so no operations
+		}
 
-    @Override
-    public String toString() {
-        return "[EqualDelta, position: " + getSource().getPosition() + ", lines: "
-                + getSource().getLines() + "]";
-    }
-    
-    @Override
-    public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-        return new EqualDelta<T>(original, revised);
-    }
+		@Override
+		public String toString() {
+				return "[EqualDelta, position: " + getSource().getPosition() + ", lines: "
+								+ getSource().getLines() + "]";
+		}
+
+		@Override
+		public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
+				return new EqualDelta<T>(original, revised);
+		}
 }

@@ -15,9 +15,8 @@
  */
 package com.github.difflib.text.deltamerge;
 
-import java.util.List;
-
 import com.github.difflib.patch.AbstractDelta;
+import java.util.List;
 
 /**
  * Holds the information required to merge deltas originating from an inline
@@ -27,25 +26,25 @@ import com.github.difflib.patch.AbstractDelta;
  */
 public final class InlineDeltaMergeInfo {
 
-    private final List<AbstractDelta<String>> deltas;
-    private final List<String> origList;
-    private final List<String> revList;
+		private final List<AbstractDelta<String>> deltas;
+		private final List<String> origList;
+		private final List<String> revList;
 
-    public InlineDeltaMergeInfo(List<AbstractDelta<String>> deltas, List<String> origList, List<String> revList) {
-        this.deltas = deltas;
-        this.origList = origList;
-        this.revList = revList;
-    }
+		public InlineDeltaMergeInfo(List<AbstractDelta<String>> deltas, List<String> origList, List<String> revList) {
+				this.deltas = deltas;
+				this.origList = origList;
+				this.revList = revList;
+		}
 
-    public List<AbstractDelta<String>> getDeltas() {
-        return deltas;
-    }
+		public List<AbstractDelta<String>> getDeltas() {
+				return deltas;
+		}
 
-    public List<String> getOrigList() {
-        return origList;
-    }
+		public List<String> getOrigList() {
+				return origList;
+		}
 
-    public List<String> getRevList() {
-        return revList;
-    }
+		public List<String> getRevList() {
+				return revList;
+		}
 }

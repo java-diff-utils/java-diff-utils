@@ -15,13 +15,14 @@
  */
 package com.github.difflib.algorithm.myers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.Patch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,43 +31,48 @@ import org.junit.jupiter.api.Test;
  */
 public class MyersDiffTest {
 
-    @Test
-    public void testDiffMyersExample1Forward() {
-        List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
-        List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
-        final Patch<String> patch = Patch.generate(original, revised, new MyersDiff<String>().computeDiff(original, revised, null));
-        assertNotNull(patch);
-        assertEquals(4, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
-    }
-    
-    @Test
-    public void testDiffMyersExample1ForwardWithListener() {
-        List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
-        List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
-        
-        List<String> logdata = new ArrayList<>();
-        final Patch<String> patch = Patch.generate(original, revised, 
-                new MyersDiff<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
-            @Override
-            public void diffStart() {
-                logdata.add("start");
-            }
+		@Test
+		public void testDiffMyersExample1Forward() {
+				List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
+				List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
+				final Patch<String> patch =
+								Patch.generate(original, revised, new MyersDiff<String>().computeDiff(original, revised, null));
+				assertNotNull(patch);
+				assertEquals(4, patch.getDeltas().size());
+				assertEquals(
+								"Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}",
+								patch.toString());
+		}
 
-            @Override
-            public void diffStep(int value, int max) {
-                logdata.add(value + " - " + max);
-            }
+		@Test
+		public void testDiffMyersExample1ForwardWithListener() {
+				List<String> original = Arrays.asList("A", "B", "C", "A", "B", "B", "A");
+				List<String> revised = Arrays.asList("C", "B", "A", "B", "A", "C");
 
-            @Override
-            public void diffEnd() {
-                logdata.add("end");
-            }
-        }));
-        assertNotNull(patch);
-        assertEquals(4, patch.getDeltas().size());
-        assertEquals("Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}", patch.toString());
-        System.out.println(logdata);
-        assertEquals(8, logdata.size());
-    }
+				List<String> logdata = new ArrayList<>();
+				final Patch<String> patch = Patch.generate(
+								original, revised, new MyersDiff<String>().computeDiff(original, revised, new DiffAlgorithmListener() {
+														@Override
+														public void diffStart() {
+																logdata.add("start");
+														}
+
+														@Override
+														public void diffStep(int value, int max) {
+																logdata.add(value + " - " + max);
+														}
+
+														@Override
+														public void diffEnd() {
+																logdata.add("end");
+														}
+												}));
+				assertNotNull(patch);
+				assertEquals(4, patch.getDeltas().size());
+				assertEquals(
+								"Patch{deltas=[[DeleteDelta, position: 0, lines: [A, B]], [InsertDelta, position: 3, lines: [B]], [DeleteDelta, position: 5, lines: [B]], [InsertDelta, position: 7, lines: [C]]]}",
+								patch.toString());
+				System.out.println(logdata);
+				assertEquals(8, logdata.size());
+		}
 }

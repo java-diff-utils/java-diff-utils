@@ -20,7 +20,7 @@ package com.github.difflib.patch;
  * @author tw
  */
 public enum VerifyChunk {
-    OK,
-    POSITION_OUT_OF_TARGET,
-    CONTENT_DOES_NOT_MATCH_TARGET
+		OK,
+		POSITION_OUT_OF_TARGET,
+		CONTENT_DOES_NOT_MATCH_TARGET
 }

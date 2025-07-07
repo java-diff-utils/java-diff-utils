@@ -25,91 +25,94 @@ import java.util.Objects;
  */
 public final class DiffRow implements Serializable {
 
-    private Tag tag;
-    private final String oldLine;
-    private final String newLine;
+		private Tag tag;
+		private final String oldLine;
+		private final String newLine;
 
-    public DiffRow(Tag tag, String oldLine, String newLine) {
-        this.tag = tag;
-        this.oldLine = oldLine;
-        this.newLine = newLine;
-    }
+		public DiffRow(Tag tag, String oldLine, String newLine) {
+				this.tag = tag;
+				this.oldLine = oldLine;
+				this.newLine = newLine;
+		}
 
-    public enum Tag {
-        INSERT, DELETE, CHANGE, EQUAL
-    }
+		public enum Tag {
+				INSERT,
+				DELETE,
+				CHANGE,
+				EQUAL
+		}
 
-    /**
-     * @return the tag
-     */
-    public Tag getTag() {
-        return tag;
-    }
+		/**
+		 * @return the tag
+		 */
+		public Tag getTag() {
+				return tag;
+		}
 
-    /**
-     * @param tag the tag to set
-     */
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
+		/**
+		 * @param tag the tag to set
+		 */
+		public void setTag(Tag tag) {
+				this.tag = tag;
+		}
 
-    /**
-     * @return the oldLine
-     */
-    public String getOldLine() {
-        return oldLine;
-    }
+		/**
+		 * @return the oldLine
+		 */
+		public String getOldLine() {
+				return oldLine;
+		}
 
-    /**
-     * @return the newLine
-     */
-    public String getNewLine() {
-        return newLine;
-    }
+		/**
+		 * @return the newLine
+		 */
+		public String getNewLine() {
+				return newLine;
+		}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(newLine, oldLine, tag);
-    }
+		@Override
+		public int hashCode() {
+				return Objects.hash(newLine, oldLine, tag);
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        DiffRow other = (DiffRow) obj;
-        if (newLine == null) {
-            if (other.newLine != null) {
-                return false;
-            }
-        } else if (!newLine.equals(other.newLine)) {
-            return false;
-        }
-        if (oldLine == null) {
-            if (other.oldLine != null) {
-                return false;
-            }
-        } else if (!oldLine.equals(other.oldLine)) {
-            return false;
-        }
-        if (tag == null) {
-            if (other.tag != null) {
-                return false;
-            }
-        } else if (!tag.equals(other.tag)) {
-            return false;
-        }
-        return true;
-    }
+		@Override
+		public boolean equals(Object obj) {
+				if (this == obj) {
+						return true;
+				}
+				if (obj == null) {
+						return false;
+				}
+				if (getClass() != obj.getClass()) {
+						return false;
+				}
+				DiffRow other = (DiffRow) obj;
+				if (newLine == null) {
+						if (other.newLine != null) {
+								return false;
+						}
+				} else if (!newLine.equals(other.newLine)) {
+						return false;
+				}
+				if (oldLine == null) {
+						if (other.oldLine != null) {
+								return false;
+						}
+				} else if (!oldLine.equals(other.oldLine)) {
+						return false;
+				}
+				if (tag == null) {
+						if (other.tag != null) {
+								return false;
+						}
+				} else if (!tag.equals(other.tag)) {
+						return false;
+				}
+				return true;
+		}
 
-    @Override
-    public String toString() {
-        return "[" + this.tag + "," + this.oldLine + "," + this.newLine + "]";
-    }
+		@Override
+		public String toString() {
+				return "[" + this.tag + "," + this.oldLine + "," + this.newLine + "]";
+		}
 }

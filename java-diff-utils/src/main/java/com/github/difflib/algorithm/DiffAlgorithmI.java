@@ -26,25 +26,25 @@ import java.util.List;
  */
 public interface DiffAlgorithmI<T> {
 
-    /**
-     * Computes the changeset to patch the source list to the target list.
-     *
-     * @param source source data
-     * @param target target data
-     * @param progress progress listener
-     * @return
-     */
-    List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress);
+		/**
+		 * Computes the changeset to patch the source list to the target list.
+		 *
+		 * @param source source data
+		 * @param target target data
+		 * @param progress progress listener
+		 * @return
+		 */
+		List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress);
 
-    /**
-     * Simple extension to compute a changeset using arrays.
-     *
-     * @param source
-     * @param target
-     * @param progress
-     * @return
-     */
-    default List<Change> computeDiff(T[] source, T[] target, DiffAlgorithmListener progress) {
-        return computeDiff(Arrays.asList(source), Arrays.asList(target), progress);
-    }
+		/**
+		 * Simple extension to compute a changeset using arrays.
+		 *
+		 * @param source
+		 * @param target
+		 * @param progress
+		 * @return
+		 */
+		default List<Change> computeDiff(T[] source, T[] target, DiffAlgorithmListener progress) {
+				return computeDiff(Arrays.asList(source), Arrays.asList(target), progress);
+		}
 }

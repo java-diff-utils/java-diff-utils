@@ -8,12 +8,11 @@ package com.github.difflib;
  */
 public final class TestConstants {
 
-    public static final String BASE_FOLDER_RESOURCES = "target/test-classes/";
-    /**
-     * The base folder containing the test files.
-     */
-    public static final String MOCK_FOLDER = BASE_FOLDER_RESOURCES + "/mocks/";
+		public static final String BASE_FOLDER_RESOURCES = "target/test-classes/";
+		/**
+		 * The base folder containing the test files.
+		 */
+		public static final String MOCK_FOLDER = BASE_FOLDER_RESOURCES + "/mocks/";
 
-    private TestConstants() {
-    }
+		private TestConstants() {}
 }

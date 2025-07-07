@@ -37,159 +37,158 @@ import java.util.Objects;
  */
 public final class Chunk<T> implements Serializable {
 
-    private final int position;
-    private List<T> lines;
-    private final List<Integer> changePosition;
+		private final int position;
+		private List<T> lines;
+		private final List<Integer> changePosition;
 
-    /**
-     * Creates a chunk and saves a copy of affected lines
-     *
-     * @param position the start position
-     * @param lines the affected lines
-     * @param changePosition the positions of changed lines
-     */
-    public Chunk(int position, List<T> lines, List<Integer> changePosition) {
-        this.position = position;
-        this.lines = new ArrayList<>(lines);
-        this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
-    }
+		/**
+		 * Creates a chunk and saves a copy of affected lines
+		 *
+		 * @param position the start position
+		 * @param lines the affected lines
+		 * @param changePosition the positions of changed lines
+		 */
+		public Chunk(int position, List<T> lines, List<Integer> changePosition) {
+				this.position = position;
+				this.lines = new ArrayList<>(lines);
+				this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
+		}
 
-    /**
-     * Creates a chunk and saves a copy of affected lines
-     *
-     * @param position the start position
-     * @param lines the affected lines
-     */
-    public Chunk(int position, List<T> lines) {
-        this(position, lines, null);
-    }
+		/**
+		 * Creates a chunk and saves a copy of affected lines
+		 *
+		 * @param position the start position
+		 * @param lines the affected lines
+		 */
+		public Chunk(int position, List<T> lines) {
+				this(position, lines, null);
+		}
 
-    /**
-     * Creates a chunk and saves a copy of affected lines
-     *
-     * @param position the start position
-     * @param lines the affected lines
-     * @param changePosition the positions of changed lines
-     */
-    public Chunk(int position, T[] lines, List<Integer> changePosition) {
-        this.position = position;
-        this.lines = Arrays.asList(lines);
-        this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
-    }
+		/**
+		 * Creates a chunk and saves a copy of affected lines
+		 *
+		 * @param position the start position
+		 * @param lines the affected lines
+		 * @param changePosition the positions of changed lines
+		 */
+		public Chunk(int position, T[] lines, List<Integer> changePosition) {
+				this.position = position;
+				this.lines = Arrays.asList(lines);
+				this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
+		}
 
-    /**
-     * Creates a chunk and saves a copy of affected lines
-     *
-     * @param position the start position
-     * @param lines the affected lines
-     */
-    public Chunk(int position, T[] lines) {
-        this(position, lines, null);
-    }
+		/**
+		 * Creates a chunk and saves a copy of affected lines
+		 *
+		 * @param position the start position
+		 * @param lines the affected lines
+		 */
+		public Chunk(int position, T[] lines) {
+				this(position, lines, null);
+		}
 
-    /**
-     * Verifies that this chunk's saved text matches the corresponding text in
-     * the given sequence.
-     *
-     * @param target the sequence to verify against.
-     * @throws com.github.difflib.patch.PatchFailedException
-     */
-    public VerifyChunk verifyChunk(List<T> target) throws PatchFailedException {
-        return verifyChunk(target, 0, getPosition());
-    }
+		/**
+		 * Verifies that this chunk's saved text matches the corresponding text in
+		 * the given sequence.
+		 *
+		 * @param target the sequence to verify against.
+		 * @throws com.github.difflib.patch.PatchFailedException
+		 */
+		public VerifyChunk verifyChunk(List<T> target) throws PatchFailedException {
+				return verifyChunk(target, 0, getPosition());
+		}
 
-    /**
-     * Verifies that this chunk's saved text matches the corresponding text in
-     * the given sequence.
-     *
-     * @param target the sequence to verify against.
-     * @param fuzz the count of ignored prefix/suffix
-     * @param position the position of target
-     * @throws com.github.difflib.patch.PatchFailedException
-     */
-    public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) throws PatchFailedException {
-        //noinspection UnnecessaryLocalVariable
-        int startIndex = fuzz;
-        int lastIndex = size() - fuzz;
-        int last = position + size() - 1;
+		/**
+		 * Verifies that this chunk's saved text matches the corresponding text in
+		 * the given sequence.
+		 *
+		 * @param target the sequence to verify against.
+		 * @param fuzz the count of ignored prefix/suffix
+		 * @param position the position of target
+		 * @throws com.github.difflib.patch.PatchFailedException
+		 */
+		public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) throws PatchFailedException {
+				//noinspection UnnecessaryLocalVariable
+				int startIndex = fuzz;
+				int lastIndex = size() - fuzz;
+				int last = position + size() - 1;
 
-        if (position + fuzz > target.size() || last - fuzz > target.size()) {
-            return VerifyChunk.POSITION_OUT_OF_TARGET;
-        }
-        for (int i = startIndex; i < lastIndex; i++) {
-            if (!target.get(position + i).equals(lines.get(i))) {
-                return VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET;
-            }
-        }
-        return VerifyChunk.OK;
-    }
+				if (position + fuzz > target.size() || last - fuzz > target.size()) {
+						return VerifyChunk.POSITION_OUT_OF_TARGET;
+				}
+				for (int i = startIndex; i < lastIndex; i++) {
+						if (!target.get(position + i).equals(lines.get(i))) {
+								return VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET;
+						}
+				}
+				return VerifyChunk.OK;
+		}
 
-    /**
-     * @return the start position of chunk in the text
-     */
-    public int getPosition() {
-        return position;
-    }
+		/**
+		 * @return the start position of chunk in the text
+		 */
+		public int getPosition() {
+				return position;
+		}
 
-    public void setLines(List<T> lines) {
-        this.lines = lines;
-    }
+		public void setLines(List<T> lines) {
+				this.lines = lines;
+		}
 
-    /**
-     * @return the affected lines
-     */
-    public List<T> getLines() {
-        return lines;
-    }
+		/**
+		 * @return the affected lines
+		 */
+		public List<T> getLines() {
+				return lines;
+		}
 
-    /**
-     * @return the positions of changed lines of chunk in the text
-     */
-    public List<Integer> getChangePosition() {
-        return changePosition;
-    }
+		/**
+		 * @return the positions of changed lines of chunk in the text
+		 */
+		public List<Integer> getChangePosition() {
+				return changePosition;
+		}
 
-    public int size() {
-        return lines.size();
-    }
+		public int size() {
+				return lines.size();
+		}
 
-    /**
-     * Returns the index of the last line of the chunk.
-     */
-    public int last() {
-        return getPosition() + size() - 1;
-    }
+		/**
+		 * Returns the index of the last line of the chunk.
+		 */
+		public int last() {
+				return getPosition() + size() - 1;
+		}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(lines, position, size());
-    }
+		@Override
+		public int hashCode() {
+				return Objects.hash(lines, position, size());
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Chunk<?> other = (Chunk<?>) obj;
-        if (lines == null) {
-            if (other.lines != null) {
-                return false;
-            }
-        } else if (!lines.equals(other.lines)) {
-            return false;
-        }
-        return position == other.position;
-    }
+		@Override
+		public boolean equals(Object obj) {
+				if (this == obj) {
+						return true;
+				}
+				if (obj == null) {
+						return false;
+				}
+				if (getClass() != obj.getClass()) {
+						return false;
+				}
+				Chunk<?> other = (Chunk<?>) obj;
+				if (lines == null) {
+						if (other.lines != null) {
+								return false;
+						}
+				} else if (!lines.equals(other.lines)) {
+						return false;
+				}
+				return position == other.position;
+		}
 
-    @Override
-    public String toString() {
-        return "[position: " + position + ", size: " + size() + ", lines: " + lines + "]";
-    }
-
+		@Override
+		public String toString() {
+				return "[position: " + position + ", size: " + size() + ", lines: " + lines + "]";
+		}
 }

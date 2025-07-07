@@ -20,97 +20,98 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Abstract delta between a source and a target. 
+ * Abstract delta between a source and a target.
  * @author Tobias Warneke (t.warneke@gmx.net)
  */
 public abstract class AbstractDelta<T> implements Serializable {
-    private final Chunk<T> source;
-    private final Chunk<T> target;
-    private final DeltaType type;
-    
-    public AbstractDelta(DeltaType type, Chunk<T> source, Chunk<T> target) {
-        Objects.requireNonNull(source);
-        Objects.requireNonNull(target);
-        Objects.requireNonNull(type);
-        this.type = type;
-        this.source = source;
-        this.target = target;
-    }
+		private final Chunk<T> source;
+		private final Chunk<T> target;
+		private final DeltaType type;
 
-    public Chunk<T> getSource() {
-        return source;
-    }
+		public AbstractDelta(DeltaType type, Chunk<T> source, Chunk<T> target) {
+				Objects.requireNonNull(source);
+				Objects.requireNonNull(target);
+				Objects.requireNonNull(type);
+				this.type = type;
+				this.source = source;
+				this.target = target;
+		}
 
-    public Chunk<T> getTarget() {
-        return target;
-    }
+		public Chunk<T> getSource() {
+				return source;
+		}
 
-    public DeltaType getType() {
-        return type;
-    }
-    
-    /**
-     * Verify the chunk of this delta, to fit the target.
-     * @param target
-     * @throws PatchFailedException 
-     */
-    protected VerifyChunk verifyChunkToFitTarget(List<T> target) throws PatchFailedException {
-        return getSource().verifyChunk(target);
-    }
-   
-    protected VerifyChunk verifyAndApplyTo(List<T> target) throws PatchFailedException {
-        final VerifyChunk verify = verifyChunkToFitTarget(target);
-        if (verify == VerifyChunk.OK) {
-            applyTo(target);
-        }
-        return verify;
-    }
-    
-    protected abstract void applyTo(List<T> target) throws PatchFailedException;
-    
-    protected abstract void restore(List<T> target);
-    
-    /**
-     * Apply patch fuzzy.
-     *
-     * @param target the list this patch will be applied to
-     * @param fuzz the number of elements to ignore before/after the patched elements
-     * @param position the position this patch will be applied to. ignores {@code source.getPosition()}
-     * @see <a href="https://www.gnu.org/software/diffutils/manual/html_node/Inexact.html">Description of Fuzzy Patch</a> for more information.
-     */
-    @SuppressWarnings("RedundantThrows")
-    protected void applyFuzzyToAt(List<T> target, int fuzz, int position) throws PatchFailedException {
-        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not supports applying patch fuzzy");
-    }
+		public Chunk<T> getTarget() {
+				return target;
+		}
 
-    /**
-     * Create a new delta of the actual instance with customized chunk data.
-     */
-    public abstract AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised);
+		public DeltaType getType() {
+				return type;
+		}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.source, this.target, this.type);
-    }
+		/**
+		 * Verify the chunk of this delta, to fit the target.
+		 * @param target
+		 * @throws PatchFailedException
+		 */
+		protected VerifyChunk verifyChunkToFitTarget(List<T> target) throws PatchFailedException {
+				return getSource().verifyChunk(target);
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AbstractDelta<?> other = (AbstractDelta<?>) obj;
-        if (!Objects.equals(this.source, other.source)) {
-            return false;
-        }
-        if (!Objects.equals(this.target, other.target)) {
-            return false;
-        }
-        return this.type == other.type;
-    }
+		protected VerifyChunk verifyAndApplyTo(List<T> target) throws PatchFailedException {
+				final VerifyChunk verify = verifyChunkToFitTarget(target);
+				if (verify == VerifyChunk.OK) {
+						applyTo(target);
+				}
+				return verify;
+		}
+
+		protected abstract void applyTo(List<T> target) throws PatchFailedException;
+
+		protected abstract void restore(List<T> target);
+
+		/**
+		 * Apply patch fuzzy.
+		 *
+		 * @param target the list this patch will be applied to
+		 * @param fuzz the number of elements to ignore before/after the patched elements
+		 * @param position the position this patch will be applied to. ignores {@code source.getPosition()}
+		 * @see <a href="https://www.gnu.org/software/diffutils/manual/html_node/Inexact.html">Description of Fuzzy Patch</a> for more information.
+		 */
+		@SuppressWarnings("RedundantThrows")
+		protected void applyFuzzyToAt(List<T> target, int fuzz, int position) throws PatchFailedException {
+				throw new UnsupportedOperationException(
+								this.getClass().getSimpleName() + " does not supports applying patch fuzzy");
+		}
+
+		/**
+		 * Create a new delta of the actual instance with customized chunk data.
+		 */
+		public abstract AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised);
+
+		@Override
+		public int hashCode() {
+				return Objects.hash(this.source, this.target, this.type);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+				if (this == obj) {
+						return true;
+				}
+				if (obj == null) {
+						return false;
+				}
+				if (getClass() != obj.getClass()) {
+						return false;
+				}
+				final AbstractDelta<?> other = (AbstractDelta<?>) obj;
+				if (!Objects.equals(this.source, other.source)) {
+						return false;
+				}
+				if (!Objects.equals(this.target, other.target)) {
+						return false;
+				}
+				return this.type == other.type;
+		}
 }

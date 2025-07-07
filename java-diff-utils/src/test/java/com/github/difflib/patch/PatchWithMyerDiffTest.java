@@ -15,13 +15,14 @@
  */
 package com.github.difflib.patch;
 
-import com.github.difflib.DiffUtils;
 import static com.github.difflib.patch.Patch.CONFLICT_PRODUCES_MERGE_CONFLICT;
-import java.util.Arrays;
-import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import com.github.difflib.DiffUtils;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,39 +31,40 @@ import org.junit.jupiter.api.Test;
  */
 public class PatchWithMyerDiffTest {
 
-    @Test
-    public void testPatch_Change_withExceptionProcessor() {
-        final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
-        final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
+		@Test
+		public void testPatch_Change_withExceptionProcessor() {
+				final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
+				final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
 
-        final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
+				final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
 
-        changeTest_from.set(2, "CDC");
+				changeTest_from.set(2, "CDC");
 
-        patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
+				patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
 
-        try {
-            List<String> data = DiffUtils.patch(changeTest_from, patch);
-            assertEquals(9, data.size());
+				try {
+						List<String> data = DiffUtils.patch(changeTest_from, patch);
+						assertEquals(9, data.size());
 
-            assertEquals(Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"), data);
+						assertEquals(
+										Arrays.asList("aaa", "<<<<<< HEAD", "bbb", "CDC", "======", "bbb", "ccc", ">>>>>>> PATCH", "ddd"),
+										data);
 
-        } catch (PatchFailedException e) {
-            fail(e.getMessage());
-        }
-    }
+				} catch (PatchFailedException e) {
+						fail(e.getMessage());
+				}
+		}
 
-    @Test
-    public void testPatchThreeWayIssue138() throws PatchFailedException {
-        List<String> base = Arrays.asList("Imagine there's no heaven".split("\\s+"));
-        List<String> left = Arrays.asList("Imagine there's no HEAVEN".split("\\s+"));
-        List<String> right = Arrays.asList("IMAGINE there's no heaven".split("\\s+"));
+		@Test
+		public void testPatchThreeWayIssue138() throws PatchFailedException {
+				List<String> base = Arrays.asList("Imagine there's no heaven".split("\\s+"));
+				List<String> left = Arrays.asList("Imagine there's no HEAVEN".split("\\s+"));
+				List<String> right = Arrays.asList("IMAGINE there's no heaven".split("\\s+"));
 
-        Patch<String> rightPatch = DiffUtils.diff(base, right)
-                .withConflictOutput(CONFLICT_PRODUCES_MERGE_CONFLICT);
+				Patch<String> rightPatch = DiffUtils.diff(base, right).withConflictOutput(CONFLICT_PRODUCES_MERGE_CONFLICT);
 
-        List<String> applied = rightPatch.applyTo(left);
+				List<String> applied = rightPatch.applyTo(left);
 
-        assertEquals("IMAGINE there's no HEAVEN", applied.stream().collect(joining(" ")));
-    }
+				assertEquals("IMAGINE there's no HEAVEN", applied.stream().collect(joining(" ")));
+		}
 }
