@@ -45,6 +45,7 @@
     <url>https://github.com/java-diff-utils/java-diff-utils/issues</url>
   </issueManagement>
 
+  <!-- 
   <distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
@@ -52,9 +53,10 @@
     </repository>
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
+		-->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -209,6 +211,15 @@
             <phase>validate</phase>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>sonatype-nexus</publishingServerId>
+        </configuration>
       </plugin>
     </plugins>
   </build>
