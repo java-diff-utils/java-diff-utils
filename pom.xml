@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.java-diff-utils</groupId>
   <artifactId>java-diff-utils-parent</artifactId>
-  <version>4.16-SNAPSHOT</version>
+  <version>4.16</version>
   <packaging>pom</packaging>
   <name>java-diff-utils-parent</name>
   <description>The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.</description>
@@ -37,7 +37,7 @@
   <scm>
     <connection>scm:git:https://github.com/java-diff-utils/java-diff-utils.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:java-diff-utils/java-diff-utils.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>java-diff-utils-parent-4.16</tag>
     <url>https://github.com/java-diff-utils/java-diff-utils.git</url>
   </scm>
   <issueManagement>
