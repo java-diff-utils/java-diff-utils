@@ -18,6 +18,10 @@ Main reason to build this library was the lack of easy-to-use libraries with all
 
 **This is originally a fork of java-diff-utils from Google Code Archive.**
 
+## GPG Signature Validation
+
+The gpg singing key in [KEYS] is used for this projects artifacts.
+
 ## API
 
 Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.10/docs/apidocs/)
