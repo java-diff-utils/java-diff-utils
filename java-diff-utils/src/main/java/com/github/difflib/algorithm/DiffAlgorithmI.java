@@ -34,7 +34,7 @@ public interface DiffAlgorithmI<T> {
 		 * @param progress progress listener
 		 * @return
 		 */
-		List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress);
+		List<Change> computeDiff(List<? extends T> source, List<? extends T> target, DiffAlgorithmListener progress);
 
 		/**
 		 * Simple extension to compute a changeset using arrays.

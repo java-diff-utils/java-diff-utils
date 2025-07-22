@@ -18,7 +18,7 @@ package com.github.difflib.patch;
 import java.util.List;
 
 /**
- * This delta contains equal lines of data. Therefore nothing is to do in applyTo and restore.
+ * This delta contains equal lines of data. Therefore, nothing is to do in applyTo and restore.
  * @author tobens
  */
 public class EqualDelta<T> extends AbstractDelta<T> {
@@ -49,6 +49,6 @@ public class EqualDelta<T> extends AbstractDelta<T> {
 
 		@Override
 		public AbstractDelta<T> withChunks(Chunk<T> original, Chunk<T> revised) {
-				return new EqualDelta<T>(original, revised);
+				return new EqualDelta<>(original, revised);
 		}
 }

@@ -31,13 +31,13 @@ import java.util.function.BiPredicate;
  */
 public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 
-		private final BiPredicate<T, T> equalizer;
+		private final BiPredicate<? super T, ? super T> equalizer;
 
 		public MyersDiff() {
 				equalizer = Object::equals;
 		}
 
-		public MyersDiff(final BiPredicate<T, T> equalizer) {
+		public MyersDiff(final BiPredicate<? super T, ? super T> equalizer) {
 				Objects.requireNonNull(equalizer, "equalizer must not be null");
 				this.equalizer = equalizer;
 		}
@@ -48,7 +48,8 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 		 * Return empty diff if get the error while procession the difference.
 		 */
 		@Override
-		public List<Change> computeDiff(final List<T> source, final List<T> target, DiffAlgorithmListener progress) {
+		public List<Change> computeDiff(
+						final List<? extends T> source, final List<? extends T> target, DiffAlgorithmListener progress) {
 				Objects.requireNonNull(source, "source list must not be null");
 				Objects.requireNonNull(target, "target list must not be null");
 
@@ -71,9 +72,10 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 		 * @param orig The original sequence.
 		 * @param rev The revised sequence.
 		 * @return A minimum {@link PathNode Path} accross the differences graph.
-		 * @throws DifferentiationFailedException if a diff path could not be found.
+		 * @throws IllegalStateException if a diff path could not be found.
 		 */
-		private PathNode buildPath(final List<T> orig, final List<T> rev, DiffAlgorithmListener progress) {
+		private PathNode buildPath(
+						final List<? extends T> orig, final List<? extends T> rev, DiffAlgorithmListener progress) {
 				Objects.requireNonNull(orig, "original sequence is null");
 				Objects.requireNonNull(rev, "revised sequence is null");
 
@@ -140,10 +142,10 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 		 * @param orig The original sequence.
 		 * @param rev The revised sequence.
 		 * @return A {@link Patch} script corresponding to the path.
-		 * @throws DifferentiationFailedException if a {@link Patch} could not be
+		 * @throws IllegalStateException if a {@link Patch} could not be
 		 * built from the given path.
 		 */
-		private List<Change> buildRevision(PathNode actualPath, List<T> orig, List<T> rev) {
+		private List<Change> buildRevision(PathNode actualPath, List<? extends T> orig, List<? extends T> rev) {
 				Objects.requireNonNull(actualPath, "path is null");
 				Objects.requireNonNull(orig, "original sequence is null");
 				Objects.requireNonNull(rev, "revised sequence is null");
@@ -190,7 +192,7 @@ public final class MyersDiff<T> implements DiffAlgorithmI<T> {
 						}
 
 						@Override
-						public <T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer) {
+						public <T> DiffAlgorithmI<T> create(BiPredicate<? super T, ? super T> equalizer) {
 								return new MyersDiff<>(equalizer);
 						}
 				};

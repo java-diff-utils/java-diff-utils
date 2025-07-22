@@ -32,19 +32,20 @@ import java.util.function.Consumer;
  */
 public class MyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 
-		private final BiPredicate<T, T> equalizer;
+		private final BiPredicate<? super T, ? super T> equalizer;
 
 		public MyersDiffWithLinearSpace() {
 				equalizer = Object::equals;
 		}
 
-		public MyersDiffWithLinearSpace(final BiPredicate<T, T> equalizer) {
+		public MyersDiffWithLinearSpace(final BiPredicate<? super T, ? super T> equalizer) {
 				Objects.requireNonNull(equalizer, "equalizer must not be null");
 				this.equalizer = equalizer;
 		}
 
 		@Override
-		public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
+		public List<Change> computeDiff(
+						List<? extends T> source, List<? extends T> target, DiffAlgorithmListener progress) {
 				Objects.requireNonNull(source, "source list must not be null");
 				Objects.requireNonNull(target, "target list must not be null");
 
@@ -200,10 +201,10 @@ public class MyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 				final int[] vDown;
 				final int[] vUp;
 				final List<Change> script;
-				final List<T> source;
-				final List<T> target;
+				final List<? extends T> source;
+				final List<? extends T> target;
 
-				public DiffData(List<T> source, List<T> target) {
+				public DiffData(List<? extends T> source, List<? extends T> target) {
 						this.source = source;
 						this.target = target;
 						size = source.size() + target.size() + 2;
@@ -237,7 +238,7 @@ public class MyersDiffWithLinearSpace<T> implements DiffAlgorithmI<T> {
 						}
 
 						@Override
-						public <T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer) {
+						public <T> DiffAlgorithmI<T> create(BiPredicate<? super T, ? super T> equalizer) {
 								return new MyersDiffWithLinearSpace<>(equalizer);
 						}
 				};

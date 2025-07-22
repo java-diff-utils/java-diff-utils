@@ -36,7 +36,8 @@ import org.eclipse.jgit.diff.SequenceComparator;
 public class HistogramDiff<T> implements DiffAlgorithmI<T> {
 
 		@Override
-		public List<Change> computeDiff(List<T> source, List<T> target, DiffAlgorithmListener progress) {
+		public List<Change> computeDiff(
+						List<? extends T> source, List<? extends T> target, DiffAlgorithmListener progress) {
 				Objects.requireNonNull(source, "source list must not be null");
 				Objects.requireNonNull(target, "target list must not be null");
 				if (progress != null) {
@@ -92,9 +93,9 @@ class DataListComparator<T> extends SequenceComparator<DataList<T>> {
 
 class DataList<T> extends Sequence {
 
-		final List<T> data;
+		final List<? extends T> data;
 
-		public DataList(List<T> data) {
+		public DataList(List<? extends T> data) {
 				this.data = data;
 		}
 

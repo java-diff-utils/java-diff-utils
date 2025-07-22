@@ -25,5 +25,5 @@ import java.util.function.BiPredicate;
 public interface DiffAlgorithmFactory {
 		<T> DiffAlgorithmI<T> create();
 
-		<T> DiffAlgorithmI<T> create(BiPredicate<T, T> equalizer);
+		<T> DiffAlgorithmI<T> create(BiPredicate<? super T, ? super T> equalizer);
 }
