@@ -57,7 +57,8 @@ public final class DiffUtils {
 		 * @param progress a {@link DiffAlgorithmListener} representing the progress listener. Can be {@code null}.
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
-		public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmListener progress) {
+		public static <T> Patch<T> diff(
+						List<? extends T> original, List<? extends T> revised, DiffAlgorithmListener progress) {
 				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), progress);
 		}
 
@@ -69,7 +70,7 @@ public final class DiffUtils {
 		 * @param revised a {@link List} representing the revised sequence of elements. Must not be {@code null}.
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
-		public static <T> Patch<T> diff(List<T> original, List<T> revised) {
+		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised) {
 				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null);
 		}
 
@@ -82,7 +83,7 @@ public final class DiffUtils {
 		 * @param includeEqualParts a {@link boolean} representing whether to include equal parts in the resulting patch.
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
-		public static <T> Patch<T> diff(List<T> original, List<T> revised, boolean includeEqualParts) {
+		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised, boolean includeEqualParts) {
 				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
 		}
 
@@ -110,7 +111,8 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and
 		 * revised sequences. Never {@code null}.
 		 */
-		public static <T> Patch<T> diff(List<T> source, List<T> target, BiPredicate<T, T> equalizer) {
+		public static <T> Patch<T> diff(
+						List<? extends T> source, List<? extends T> target, BiPredicate<? super T, ? super T> equalizer) {
 				if (equalizer != null) {
 						return DiffUtils.diff(source, target, DEFAULT_DIFF.create(equalizer));
 				}
@@ -118,7 +120,10 @@ public final class DiffUtils {
 		}
 
 		public static <T> Patch<T> diff(
-						List<T> original, List<T> revised, DiffAlgorithmI<T> algorithm, DiffAlgorithmListener progress) {
+						List<? extends T> original,
+						List<? extends T> revised,
+						DiffAlgorithmI<T> algorithm,
+						DiffAlgorithmListener progress) {
 				return diff(original, revised, algorithm, progress, false);
 		}
 
@@ -135,8 +140,8 @@ public final class DiffUtils {
 		 * revised sequences. Never {@code null}.
 		 */
 		public static <T> Patch<T> diff(
-						List<T> original,
-						List<T> revised,
+						List<? extends T> original,
+						List<? extends T> revised,
 						DiffAlgorithmI<T> algorithm,
 						DiffAlgorithmListener progress,
 						boolean includeEqualParts) {
@@ -157,7 +162,8 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and
 		 * revised sequences. Never {@code null}.
 		 */
-		public static <T> Patch<T> diff(List<T> original, List<T> revised, DiffAlgorithmI<T> algorithm) {
+		public static <T> Patch<T> diff(
+						List<? extends T> original, List<? extends T> revised, DiffAlgorithmI<T> algorithm) {
 				return diff(original, revised, algorithm, null);
 		}
 
@@ -196,7 +202,7 @@ public final class DiffUtils {
 		 * @return the revised list.
 		 * @throws PatchFailedException if the patch cannot be applied.
 		 */
-		public static <T> List<T> patch(List<T> original, Patch<T> patch) throws PatchFailedException {
+		public static <T> List<T> patch(List<? extends T> original, Patch<T> patch) throws PatchFailedException {
 				return patch.applyTo(original);
 		}
 
@@ -208,7 +214,7 @@ public final class DiffUtils {
 		 * @return the original list.
 		 * @throws PatchFailedException if the patch cannot be applied.
 		 */
-		public static <T> List<T> unpatch(List<T> revised, Patch<T> patch) {
+		public static <T> List<T> unpatch(List<? extends T> revised, Patch<T> patch) {
 				return patch.restore(revised);
 		}
 

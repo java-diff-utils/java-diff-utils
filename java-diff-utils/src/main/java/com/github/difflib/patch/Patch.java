@@ -54,7 +54,7 @@ public final class Patch<T> implements Serializable {
 		 * @return A new list containing the applied patch.
 		 * @throws PatchFailedException if the patch cannot be applied
 		 */
-		public List<T> applyTo(List<T> target) throws PatchFailedException {
+		public List<T> applyTo(List<? extends T> target) throws PatchFailedException {
 				List<T> result = new ArrayList<>(target);
 				applyToExisting(result);
 				return result;
@@ -244,7 +244,7 @@ public final class Patch<T> implements Serializable {
 		 * @param target The list to copy and apply changes to.
 		 * @return A new list, containing the restored state.
 		 */
-		public List<T> restore(List<T> target) {
+		public List<T> restore(List<? extends T> target) {
 				List<T> result = new ArrayList<>(target);
 				restoreToExisting(result);
 				return result;
@@ -294,12 +294,12 @@ public final class Patch<T> implements Serializable {
 				return generate(original, revised, changes, false);
 		}
 
-		private static <T> Chunk<T> buildChunk(int start, int end, List<T> data) {
+		private static <T> Chunk<T> buildChunk(int start, int end, List<? extends T> data) {
 				return new Chunk<>(start, new ArrayList<>(data.subList(start, end)));
 		}
 
 		public static <T> Patch<T> generate(
-						List<T> original, List<T> revised, List<Change> _changes, boolean includeEquals) {
+						List<? extends T> original, List<? extends T> revised, List<Change> _changes, boolean includeEquals) {
 				Patch<T> patch = new Patch<>(_changes.size());
 				int startOriginal = 0;
 				int startRevised = 0;
