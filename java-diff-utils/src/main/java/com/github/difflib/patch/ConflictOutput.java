@@ -29,6 +29,5 @@ import java.util.List;
 @FunctionalInterface
 public interface ConflictOutput<T> extends Serializable {
 
-		public void processConflict(VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result)
-						throws PatchFailedException;
+		void processConflict(VerifyChunk verifyChunk, AbstractDelta<T> delta, List<T> result) throws PatchFailedException;
 }

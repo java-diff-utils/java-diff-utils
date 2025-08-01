@@ -107,7 +107,7 @@ public final class Chunk<T> implements Serializable {
 		 * @param position the position of target
 		 * @throws com.github.difflib.patch.PatchFailedException
 		 */
-		public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) throws PatchFailedException {
+		public VerifyChunk verifyChunk(List<T> target, int fuzz, int position) {
 				//noinspection UnnecessaryLocalVariable
 				int startIndex = fuzz;
 				int lastIndex = size() - fuzz;

@@ -79,7 +79,7 @@ public final class PathNode {
 		 *
 		 * @return The next first {@link PathNode} or bootstrap node in the path, or <code>null</code> if none found.
 		 */
-		public final PathNode previousSnake() {
+		public PathNode previousSnake() {
 				if (isBootstrap()) {
 						return null;
 				}

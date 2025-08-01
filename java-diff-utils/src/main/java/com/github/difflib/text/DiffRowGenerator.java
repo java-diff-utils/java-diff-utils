@@ -98,7 +98,7 @@ public final class DiffRowGenerator {
 				return WHITESPACE_PATTERN.matcher(raw.trim()).replaceAll(" ");
 		}
 
-		protected static final List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {
+		protected static List<String> splitStringPreserveDelimiter(String str, Pattern SPLIT_PATTERN) {
 				List<String> list = new ArrayList<>();
 				if (str != null) {
 						Matcher matcher = SPLIT_PATTERN.matcher(str);
@@ -374,9 +374,7 @@ public final class DiffRowGenerator {
 		}
 
 		List<String> normalizeLines(List<String> list) {
-				return reportLinesUnchanged
-								? list
-								: list.stream().map(lineNormalizer::apply).collect(toList());
+				return reportLinesUnchanged ? list : list.stream().map(lineNormalizer).collect(toList());
 		}
 
 		/**

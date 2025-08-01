@@ -51,7 +51,7 @@ public class UnifiedDiffWriterTest {
 
 				StringWriter writer = new StringWriter();
 				UnifiedDiffWriter.write(diff, f -> Collections.emptyList(), writer, 5);
-				System.out.println(writer.toString());
+				System.out.println(writer);
 		}
 
 		/**
@@ -72,7 +72,7 @@ public class UnifiedDiffWriterTest {
 
 				StringWriter writer = new StringWriter();
 				UnifiedDiffWriter.write(diff, f -> original, writer, 5);
-				System.out.println(writer.toString());
+				System.out.println(writer);
 
 				String[] lines = writer.toString().split("\\n");
 

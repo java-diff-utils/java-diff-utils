@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +74,7 @@ public class LRHistogramDiffTest {
 		}
 
 		public static List<String> readStringListFromInputStream(InputStream is) throws IOException {
-				try (BufferedReader reader =
-								new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))) {
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
 						return reader.lines().collect(toList());
 				}

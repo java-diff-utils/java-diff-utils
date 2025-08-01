@@ -122,7 +122,7 @@ public class UnifiedDiffRoundTripTest {
 								writer,
 								10);
 
-				System.out.println(writer.toString());
+				System.out.println(writer);
 
 				UnifiedDiff unifiedDiff = UnifiedDiffReader.parseUnifiedDiff(
 								new ByteArrayInputStream(writer.toString().getBytes()));
@@ -139,7 +139,7 @@ public class UnifiedDiffRoundTripTest {
 								writer,
 								10);
 
-				System.out.println(writer.toString());
+				System.out.println(writer);
 
 				UnifiedDiff unifiedDiff = UnifiedDiffReader.parseUnifiedDiff(
 								new ByteArrayInputStream(writer.toString().getBytes()));

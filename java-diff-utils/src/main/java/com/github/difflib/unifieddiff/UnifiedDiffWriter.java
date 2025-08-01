@@ -198,9 +198,7 @@ public class UnifiedDiffWriter {
 				// Create and insert the block header, conforming to the Unified Diff
 				// standard
 				writer.accept("@@ -" + origStart + "," + origTotal + " +" + revStart + "," + revTotal + " @@");
-				buffer.forEach(txt -> {
-						writer.accept(txt);
-				});
+				buffer.forEach(writer);
 		}
 
 		/**

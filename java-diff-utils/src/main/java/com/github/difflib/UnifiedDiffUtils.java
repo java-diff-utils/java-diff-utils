@@ -428,9 +428,7 @@ public final class UnifiedDiffUtils {
 
 		// Insert the unchanged content in the source file into result
 		private static void insert(List<String> result, List<String> noChangeContent) {
-				for (String ins : noChangeContent) {
-						result.add(ins);
-				}
+				result.addAll(noChangeContent);
 		}
 
 		// Parse the line containing @@ to get the modified line number to delete or add a few lines

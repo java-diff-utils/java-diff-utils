@@ -241,7 +241,7 @@ public final class UnifiedDiffReader {
 				}
 				for (UnifiedDiffLine rule : rules) {
 						if (rule.processLine(line)) {
-								LOG.fine("  >>> processed rule " + rule.toString());
+								LOG.fine("  >>> processed rule " + rule);
 								return true;
 						}
 				}
@@ -256,7 +256,7 @@ public final class UnifiedDiffReader {
 				}
 				for (UnifiedDiffLine rule : rules) {
 						if (rule.validLine(line)) {
-								LOG.fine("  >>> accepted rule " + rule.toString());
+								LOG.fine("  >>> accepted rule " + rule);
 								return true;
 						}
 				}
