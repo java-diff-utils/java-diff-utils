@@ -28,7 +28,7 @@ import org.eclipse.jgit.diff.Sequence;
 import org.eclipse.jgit.diff.SequenceComparator;
 
 /**
- * HistorgramDiff using JGit - Library. This one is much more performant than the original Myers
+ * HistogramDiff using JGit - Library. This one is much more performant than the original Myers
  * implementation.
  *
  * @author toben
