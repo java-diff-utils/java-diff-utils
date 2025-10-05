@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/java-diff-utils/java-diff-utils.svg?branch=master)](https://travis-ci.org/java-diff-utils/java-diff-utils)
 
-[![Build Status using Github Actions](https://github.com/java-diff-utils/java-diff-utils/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/java-diff-utils/java-diff-utils/actions?query=workflow%3A%22Java+CI+with+Maven%22)
+[![Build Status using GitHub Actions](https://github.com/java-diff-utils/java-diff-utils/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/java-diff-utils/java-diff-utils/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/002c53aa0c924f71ac80a2f65446dfdd)](https://www.codacy.com/gh/java-diff-utils/java-diff-utils/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=java-diff-utils/java-diff-utils&amp;utm_campaign=Badge_Grade)
 
@@ -12,30 +12,30 @@
 
 ## Intro
 
-Diff Utils library is an OpenSource library for performing the comparison operations between texts: computing diffs, applying patches, generating unified diffs or parsing them, generating diff output for easy future displaying (like side-by-side view) and so on.
+Diff Utils library is an open source library for performing comparison operations between texts: computing diffs, applying patches, generating unified diffs or parsing them, generating diff output for easy future displaying (like side-by-side view) and so on.
 
-Main reason to build this library was the lack of easy-to-use libraries with all the usual stuff you need while working with diff files. Originally it was inspired by JRCS library and it's nice design of diff module.
+The main reason to build this library was the lack of easy-to-use libraries with all the usual stuff you need while working with diff files. Originally it was inspired by JRCS library and its nice design of diff module.
 
 **This is originally a fork of java-diff-utils from Google Code Archive.**
 
 ## GPG Signature Validation
 
-The gpg singing key in [KEYS] is used for this projects artifacts.
+The gpg singing key in [KEYS] is used for this project's artifacts.
 
 ## API
 
-Javadocs of the actual release version: [JavaDocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.10/docs/apidocs/)
+Javadocs of the actual release version: [Javadocs java-diff-utils](https://java-diff-utils.github.io/java-diff-utils/4.10/docs/apidocs/)
 
 ## Examples
 
-Look [here](https://github.com/java-diff-utils/java-diff-utils/wiki) to find more helpful informations and examples.
+Look [here](https://github.com/java-diff-utils/java-diff-utils/wiki) to find more helpful information and examples.
 
-These two outputs are generated using this java-diff-utils. The source code can also be found at the *Examples* page:
+These two outputs are generated using java-diff-utils. The source code can also be found at the *Examples* page:
 
 **Producing a one liner including all difference information.**
 
 ```Java
-//create a configured DiffRowGenerator
+// Create a configured DiffRowGenerator
 DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
@@ -44,15 +44,15 @@ DiffRowGenerator generator = DiffRowGenerator.create()
                 .newTag(f -> "**")     //introduce markdown style for bold
                 .build();
 
-//compute the differences for two test texts.
+// Compute the differences for two test texts
 List<DiffRow> rows = generator.generateDiffRows(
-                Arrays.asList("This is a test senctence."),
+                Arrays.asList("This is a test sentence."),
                 Arrays.asList("This is a test for diffutils."));
-        
+
 System.out.println(rows.get(0).getOldLine());
 ```
 
-This is a test ~senctence~**for diffutils**.
+This is a test ~sentence~**for diffutils**.
 
 **Producing a side by side view of computed differences.**
 
@@ -64,9 +64,9 @@ DiffRowGenerator generator = DiffRowGenerator.create()
                 .newTag(f -> "**")
                 .build();
 List<DiffRow> rows = generator.generateDiffRows(
-                Arrays.asList("This is a test senctence.", "This is the second line.", "And here is the finish."),
+                Arrays.asList("This is a test sentence.", "This is the second line.", "And here is the finish."),
                 Arrays.asList("This is a test for diffutils.", "This is the second line."));
-        
+
 System.out.println("|original|new|");
 System.out.println("|--------|---|");
 for (DiffRow row : rows) {
@@ -76,14 +76,14 @@ for (DiffRow row : rows) {
 
 |original|new|
 |--------|---|
-|This is a test ~senctence~.|This is a test **for diffutils**.|
+|This is a test ~sentence~.|This is a test **for diffutils**.|
 |This is the second line.|This is the second line.|
 |~And here is the finish.~||
 
 ## Main Features
 
-* computing the difference between two texts.
-* capable to hand more than plain ascii. Arrays or List of any type that implements hashCode() and equals() correctly can be subject to differencing using this library
+* Computing the difference between two texts.
+* Capable to handle more than plain ASCII. Arrays or List of any type that implements hashCode() and equals() correctly can be subject to differencing using this library
 * patch and unpatch the text with the given patch
 * parsing the unified diff format
 * producing human-readable differences
@@ -95,10 +95,10 @@ for (DiffRow row : rows) {
 
 ### Algorithms
 
-* Myer's diff
+* Myers diff
 * HistogramDiff
 
-But it can easily replaced by any other which is better for handing your texts. I have plan to add implementation of some in future.
+But it can easily be replaced by any other which is better for handling your texts. I have a plan to add the implementation of some in the future.
 
 ## Source Code conventions
 
@@ -123,7 +123,7 @@ This is a valid piece of source code:
 
 ### To Install
 
-Just add the code below to your maven dependencies:
+Just add the code below to your Maven dependencies:
 
 ```xml
 <dependency>
@@ -133,7 +133,7 @@ Just add the code below to your maven dependencies:
 </dependency>
 ```
 
-or using gradle:
+or using Gradle:
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils
