@@ -20,7 +20,7 @@ The main reason to build this library was the lack of easy-to-use libraries with
 
 ## GPG Signature Validation
 
-The gpg singing key in [KEYS] is used for this project's artifacts.
+The GPG signing key in [KEYS] is used for this project's artifacts.
 
 ## API
 
@@ -30,18 +30,18 @@ Javadocs of the actual release version: [Javadocs java-diff-utils](https://java-
 
 Look [here](https://github.com/java-diff-utils/java-diff-utils/wiki) to find more helpful information and examples.
 
-These two outputs are generated using java-diff-utils. The source code can also be found at the *Examples* page:
+These two outputs are generated using java-diff-utils. The source code can also be found on the [Examples](https://github.com/java-diff-utils/java-diff-utils/wiki/Examples) page:
 
 **Producing a one liner including all difference information.**
 
-```Java
+```java
 // Create a configured DiffRowGenerator
 DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .mergeOriginalRevised(true)
                 .inlineDiffByWord(true)
-                .oldTag(f -> "~")      //introduce markdown style for strikethrough
-                .newTag(f -> "**")     //introduce markdown style for bold
+                .oldTag(f -> "~")      // Introduce markdown style for strikethrough
+                .newTag(f -> "**")     // Introduce markdown style for bold
                 .build();
 
 // Compute the differences for two test texts
@@ -54,9 +54,9 @@ System.out.println(rows.get(0).getOldLine());
 
 This is a test ~sentence~**for diffutils**.
 
-**Producing a side by side view of computed differences.**
+**Producing a side-by-side view of computed differences.**
 
-```Java
+```java
 DiffRowGenerator generator = DiffRowGenerator.create()
                 .showInlineDiffs(true)
                 .inlineDiffByWord(true)
@@ -83,15 +83,15 @@ for (DiffRow row : rows) {
 ## Main Features
 
 * Computing the difference between two texts.
-* Capable to handle more than plain ASCII. Arrays or List of any type that implements hashCode() and equals() correctly can be subject to differencing using this library
-* patch and unpatch the text with the given patch
-* parsing the unified diff format
-* producing human-readable differences
-* inline difference construction
+* Capable of handling more than plain ASCII. Arrays or lists of any type that implement `hashCode()` and `equals()` correctly can be subject to differencing using this library
+* Patch and unpatch the text with the given patch
+* Parsing the unified diff format
+* Producing human-readable differences
+* Inline difference construction
 * Algorithms:
-  * Myers Standard Algorithm
+  * Myers standard algorithm
   * Myers with linear space improvement
-  * HistogramDiff using JGit Library
+  * HistogramDiff using the JGit library
 
 ### Algorithms
 
@@ -102,7 +102,7 @@ But it can easily be replaced by any other which is better for handling your tex
 
 ## Source Code conventions
 
-Recently a checkstyle process was integrated into the build process. java-diff-utils follows the sun java format convention. There are no TABs allowed. Use spaces.
+Recently a checkstyle process was integrated into the build process. java-diff-utils follows the Sun Java format convention. There are no tabs allowed. Use spaces.
 
 ```java
 public static <T> Patch<T> diff(List<T> original, List<T> revised,
