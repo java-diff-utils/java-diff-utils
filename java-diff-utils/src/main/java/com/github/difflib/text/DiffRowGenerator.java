@@ -189,6 +189,8 @@ public final class DiffRowGenerator {
 		private final Function<String, String> lineNormalizer;
 		private final Function<String, String> processDiffs;
 		private final Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> inlineDeltaMerger;
+		// processor for equal (unchanged) lines
+		private final Function<String, String> equalityProcessor;
 
 		private final boolean showInlineDiffs;
 		private final boolean replaceOriginalLinefeedInChangesWithSpaces;
@@ -214,6 +216,7 @@ public final class DiffRowGenerator {
 				lineNormalizer = builder.lineNormalizer;
 				processDiffs = builder.processDiffs;
 				inlineDeltaMerger = builder.inlineDeltaMerger;
+				equalityProcessor = builder.equalityProcessor;
 
 				replaceOriginalLinefeedInChangesWithSpaces = builder.replaceOriginalLinefeedInChangesWithSpaces;
 
@@ -262,7 +265,8 @@ public final class DiffRowGenerator {
 
 				// Copy the final matching chunk if any.
 				for (String line : original.subList(endPos, original.size())) {
-						diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+						String processed = processEqualities(line);
+						diffRows.add(buildDiffRow(Tag.EQUAL, processed, processed));
 				}
 				return diffRows;
 		}
@@ -276,7 +280,8 @@ public final class DiffRowGenerator {
 				Chunk<String> rev = delta.getTarget();
 
 				for (String line : original.subList(endPos, orig.getPosition())) {
-						diffRows.add(buildDiffRow(Tag.EQUAL, line, line));
+						String processed = processEqualities(line);
+						diffRows.add(buildDiffRow(Tag.EQUAL, processed, processed));
 				}
 
 				switch (delta.getType()) {
@@ -497,6 +502,19 @@ public final class DiffRowGenerator {
 		}
 
 		/**
+		 * Hook for processing equal (unchanged) text segments.
+		 * Delegates to the builder-configured equalityProcessor if present.
+		 *
+		 * @author tusharsoni52
+		 * @param text
+		 * @return
+		 *
+		 */
+		protected String processEqualities(final String text) {
+				return equalityProcessor != null ? equalityProcessor.apply(text) : text;
+		}
+
+		/**
 		 * This class used for building the DiffRowGenerator.
 		 *
 		 * @author dmitry
@@ -521,6 +539,8 @@ public final class DiffRowGenerator {
 				private boolean replaceOriginalLinefeedInChangesWithSpaces = false;
 				private Function<InlineDeltaMergeInfo, List<AbstractDelta<String>>> inlineDeltaMerger =
 								DEFAULT_INLINE_DELTA_MERGER;
+				// Processor for equalities
+				private Function<String, String> equalityProcessor = null;
 
 				private Builder() {}
 
@@ -610,6 +630,20 @@ public final class DiffRowGenerator {
 				 */
 				public Builder processDiffs(Function<String, String> processDiffs) {
 						this.processDiffs = processDiffs;
+						return this;
+				}
+
+				/**
+				 * Processor for equal (unchanged) text parts.
+				 * Allows applying the same escaping/transformation as for diffs.
+				 *
+				 * @author tusharsoni52
+				 * @param equalityProcessor
+				 * @return
+				 *
+				 */
+				public Builder processEqualities(Function<String, String> equalityProcessor) {
+						this.equalityProcessor = equalityProcessor;
 						return this;
 				}
 
