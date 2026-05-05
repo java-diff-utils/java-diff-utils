@@ -275,7 +275,7 @@ public class UnifiedDiffReaderTest {
 				assertThat(file.getToFile()).isEqualTo("doc/samba_data_tool_path.xml.in");
 
 				assertThat(file.getPatch().toString())
-								.isEqualTo("Patch{deltas=[[ChangeDelta, position: 0, lines: [] to [@SAMBA_DATA_TOOL@]]]}");
+								.isEqualTo("Patch{deltas=[[InsertDelta, position: 0, lines: [@SAMBA_DATA_TOOL@]]]}");
 
 				assertThat(diff.getTail()).isEqualTo("2.14.4");
 		}
