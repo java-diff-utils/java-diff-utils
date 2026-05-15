@@ -302,41 +302,41 @@ public final class UnifiedDiffReader {
 		private int delLineIdx = 0;
 		private int addLineIdx = 0;
 
-	private void finalizeChunk() {
-			if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
-					boolean hasDeletes = !delLineIdxList.isEmpty();
-					boolean hasInserts = !addLineIdxList.isEmpty();
-					boolean hasContext = originalTxt.size() != delLineIdxList.size()
-								|| revisedTxt.size() != addLineIdxList.size();
-					AbstractDelta<String> delta;
-					if (hasContext || (hasDeletes && hasInserts)) {
-							delta = new ChangeDelta<>(
-										new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
-										new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
-					} else if (hasDeletes) {
-							delta = new DeleteDelta<>(
-										new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
-										new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
-					} else if (hasInserts) {
-							delta = new InsertDelta<>(
-										new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
-										new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
-					} else {
-							delta = new EqualDelta<>(
-										new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
-										new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
-					}
-					actualFile.getPatch().addDelta(delta);
-					old_ln = 0;
-					new_ln = 0;
-					originalTxt.clear();
-					revisedTxt.clear();
-					addLineIdxList.clear();
-					delLineIdxList.clear();
-					delLineIdx = 0;
-					addLineIdx = 0;
-			}
-	}
+		private void finalizeChunk() {
+				if (!originalTxt.isEmpty() || !revisedTxt.isEmpty()) {
+						boolean hasDeletes = !delLineIdxList.isEmpty();
+						boolean hasInserts = !addLineIdxList.isEmpty();
+						boolean hasContext =
+										originalTxt.size() != delLineIdxList.size() || revisedTxt.size() != addLineIdxList.size();
+						AbstractDelta<String> delta;
+						if (hasContext || (hasDeletes && hasInserts)) {
+								delta = new ChangeDelta<>(
+												new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
+												new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
+						} else if (hasDeletes) {
+								delta = new DeleteDelta<>(
+												new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
+												new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
+						} else if (hasInserts) {
+								delta = new InsertDelta<>(
+												new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
+												new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
+						} else {
+								delta = new EqualDelta<>(
+												new Chunk<>(old_ln - 1, originalTxt, delLineIdxList),
+												new Chunk<>(new_ln - 1, revisedTxt, addLineIdxList));
+						}
+						actualFile.getPatch().addDelta(delta);
+						old_ln = 0;
+						new_ln = 0;
+						originalTxt.clear();
+						revisedTxt.clear();
+						addLineIdxList.clear();
+						delLineIdxList.clear();
+						delLineIdx = 0;
+						addLineIdx = 0;
+				}
+		}
 
 		private void processNormalLine(MatchResult match, String line) {
 				String cline = line.substring(1);
