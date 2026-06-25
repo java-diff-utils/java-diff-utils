@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.algorithm.myers.MyersDiffWithLinearSpace;
@@ -41,7 +42,7 @@ public class PatchWithAllDiffAlgorithmsTest {
 
 				final Patch<String> patch = DiffUtils.diff(insertTest_from, insertTest_to);
 				try {
-						assertEquals(insertTest_to, DiffUtils.patch(insertTest_from, patch));
+						assertEquals(insertTest_to, PatchUtils.patch(insertTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -57,7 +58,7 @@ public class PatchWithAllDiffAlgorithmsTest {
 
 				final Patch<String> patch = DiffUtils.diff(deleteTest_from, deleteTest_to);
 				try {
-						assertEquals(deleteTest_to, DiffUtils.patch(deleteTest_from, patch));
+						assertEquals(deleteTest_to, PatchUtils.patch(deleteTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -73,7 +74,7 @@ public class PatchWithAllDiffAlgorithmsTest {
 
 				final Patch<String> patch = DiffUtils.diff(changeTest_from, changeTest_to);
 				try {
-						assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
+						assertEquals(changeTest_to, PatchUtils.patch(changeTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -98,7 +99,7 @@ public class PatchWithAllDiffAlgorithmsTest {
 				in.close();
 
 				try {
-						assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, result));
+						assertEquals(changeTest_to, PatchUtils.patch(changeTest_from, result));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}

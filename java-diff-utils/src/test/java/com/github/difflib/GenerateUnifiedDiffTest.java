@@ -70,7 +70,7 @@ public class GenerateUnifiedDiffTest {
 				final List<String> patchLines = fileToLines(TestConstants.MOCK_FOLDER + "issue10_patch.txt");
 				final Patch<String> p = UnifiedDiffUtils.parseUnifiedDiff(patchLines);
 				try {
-						DiffUtils.patch(baseLines, p);
+						PatchUtils.patch(baseLines, p);
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -208,7 +208,7 @@ public class GenerateUnifiedDiffTest {
 				// make original not fitting
 				baseLines.set(40, baseLines.get(40) + " corrupted ");
 
-				assertThrows(PatchFailedException.class, () -> DiffUtils.patch(baseLines, p));
+				assertThrows(PatchFailedException.class, () -> PatchUtils.patch(baseLines, p));
 		}
 
 		@Test

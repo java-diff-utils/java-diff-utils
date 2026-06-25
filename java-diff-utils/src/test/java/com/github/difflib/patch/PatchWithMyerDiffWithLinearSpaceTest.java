@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import com.github.difflib.algorithm.myers.MyersDiff;
 import com.github.difflib.algorithm.myers.MyersDiffWithLinearSpace;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class PatchWithMyerDiffWithLinearSpaceTest {
 				patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
 
 				try {
-						List<String> data = DiffUtils.patch(changeTest_from, patch);
+						List<String> data = PatchUtils.patch(changeTest_from, patch);
 						assertEquals(11, data.size());
 
 						assertEquals(
