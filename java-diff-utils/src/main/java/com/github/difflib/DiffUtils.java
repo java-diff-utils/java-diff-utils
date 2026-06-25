@@ -116,7 +116,7 @@ public final class DiffUtils {
 				if (equalizer != null) {
 						return DiffUtils.diff(source, target, DEFAULT_DIFF.create(equalizer));
 				}
-				return DiffUtils.diff(source, target, new MyersDiff<>());
+				return DiffUtils.diff(source, target, DEFAULT_DIFF.create());
 		}
 
 		public static <T> Patch<T> diff(
