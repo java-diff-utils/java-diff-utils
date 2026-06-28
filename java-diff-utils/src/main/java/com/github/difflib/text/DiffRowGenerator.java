@@ -15,15 +15,9 @@
  */
 package com.github.difflib.text;
 
-import static java.util.stream.Collectors.toList;
-
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
-import com.github.difflib.patch.ChangeDelta;
 import com.github.difflib.patch.Chunk;
-import com.github.difflib.patch.DeleteDelta;
-import com.github.difflib.patch.DeltaType;
-import com.github.difflib.patch.InsertDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow.Tag;
 import com.github.difflib.text.deltamerge.DeltaMergeUtils;
@@ -117,67 +111,6 @@ public final class DiffRowGenerator {
 				return list;
 		}
 
-		/**
-		 * Wrap the elements in the sequence with the given tag
-		 *
-		 * @param startPosition the position from which tag should start. The
-		 * counting start from a zero.
-		 * @param endPosition the position before which tag should should be closed.
-		 * @param tagGenerator the tag generator
-		 */
-		static void wrapInTag(
-						List<String> sequence,
-						int startPosition,
-						int endPosition,
-						Tag tag,
-						BiFunction<Tag, Boolean, String> tagGenerator,
-						Function<String, String> processDiffs,
-						boolean replaceLinefeedWithSpace) {
-				int endPos = endPosition;
-
-				while (endPos >= startPosition) {
-
-						// search position for end tag
-						while (endPos > startPosition) {
-								if (!"\n".equals(sequence.get(endPos - 1))) {
-										break;
-								} else if (replaceLinefeedWithSpace) {
-										sequence.set(endPos - 1, " ");
-										break;
-								}
-								endPos--;
-						}
-
-						if (endPos == startPosition) {
-								break;
-						}
-
-						sequence.add(endPos, tagGenerator.apply(tag, false));
-						if (processDiffs != null) {
-								sequence.set(endPos - 1, processDiffs.apply(sequence.get(endPos - 1)));
-						}
-						endPos--;
-
-						// search position for end tag
-						while (endPos > startPosition) {
-								if ("\n".equals(sequence.get(endPos - 1))) {
-										if (replaceLinefeedWithSpace) {
-												sequence.set(endPos - 1, " ");
-										} else {
-												break;
-										}
-								}
-								if (processDiffs != null) {
-										sequence.set(endPos - 1, processDiffs.apply(sequence.get(endPos - 1)));
-								}
-								endPos--;
-						}
-
-						sequence.add(endPos, tagGenerator.apply(tag, true));
-						endPos--;
-				}
-		}
-
 		private final int columnWidth;
 		private final BiPredicate<String, String> equalizer;
 		private final boolean ignoreWhiteSpaces;
@@ -195,6 +128,9 @@ public final class DiffRowGenerator {
 		private final boolean showInlineDiffs;
 		private final boolean replaceOriginalLinefeedInChangesWithSpaces;
 		private final boolean decompressDeltas;
+
+		/** Pre-built config object passed to {@link InlineDiffAnnotator} for each changed delta. */
+		private final InlineDiffAnnotatorConfig annotatorConfig;
 
 		private DiffRowGenerator(Builder builder) {
 				showInlineDiffs = builder.showInlineDiffs;
@@ -223,6 +159,29 @@ public final class DiffRowGenerator {
 				Objects.requireNonNull(inlineDiffSplitter);
 				Objects.requireNonNull(lineNormalizer);
 				Objects.requireNonNull(inlineDeltaMerger);
+
+				annotatorConfig = new InlineDiffAnnotatorConfig(
+								reportLinesUnchanged,
+								lineNormalizer,
+								inlineDiffSplitter,
+								equalizer,
+								inlineDeltaMerger,
+								oldTag,
+								newTag,
+								processDiffs,
+								mergeOriginalRevised,
+								replaceOriginalLinefeedInChangesWithSpaces,
+								columnWidth);
+		}
+
+		/**
+		 * Applies the configured line normalizer to each line, unless
+		 * {@code reportLinesUnchanged} is set. Package-visible for testing.
+		 */
+		List<String> normalizeLines(List<String> list) {
+				return reportLinesUnchanged
+								? list
+								: list.stream().map(lineNormalizer::apply).collect(java.util.stream.Collectors.toList());
 		}
 
 		/**
@@ -253,7 +212,7 @@ public final class DiffRowGenerator {
 
 				if (decompressDeltas) {
 						for (AbstractDelta<String> originalDelta : deltaList) {
-								for (AbstractDelta<String> delta : decompressDeltas(originalDelta)) {
+								for (AbstractDelta<String> delta : DeltaDecompressor.decompress(originalDelta)) {
 										endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta);
 								}
 						}
@@ -297,7 +256,7 @@ public final class DiffRowGenerator {
 								break;
 						default:
 								if (showInlineDiffs) {
-										diffRows.addAll(generateInlineDiffs(delta));
+										diffRows.addAll(InlineDiffAnnotator.annotate(delta, annotatorConfig));
 								} else {
 										for (int j = 0; j < Math.max(orig.size(), rev.size()); j++) {
 												diffRows.add(buildDiffRow(
@@ -309,46 +268,6 @@ public final class DiffRowGenerator {
 				}
 
 				return orig.last() + 1;
-		}
-
-		/**
-		 * Decompresses ChangeDeltas with different source and target size to a
-		 * ChangeDelta with same size and a following InsertDelta or DeleteDelta.
-		 * With this problems of building DiffRows getting smaller.
-		 *
-		 * @param deltaList
-		 */
-		private List<AbstractDelta<String>> decompressDeltas(AbstractDelta<String> delta) {
-				if (delta.getType() == DeltaType.CHANGE
-								&& delta.getSource().size() != delta.getTarget().size()) {
-						List<AbstractDelta<String>> deltas = new ArrayList<>();
-						// System.out.println("decompress this " + delta);
-
-						int minSize = Math.min(delta.getSource().size(), delta.getTarget().size());
-						Chunk<String> orig = delta.getSource();
-						Chunk<String> rev = delta.getTarget();
-
-						deltas.add(new ChangeDelta<String>(
-										new Chunk<>(orig.getPosition(), orig.getLines().subList(0, minSize)),
-										new Chunk<>(rev.getPosition(), rev.getLines().subList(0, minSize))));
-
-						if (orig.getLines().size() < rev.getLines().size()) {
-								deltas.add(new InsertDelta<String>(
-												new Chunk<>(orig.getPosition() + minSize, Collections.emptyList()),
-												new Chunk<>(
-																rev.getPosition() + minSize,
-																rev.getLines().subList(minSize, rev.getLines().size()))));
-						} else {
-								deltas.add(new DeleteDelta<String>(
-												new Chunk<>(
-																orig.getPosition() + minSize,
-																orig.getLines().subList(minSize, orig.getLines().size())),
-												new Chunk<>(rev.getPosition() + minSize, Collections.emptyList())));
-						}
-						return deltas;
-				}
-
-				return Collections.singletonList(delta);
 		}
 
 		private DiffRow buildDiffRow(Tag type, String orgline, String newline) {
@@ -371,126 +290,6 @@ public final class DiffRowGenerator {
 						}
 						return new DiffRow(type, wrapOrg, wrapNew);
 				}
-		}
-
-		private DiffRow buildDiffRowWithoutNormalizing(Tag type, String orgline, String newline) {
-				return new DiffRow(
-								type, StringUtils.wrapText(orgline, columnWidth), StringUtils.wrapText(newline, columnWidth));
-		}
-
-		List<String> normalizeLines(List<String> list) {
-				return reportLinesUnchanged
-								? list
-								: list.stream().map(lineNormalizer::apply).collect(toList());
-		}
-
-		/**
-		 * Add the inline diffs for given delta
-		 *
-		 * @param delta the given delta
-		 */
-		private List<DiffRow> generateInlineDiffs(AbstractDelta<String> delta) {
-				List<String> orig = normalizeLines(delta.getSource().getLines());
-				List<String> rev = normalizeLines(delta.getTarget().getLines());
-				List<String> origList;
-				List<String> revList;
-				String joinedOrig = String.join("\n", orig);
-				String joinedRev = String.join("\n", rev);
-
-				origList = inlineDiffSplitter.apply(joinedOrig);
-				revList = inlineDiffSplitter.apply(joinedRev);
-
-				List<AbstractDelta<String>> originalInlineDeltas =
-								DiffUtils.diff(origList, revList, equalizer).getDeltas();
-				List<AbstractDelta<String>> inlineDeltas =
-								inlineDeltaMerger.apply(new InlineDeltaMergeInfo(originalInlineDeltas, origList, revList));
-
-				Collections.reverse(inlineDeltas);
-				for (AbstractDelta<String> inlineDelta : inlineDeltas) {
-						Chunk<String> inlineOrig = inlineDelta.getSource();
-						Chunk<String> inlineRev = inlineDelta.getTarget();
-						if (inlineDelta.getType() == DeltaType.DELETE) {
-								wrapInTag(
-												origList,
-												inlineOrig.getPosition(),
-												inlineOrig.getPosition() + inlineOrig.size(),
-												Tag.DELETE,
-												oldTag,
-												processDiffs,
-												replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised);
-						} else if (inlineDelta.getType() == DeltaType.INSERT) {
-								if (mergeOriginalRevised) {
-										origList.addAll(
-														inlineOrig.getPosition(),
-														revList.subList(inlineRev.getPosition(), inlineRev.getPosition() + inlineRev.size()));
-										wrapInTag(
-														origList,
-														inlineOrig.getPosition(),
-														inlineOrig.getPosition() + inlineRev.size(),
-														Tag.INSERT,
-														newTag,
-														processDiffs,
-														false);
-								} else {
-										wrapInTag(
-														revList,
-														inlineRev.getPosition(),
-														inlineRev.getPosition() + inlineRev.size(),
-														Tag.INSERT,
-														newTag,
-														processDiffs,
-														false);
-								}
-						} else if (inlineDelta.getType() == DeltaType.CHANGE) {
-								if (mergeOriginalRevised) {
-										origList.addAll(
-														inlineOrig.getPosition() + inlineOrig.size(),
-														revList.subList(inlineRev.getPosition(), inlineRev.getPosition() + inlineRev.size()));
-										wrapInTag(
-														origList,
-														inlineOrig.getPosition() + inlineOrig.size(),
-														inlineOrig.getPosition() + inlineOrig.size() + inlineRev.size(),
-														Tag.CHANGE,
-														newTag,
-														processDiffs,
-														false);
-								} else {
-										wrapInTag(
-														revList,
-														inlineRev.getPosition(),
-														inlineRev.getPosition() + inlineRev.size(),
-														Tag.CHANGE,
-														newTag,
-														processDiffs,
-														false);
-								}
-								wrapInTag(
-												origList,
-												inlineOrig.getPosition(),
-												inlineOrig.getPosition() + inlineOrig.size(),
-												Tag.CHANGE,
-												oldTag,
-												processDiffs,
-												replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised);
-						}
-				}
-				StringBuilder origResult = new StringBuilder();
-				StringBuilder revResult = new StringBuilder();
-				for (String character : origList) {
-						origResult.append(character);
-				}
-				for (String character : revList) {
-						revResult.append(character);
-				}
-
-				List<String> original = Arrays.asList(origResult.toString().split("\n"));
-				List<String> revised = Arrays.asList(revResult.toString().split("\n"));
-				List<DiffRow> diffRows = new ArrayList<>();
-				for (int j = 0; j < Math.max(original.size(), revised.size()); j++) {
-						diffRows.add(buildDiffRowWithoutNormalizing(
-										Tag.CHANGE, original.size() > j ? original.get(j) : "", revised.size() > j ? revised.get(j) : ""));
-				}
-				return diffRows;
 		}
 
 		private String preprocessLine(String line) {
