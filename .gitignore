@@ -4,3 +4,14 @@ nbproject/
 target/
 
 *.iml
+
+# Assignment docs and generated reports (not part of library source)
+docs/
+*.docx
+*.pdf
+*.py
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
