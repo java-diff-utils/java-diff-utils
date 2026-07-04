@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import com.github.difflib.patch.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +31,7 @@ public class WithMyersDiffWithLinearSpacePatchTest {
 				final Patch<String> patch =
 								DiffUtils.diff(insertTest_from, insertTest_to, new MyersDiffWithLinearSpace<String>());
 				try {
-						assertEquals(insertTest_to, DiffUtils.patch(insertTest_from, patch));
+						assertEquals(insertTest_to, PatchUtils.patch(insertTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -44,7 +45,7 @@ public class WithMyersDiffWithLinearSpacePatchTest {
 				final Patch<String> patch =
 								DiffUtils.diff(deleteTest_from, deleteTest_to, new MyersDiffWithLinearSpace<String>());
 				try {
-						assertEquals(deleteTest_to, DiffUtils.patch(deleteTest_from, patch));
+						assertEquals(deleteTest_to, PatchUtils.patch(deleteTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -58,7 +59,7 @@ public class WithMyersDiffWithLinearSpacePatchTest {
 				final Patch<String> patch =
 								DiffUtils.diff(changeTest_from, changeTest_to, new MyersDiffWithLinearSpace<String>());
 				try {
-						assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, patch));
+						assertEquals(changeTest_to, PatchUtils.patch(changeTest_from, patch));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -167,7 +168,7 @@ public class WithMyersDiffWithLinearSpacePatchTest {
 				in.close();
 
 				try {
-						assertEquals(changeTest_to, DiffUtils.patch(changeTest_from, result));
+						assertEquals(changeTest_to, PatchUtils.patch(changeTest_from, result));
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}
@@ -186,7 +187,7 @@ public class WithMyersDiffWithLinearSpacePatchTest {
 				patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
 
 				try {
-						List<String> data = DiffUtils.patch(changeTest_from, patch);
+						List<String> data = PatchUtils.patch(changeTest_from, patch);
 						assertEquals(11, data.size());
 
 						assertEquals(

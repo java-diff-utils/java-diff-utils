@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,26 +18,22 @@ package com.github.difflib;
 import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
-import com.github.difflib.algorithm.myers.MyersDiff;
-import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
- * Utility class to implement the difference and patching engine.
+ * Utility class to implement the difference engine.
  */
 public final class DiffUtils {
 
 		/**
 		 * This factory generates the DEFAULT_DIFF algorithm for all these routines.
 		 */
-		static DiffAlgorithmFactory DEFAULT_DIFF = MyersDiff.factory();
+		static DiffAlgorithmFactory DEFAULT_DIFF = DiffAlgorithmDefaults.getDefault();
 
 		/**
 		 * Sets the default diff algorithm factory to be used by all diff routines.
@@ -59,7 +55,7 @@ public final class DiffUtils {
 		 */
 		public static <T> Patch<T> diff(
 						List<? extends T> original, List<? extends T> revised, DiffAlgorithmListener progress) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), progress);
+				return diff(original, revised, DEFAULT_DIFF.create(), progress);
 		}
 
 		/**
@@ -71,7 +67,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
 		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null);
+				return diff(original, revised, DEFAULT_DIFF.create(), null);
 		}
 
 		/**
@@ -84,7 +80,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
 		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised, boolean includeEqualParts) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
+				return diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
 		}
 
 		/**
@@ -96,7 +92,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised strings. Never {@code null}.
 		 */
 		public static Patch<String> diff(String sourceText, String targetText, DiffAlgorithmListener progress) {
-				return DiffUtils.diff(Arrays.asList(sourceText.split("\n")), Arrays.asList(targetText.split("\n")), progress);
+				return diff(Arrays.asList(sourceText.split("\n")), Arrays.asList(targetText.split("\n")), progress);
 		}
 
 		/**
@@ -114,9 +110,9 @@ public final class DiffUtils {
 		public static <T> Patch<T> diff(
 						List<? extends T> source, List<? extends T> target, BiPredicate<? super T, ? super T> equalizer) {
 				if (equalizer != null) {
-						return DiffUtils.diff(source, target, DEFAULT_DIFF.create(equalizer));
+						return diff(source, target, DEFAULT_DIFF.create(equalizer));
 				}
-				return DiffUtils.diff(source, target, new MyersDiff<>());
+				return diff(source, target, DEFAULT_DIFF.create());
 		}
 
 		public static <T> Patch<T> diff(
@@ -168,61 +164,40 @@ public final class DiffUtils {
 		}
 
 		/**
-		 * Computes the difference between the given texts inline. This one uses the
-		 * "trick" to make out of texts lists of characters, like DiffRowGenerator
-		 * does and merges those changes at the end together again.
+		 * Computes the difference between the given texts inline. Splits the texts
+		 * into tokens and delegates to the default diff algorithm.
 		 *
-		 * @param original a {@link String} representing the original text. Must not be {@code null}.
-		 * @param revised a {@link String} representing the revised text. Must not be {@code null}.
-		 * @return The patch describing the difference between the original and
-		 * revised sequences. Never {@code null}.
+		 * @param original the original text. Must not be {@code null}.
+		 * @param revised the revised text. Must not be {@code null}.
+		 * @return The patch describing the difference between the original and revised texts.
 		 */
 		public static Patch<String> diffInline(String original, String revised) {
-				List<String> origList = new ArrayList<>();
-				List<String> revList = new ArrayList<>();
-				for (Character character : original.toCharArray()) {
-						origList.add(character.toString());
-				}
-				for (Character character : revised.toCharArray()) {
-						revList.add(character.toString());
-				}
-				Patch<String> patch = DiffUtils.diff(origList, revList);
-				for (AbstractDelta<String> delta : patch.getDeltas()) {
-						delta.getSource().setLines(compressLines(delta.getSource().getLines(), ""));
-						delta.getTarget().setLines(compressLines(delta.getTarget().getLines(), ""));
-				}
-				return patch;
+				return InlineDiffUtils.diffInline(original, revised);
 		}
 
 		/**
 		 * Applies the given patch to the original list and returns the revised list.
 		 *
-		 * @param original a {@link List} representing the original list.
-		 * @param patch a {@link List} representing the patch to apply.
+		 * @param <T> the type of elements in the lists.
+		 * @param original the original list. Must not be {@code null}.
+		 * @param patch the patch to apply. Must not be {@code null}.
 		 * @return the revised list.
 		 * @throws PatchFailedException if the patch cannot be applied.
 		 */
 		public static <T> List<T> patch(List<? extends T> original, Patch<T> patch) throws PatchFailedException {
-				return patch.applyTo(original);
+				return PatchUtils.patch(original, patch);
 		}
 
 		/**
-		 * Applies the given patch to the revised list and returns the original list.
+		 * Applies the given patch in reverse to the revised list and returns the original list.
 		 *
-		 * @param revised a {@link List} representing the revised list.
-		 * @param patch a {@link Patch} representing the patch to apply.
-		 * @return the original list.
-		 * @throws PatchFailedException if the patch cannot be applied.
+		 * @param <T> the type of elements in the lists.
+		 * @param revised the revised list. Must not be {@code null}.
+		 * @param patch the patch to reverse-apply. Must not be {@code null}.
+		 * @return the reconstructed original list.
 		 */
 		public static <T> List<T> unpatch(List<? extends T> revised, Patch<T> patch) {
-				return patch.restore(revised);
-		}
-
-		private static List<String> compressLines(List<String> lines, String delimiter) {
-				if (lines.isEmpty()) {
-						return Collections.emptyList();
-				}
-				return Collections.singletonList(String.join(delimiter, lines));
+				return PatchUtils.unpatch(revised, patch);
 		}
 
 		private DiffUtils() {}

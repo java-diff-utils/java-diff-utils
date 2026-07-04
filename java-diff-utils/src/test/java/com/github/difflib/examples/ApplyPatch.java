@@ -1,6 +1,6 @@
 package com.github.difflib.examples;
 
-import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import com.github.difflib.TestConstants;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
@@ -23,7 +23,7 @@ public class ApplyPatch {
 				Patch<String> patch = UnifiedDiffUtils.parseUnifiedDiff(patched);
 
 				// Then apply the computed patch to the given text
-				List<String> result = DiffUtils.patch(original, patch);
+				List<String> result = PatchUtils.patch(original, patch);
 				System.out.println(result);
 				// / Or we can call patch.applyTo(original). There is no difference.
 		}

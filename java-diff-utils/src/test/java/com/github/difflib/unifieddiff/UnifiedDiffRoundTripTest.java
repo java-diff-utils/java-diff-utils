@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import com.github.difflib.TestConstants;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.patch.PatchFailedException;
@@ -71,7 +72,7 @@ public class UnifiedDiffRoundTripTest {
 
 				final Patch<String> p = unifiedDiff.getFiles().get(0).getPatch();
 				try {
-						DiffUtils.patch(baseLines, p);
+						PatchUtils.patch(baseLines, p);
 				} catch (PatchFailedException e) {
 						fail(e.getMessage());
 				}

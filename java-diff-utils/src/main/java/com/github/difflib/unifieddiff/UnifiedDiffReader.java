@@ -82,121 +82,128 @@ public final class UnifiedDiffReader {
 		private final UnifiedDiffLine LINE_DEL = new UnifiedDiffLine("^-", this::processDelLine);
 		private final UnifiedDiffLine LINE_ADD = new UnifiedDiffLine("^\\+", this::processAddLine);
 
+		private final UnifiedDiffLine[] FILE_HEADER_RULES = {
+				DIFF_COMMAND,
+				SIMILARITY_INDEX,
+				INDEX,
+				FROM_FILE,
+				TO_FILE,
+				RENAME_FROM,
+				RENAME_TO,
+				COPY_FROM,
+				COPY_TO,
+				NEW_FILE_MODE,
+				DELETED_FILE_MODE,
+				OLD_MODE,
+				NEW_MODE,
+				BINARY_ADDED,
+				BINARY_DELETED,
+				BINARY_EDITED
+		};
+
+		private final UnifiedDiffLine[] HEADER_STOP_RULES = {
+				DIFF_COMMAND,
+				SIMILARITY_INDEX,
+				INDEX,
+				FROM_FILE,
+				TO_FILE,
+				RENAME_FROM,
+				RENAME_TO,
+				COPY_FROM,
+				COPY_TO,
+				NEW_FILE_MODE,
+				DELETED_FILE_MODE,
+				OLD_MODE,
+				NEW_MODE,
+				BINARY_ADDED,
+				BINARY_DELETED,
+				BINARY_EDITED,
+				CHUNK
+		};
+
 		private UnifiedDiffFile actualFile;
 
 		UnifiedDiffReader(Reader reader) {
 				this.READER = new InternalUnifiedDiffReader(reader);
 		}
 
-		// schema = [[/^\s+/, normal], [/^diff\s/, start], [/^new file mode \d+$/, new_file],
-		// [/^deleted file mode \d+$/, deleted_file], [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index],
-		// [/^---\s/, from_file], [/^\+\+\+\s/, to_file], [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk],
-		// [/^-/, del], [/^\+/, add], [/^\\ No newline at end of file$/, eof]];
 		private UnifiedDiff parse() throws IOException, UnifiedDiffParserException {
-				//        String headerTxt = "";
-				//        LOG.log(Level.FINE, "header parsing");
-				//        String line = null;
-				//        while (READER.ready()) {
-				//            line = READER.readLine();
-				//            LOG.log(Level.FINE, "parsing line {0}", line);
-				//            if (DIFF_COMMAND.validLine(line) || INDEX.validLine(line)
-				//                    || FROM_FILE.validLine(line) || TO_FILE.validLine(line)
-				//                    || NEW_FILE_MODE.validLine(line)) {
-				//                break;
-				//            } else {
-				//                headerTxt += line + "\n";
-				//            }
-				//        }
-				//        if (!"".equals(headerTxt)) {
-				//            data.setHeader(headerTxt);
-				//        }
-
 				String line = READER.readLine();
 				while (line != null) {
-						String headerTxt = "";
-						LOG.log(Level.FINE, "header parsing");
-						while (line != null) {
-								LOG.log(Level.FINE, "parsing line {0}", line);
-								if (validLine(
-												line,
-												DIFF_COMMAND,
-												SIMILARITY_INDEX,
-												INDEX,
-												FROM_FILE,
-												TO_FILE,
-												RENAME_FROM,
-												RENAME_TO,
-												COPY_FROM,
-												COPY_TO,
-												NEW_FILE_MODE,
-												DELETED_FILE_MODE,
-												OLD_MODE,
-												NEW_MODE,
-												BINARY_ADDED,
-												BINARY_DELETED,
-												BINARY_EDITED,
-												CHUNK)) {
-										break;
-								} else {
-										headerTxt += line + "\n";
-								}
-								line = READER.readLine();
-						}
-						if (!"".equals(headerTxt)) {
-								data.setHeader(headerTxt);
-						}
-						if (line != null && !CHUNK.validLine(line)) {
-								initFileIfNecessary();
-								while (line != null && !CHUNK.validLine(line)) {
-										if (!processLine(
-														line,
-														DIFF_COMMAND,
-														SIMILARITY_INDEX,
-														INDEX,
-														FROM_FILE,
-														TO_FILE,
-														RENAME_FROM,
-														RENAME_TO,
-														COPY_FROM,
-														COPY_TO,
-														NEW_FILE_MODE,
-														DELETED_FILE_MODE,
-														OLD_MODE,
-														NEW_MODE,
-														BINARY_ADDED,
-														BINARY_DELETED,
-														BINARY_EDITED)) {
-												throw new UnifiedDiffParserException("expected file start line not found");
-										}
-										line = READER.readLine();
-								}
-						}
-						if (line != null) {
-								processLine(line, CHUNK);
-								while ((line = READER.readLine()) != null) {
-										line = checkForNoNewLineAtTheEndOfTheFile(line);
-
-										if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
-												throw new UnifiedDiffParserException("expected data line not found");
-										}
-										if ((originalTxt.size() == old_size && revisedTxt.size() == new_size)
-														|| (old_size == 0
-																		&& new_size == 0
-																		&& originalTxt.size() == this.old_ln
-																		&& revisedTxt.size() == this.new_ln)) {
-												finalizeChunk();
-												break;
-										}
-								}
-								line = READER.readLine();
-
-								line = checkForNoNewLineAtTheEndOfTheFile(line);
-						}
+						line = parseHeaderSection(line);
+						line = parseFileHeader(line);
+						line = parseChunkSection(line);
 						if (line == null || (line.startsWith("--") && !line.startsWith("---"))) {
 								break;
 						}
 				}
+				parseTailSection();
+				return data;
+		}
 
+		private String parseHeaderSection(String currentLine) throws IOException {
+				String line = currentLine;
+				String headerTxt = "";
+				LOG.log(Level.FINE, "header parsing");
+				while (line != null) {
+						LOG.log(Level.FINE, "parsing line {0}", line);
+						if (validLine(line, HEADER_STOP_RULES)) {
+								break;
+						} else {
+								headerTxt += line + "\n";
+						}
+						line = READER.readLine();
+				}
+				if (!"".equals(headerTxt)) {
+						data.setHeader(headerTxt);
+				}
+				return line;
+		}
+
+		private String parseFileHeader(String currentLine) throws IOException, UnifiedDiffParserException {
+				String line = currentLine;
+				if (line != null && !CHUNK.validLine(line)) {
+						initFileIfNecessary();
+						while (line != null && !CHUNK.validLine(line)) {
+								if (!processLine(line, FILE_HEADER_RULES)) {
+										throw new UnifiedDiffParserException("expected file start line not found");
+								}
+								line = READER.readLine();
+						}
+				}
+				return line;
+		}
+
+		private String parseChunkSection(String currentLine) throws IOException, UnifiedDiffParserException {
+				String line = currentLine;
+				if (line != null) {
+						processLine(line, CHUNK);
+						while ((line = READER.readLine()) != null) {
+								line = checkForNoNewLineAtTheEndOfTheFile(line);
+
+								if (!processLine(line, LINE_NORMAL, LINE_ADD, LINE_DEL)) {
+										throw new UnifiedDiffParserException("expected data line not found");
+								}
+								if (isChunkFinished()) {
+										finalizeChunk();
+										break;
+								}
+						}
+						line = READER.readLine();
+						line = checkForNoNewLineAtTheEndOfTheFile(line);
+				}
+				return line;
+		}
+
+		private boolean isChunkFinished() {
+				return (originalTxt.size() == old_size && revisedTxt.size() == new_size)
+								|| (old_size == 0
+												&& new_size == 0
+												&& originalTxt.size() == this.old_ln
+												&& revisedTxt.size() == this.new_ln);
+		}
+
+		private void parseTailSection() throws IOException {
 				if (READER.ready()) {
 						String tailTxt = "";
 						while (READER.ready()) {
@@ -207,8 +214,6 @@ public final class UnifiedDiffReader {
 						}
 						data.setTailTxt(tailTxt);
 				}
-
-				return data;
 		}
 
 		private String checkForNoNewLineAtTheEndOfTheFile(String line) throws IOException {
@@ -278,6 +283,7 @@ public final class UnifiedDiffReader {
 				}
 		}
 
+		@SuppressWarnings("unused")
 		private void processDiff(MatchResult match, String line) {
 				// initFileIfNecessary();
 				LOG.log(Level.FINE, "start {0}", line);
@@ -287,6 +293,7 @@ public final class UnifiedDiffReader {
 				actualFile.setDiffCommand(line);
 		}
 
+		@SuppressWarnings("unused")
 		private void processSimilarityIndex(MatchResult match, String line) {
 				actualFile.setSimilarityIndex(Integer.valueOf(match.group(1)));
 		}
@@ -338,6 +345,7 @@ public final class UnifiedDiffReader {
 				}
 		}
 
+		@SuppressWarnings("unused")
 		private void processNormalLine(MatchResult match, String line) {
 				String cline = line.substring(1);
 				originalTxt.add(cline);

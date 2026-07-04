@@ -85,7 +85,7 @@ public class DiffUtilsTest {
 
 		@Test
 		public void testDiffInline() {
-				final Patch<String> patch = DiffUtils.diffInline("", "test");
+				final Patch<String> patch = InlineDiffUtils.diffInline("", "test");
 				assertEquals(1, patch.getDeltas().size());
 				assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
 				assertEquals(0, patch.getDeltas().get(0).getSource().getPosition());
@@ -95,7 +95,7 @@ public class DiffUtilsTest {
 
 		@Test
 		public void testDiffInline2() {
-				final Patch<String> patch = DiffUtils.diffInline("es", "fest");
+				final Patch<String> patch = InlineDiffUtils.diffInline("es", "fest");
 				assertEquals(2, patch.getDeltas().size());
 				assertTrue(patch.getDeltas().get(0) instanceof InsertDelta);
 				assertEquals(0, patch.getDeltas().get(0).getSource().getPosition());

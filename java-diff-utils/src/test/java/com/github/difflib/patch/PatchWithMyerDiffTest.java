@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.PatchUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ public class PatchWithMyerDiffTest {
 				patch.withConflictOutput(Patch.CONFLICT_PRODUCES_MERGE_CONFLICT);
 
 				try {
-						List<String> data = DiffUtils.patch(changeTest_from, patch);
+						List<String> data = PatchUtils.patch(changeTest_from, patch);
 						assertEquals(9, data.size());
 
 						assertEquals(
