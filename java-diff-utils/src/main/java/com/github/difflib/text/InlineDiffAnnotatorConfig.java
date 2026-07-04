@@ -29,6 +29,7 @@ final class InlineDiffAnnotatorConfig {
 		final boolean replaceOriginalLinefeedInChangesWithSpaces;
 		final int columnWidth;
 
+		@SuppressWarnings({"squid:S107", "PMD.ExcessiveParameterList"})
 		InlineDiffAnnotatorConfig(
 						boolean reportLinesUnchanged,
 						Function<String, String> lineNormalizer,

@@ -19,6 +19,7 @@ import com.github.difflib.algorithm.DiffAlgorithmFactory;
 import com.github.difflib.algorithm.DiffAlgorithmI;
 import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.Patch;
+import com.github.difflib.patch.PatchFailedException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -162,7 +163,6 @@ public final class DiffUtils {
 				return diff(original, revised, algorithm, null);
 		}
 
-
 		/**
 		 * Computes the difference between the given texts inline. Splits the texts
 		 * into tokens and delegates to the default diff algorithm.
@@ -182,10 +182,9 @@ public final class DiffUtils {
 		 * @param original the original list. Must not be {@code null}.
 		 * @param patch the patch to apply. Must not be {@code null}.
 		 * @return the revised list.
-		 * @throws com.github.difflib.patch.PatchFailedException if the patch cannot be applied.
+		 * @throws PatchFailedException if the patch cannot be applied.
 		 */
-		public static <T> List<T> patch(List<? extends T> original, Patch<T> patch)
-						throws com.github.difflib.patch.PatchFailedException {
+		public static <T> List<T> patch(List<? extends T> original, Patch<T> patch) throws PatchFailedException {
 				return PatchUtils.patch(original, patch);
 		}
 
