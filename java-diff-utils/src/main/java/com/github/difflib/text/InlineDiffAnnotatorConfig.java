@@ -15,7 +15,7 @@ import java.util.function.Function;
  * <p>Instances are created once per {@link DiffRowGenerator} construction and reused
  * for every delta processed.
  */
-public final class InlineDiffAnnotatorConfig {
+final class InlineDiffAnnotatorConfig {
 
 		final boolean reportLinesUnchanged;
 		final Function<String, String> lineNormalizer;

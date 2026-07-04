@@ -54,7 +54,7 @@ public final class DiffUtils {
 		 */
 		public static <T> Patch<T> diff(
 						List<? extends T> original, List<? extends T> revised, DiffAlgorithmListener progress) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), progress);
+				return diff(original, revised, DEFAULT_DIFF.create(), progress);
 		}
 
 		/**
@@ -66,7 +66,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
 		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null);
+				return diff(original, revised, DEFAULT_DIFF.create(), null);
 		}
 
 		/**
@@ -79,7 +79,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised sequences. Never {@code null}.
 		 */
 		public static <T> Patch<T> diff(List<? extends T> original, List<? extends T> revised, boolean includeEqualParts) {
-				return DiffUtils.diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
+				return diff(original, revised, DEFAULT_DIFF.create(), null, includeEqualParts);
 		}
 
 		/**
@@ -91,7 +91,7 @@ public final class DiffUtils {
 		 * @return The patch describing the difference between the original and revised strings. Never {@code null}.
 		 */
 		public static Patch<String> diff(String sourceText, String targetText, DiffAlgorithmListener progress) {
-				return DiffUtils.diff(Arrays.asList(sourceText.split("\n")), Arrays.asList(targetText.split("\n")), progress);
+				return diff(Arrays.asList(sourceText.split("\n")), Arrays.asList(targetText.split("\n")), progress);
 		}
 
 		/**
@@ -109,9 +109,9 @@ public final class DiffUtils {
 		public static <T> Patch<T> diff(
 						List<? extends T> source, List<? extends T> target, BiPredicate<? super T, ? super T> equalizer) {
 				if (equalizer != null) {
-						return DiffUtils.diff(source, target, DEFAULT_DIFF.create(equalizer));
+						return diff(source, target, DEFAULT_DIFF.create(equalizer));
 				}
-				return DiffUtils.diff(source, target, DEFAULT_DIFF.create());
+				return diff(source, target, DEFAULT_DIFF.create());
 		}
 
 		public static <T> Patch<T> diff(
@@ -160,6 +160,45 @@ public final class DiffUtils {
 		public static <T> Patch<T> diff(
 						List<? extends T> original, List<? extends T> revised, DiffAlgorithmI<T> algorithm) {
 				return diff(original, revised, algorithm, null);
+		}
+
+
+		/**
+		 * Computes the difference between the given texts inline. Splits the texts
+		 * into tokens and delegates to the default diff algorithm.
+		 *
+		 * @param original the original text. Must not be {@code null}.
+		 * @param revised the revised text. Must not be {@code null}.
+		 * @return The patch describing the difference between the original and revised texts.
+		 */
+		public static Patch<String> diffInline(String original, String revised) {
+				return InlineDiffUtils.diffInline(original, revised);
+		}
+
+		/**
+		 * Applies the given patch to the original list and returns the revised list.
+		 *
+		 * @param <T> the type of elements in the lists.
+		 * @param original the original list. Must not be {@code null}.
+		 * @param patch the patch to apply. Must not be {@code null}.
+		 * @return the revised list.
+		 * @throws com.github.difflib.patch.PatchFailedException if the patch cannot be applied.
+		 */
+		public static <T> List<T> patch(List<? extends T> original, Patch<T> patch)
+						throws com.github.difflib.patch.PatchFailedException {
+				return PatchUtils.patch(original, patch);
+		}
+
+		/**
+		 * Applies the given patch in reverse to the revised list and returns the original list.
+		 *
+		 * @param <T> the type of elements in the lists.
+		 * @param revised the revised list. Must not be {@code null}.
+		 * @param patch the patch to reverse-apply. Must not be {@code null}.
+		 * @return the reconstructed original list.
+		 */
+		public static <T> List<T> unpatch(List<? extends T> revised, Patch<T> patch) {
+				return PatchUtils.unpatch(revised, patch);
 		}
 
 		private DiffUtils() {}

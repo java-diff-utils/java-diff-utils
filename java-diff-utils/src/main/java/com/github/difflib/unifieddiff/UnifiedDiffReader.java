@@ -283,6 +283,7 @@ public final class UnifiedDiffReader {
 				}
 		}
 
+		@SuppressWarnings("unused")
 		private void processDiff(MatchResult match, String line) {
 				// initFileIfNecessary();
 				LOG.log(Level.FINE, "start {0}", line);
@@ -292,6 +293,7 @@ public final class UnifiedDiffReader {
 				actualFile.setDiffCommand(line);
 		}
 
+		@SuppressWarnings("unused")
 		private void processSimilarityIndex(MatchResult match, String line) {
 				actualFile.setSimilarityIndex(Integer.valueOf(match.group(1)));
 		}
@@ -343,6 +345,7 @@ public final class UnifiedDiffReader {
 				}
 		}
 
+		@SuppressWarnings("unused")
 		private void processNormalLine(MatchResult match, String line) {
 				String cline = line.substring(1);
 				originalTxt.add(cline);

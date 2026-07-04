@@ -13,7 +13,7 @@ public final class PatchUtils {
 		 * Applies the given patch to the original list and returns the revised list.
 		 *
 		 * @param original a {@link List} representing the original list.
-		 * @param patch a {@link List} representing the patch to apply.
+		 * @param patch a {@link Patch} representing the patch to apply.
 		 * @return the revised list.
 		 * @throws PatchFailedException if the patch cannot be applied.
 		 */
