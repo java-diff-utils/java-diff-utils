@@ -31,6 +31,16 @@ class ChunkTest {
 								VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET, chunk.verifyChunk(toCharList("prefix      suffix"), 1, 7));
 		}
 
+		@Test
+		void verifyChunkAtTheEndOfTheTarget() throws PatchFailedException {
+				// chunk covers target indices 7..10, so it needs a target of at least 11
+				Chunk<Character> chunk = new Chunk<>(7, toCharList("test"));
+
+				assertEquals(VerifyChunk.OK, chunk.verifyChunk(toCharList("prefix test"), 0, 7));
+				assertEquals(VerifyChunk.POSITION_OUT_OF_TARGET, chunk.verifyChunk(toCharList("prefix tes"), 0, 7));
+				assertEquals(VerifyChunk.POSITION_OUT_OF_TARGET, chunk.verifyChunk(toCharList("prefix te"), 0, 7));
+		}
+
 		private List<Character> toCharList(String str) {
 				return str.chars().mapToObj(x -> (char) x).collect(Collectors.toList());
 		}

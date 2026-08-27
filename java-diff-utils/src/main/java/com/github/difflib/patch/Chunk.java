@@ -113,7 +113,7 @@ public final class Chunk<T> implements Serializable {
 				int lastIndex = size() - fuzz;
 				int last = position + size() - 1;
 
-				if (position + fuzz > target.size() || last - fuzz > target.size()) {
+				if (position + fuzz > target.size() || last - fuzz >= target.size()) {
 						return VerifyChunk.POSITION_OUT_OF_TARGET;
 				}
 				for (int i = startIndex; i < lastIndex; i++) {
