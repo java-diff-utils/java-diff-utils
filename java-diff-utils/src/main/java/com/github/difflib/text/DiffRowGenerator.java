@@ -285,6 +285,12 @@ public final class DiffRowGenerator {
 				}
 
 				switch (delta.getType()) {
+						case EQUAL:
+								for (String line : orig.getLines()) {
+										String processed = processEqualities(line);
+										diffRows.add(buildDiffRow(Tag.EQUAL, processed, processed));
+								}
+								break;
 						case INSERT:
 								for (String line : rev.getLines()) {
 										diffRows.add(buildDiffRow(Tag.INSERT, "", line));
