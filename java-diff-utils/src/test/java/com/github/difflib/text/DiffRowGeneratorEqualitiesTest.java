@@ -3,6 +3,8 @@ package com.github.difflib.text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.Patch;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -88,5 +90,35 @@ public class DiffRowGeneratorEqualitiesTest {
 				// Equalities inside CHANGE row must NOT be wrapped by processEqualities
 				// Option 3 does NOT modify inline equalities
 				assertTrue(row.getOldLine().startsWith("hello "), "Equal (unchanged) inline segment should remain unchanged");
+		}
+
+		@Test
+		public void testEqualDeltaIsReportedAsEqualWithoutInlineDiffs() {
+				List<String> original = Arrays.asList("same", "before");
+				List<String> revised = Arrays.asList("same", "after");
+				Patch<String> patch = DiffUtils.diff(original, revised, true);
+
+				List<DiffRow> rows =
+								DiffRowGenerator.create().showInlineDiffs(false).build().generateDiffRows(original, patch);
+
+				assertEquals(2, rows.size());
+				assertEquals(DiffRow.Tag.EQUAL, rows.get(0).getTag());
+				assertEquals("same", rows.get(0).getOldLine());
+				assertEquals(DiffRow.Tag.CHANGE, rows.get(1).getTag());
+		}
+
+		@Test
+		public void testEqualDeltaIsReportedAsEqualWithInlineDiffs() {
+				List<String> original = Arrays.asList("same", "before");
+				List<String> revised = Arrays.asList("same", "after");
+				Patch<String> patch = DiffUtils.diff(original, revised, true);
+
+				List<DiffRow> rows =
+								DiffRowGenerator.create().showInlineDiffs(true).build().generateDiffRows(original, patch);
+
+				assertEquals(2, rows.size());
+				assertEquals(DiffRow.Tag.EQUAL, rows.get(0).getTag());
+				assertEquals("same", rows.get(0).getNewLine());
+				assertEquals(DiffRow.Tag.CHANGE, rows.get(1).getTag());
 		}
 }
