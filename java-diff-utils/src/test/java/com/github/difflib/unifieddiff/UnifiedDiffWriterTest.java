@@ -103,10 +103,14 @@ public class UnifiedDiffWriterTest {
 						}
 
 						@Override
-						public void flush() {}
+						public void flush() {
+								// No buffered output in this test writer.
+						}
 
 						@Override
-						public void close() {}
+						public void close() {
+								// No resources to release.
+						}
 				};
 
 				assertSame(
