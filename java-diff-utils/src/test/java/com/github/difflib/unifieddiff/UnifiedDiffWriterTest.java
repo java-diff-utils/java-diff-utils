@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -79,6 +80,23 @@ public class UnifiedDiffWriterTest {
 				assertEquals("--- /dev/null", lines[0]);
 				assertEquals("+++ revised", lines[1]);
 				assertEquals("@@ -0,0 +1,2 @@", lines[2]);
+		}
+
+		@Test
+		public void testWriteZeroContextEmptyRange() throws IOException {
+				List<String> original = Arrays.asList("a", "b", "c");
+				List<String> revised = Arrays.asList("a", "b", "X", "c");
+
+				Patch<String> patch = DiffUtils.diff(original, revised);
+				UnifiedDiff diff = new UnifiedDiff();
+				diff.addFile(UnifiedDiffFile.from("original", "revised", patch));
+
+				StringWriter writer = new StringWriter();
+				UnifiedDiffWriter.write(diff, f -> original, writer, 0);
+
+				String[] lines = writer.toString().split("\\n");
+
+				assertEquals("@@ -2,0 +3,1 @@", lines[2]);
 		}
 
 		static String readFile(URI path, Charset encoding) throws IOException {

@@ -69,6 +69,13 @@ public final class UnifiedDiffUtils {
 								old_ln = m.group(1) == null ? 1 : Integer.parseInt(m.group(1));
 								new_ln = m.group(3) == null ? 1 : Integer.parseInt(m.group(3));
 
+								// an empty range names the line before it
+								if ("0".equals(m.group(2))) {
+										old_ln++;
+								}
+								if ("0".equals(m.group(4))) {
+										new_ln++;
+								}
 								if (old_ln == 0) {
 										old_ln = 1;
 								}
@@ -276,6 +283,14 @@ public final class UnifiedDiffUtils {
 						buffer.add(" " + origLines.get(line));
 						origTotal++;
 						revTotal++;
+				}
+
+				// an empty range names the line before it
+				if (origTotal == 0 && origStart > 0) {
+						origStart--;
+				}
+				if (revTotal == 0) {
+						revStart--;
 				}
 
 				// Create and insert the block header, conforming to the Unified Diff

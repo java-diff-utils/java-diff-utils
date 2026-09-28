@@ -195,6 +195,14 @@ public class UnifiedDiffWriter {
 						revTotal++;
 				}
 
+				// an empty range names the line before it
+				if (origTotal == 0 && origStart > 0) {
+						origStart--;
+				}
+				if (revTotal == 0) {
+						revStart--;
+				}
+
 				// Create and insert the block header, conforming to the Unified Diff
 				// standard
 				writer.accept("@@ -" + origStart + "," + origTotal + " +" + revStart + "," + revTotal + " @@");
