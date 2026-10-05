@@ -110,7 +110,10 @@ public final class Patch<T> implements Serializable {
 						int patchPosition = findPositionFuzzy(ctx, delta);
 						if (0 <= patchPosition) {
 								delta.applyFuzzyToAt(ctx.result, ctx.currentFuzz, patchPosition);
-								lastPatchDelta = patchPosition - delta.getSource().getPosition();
+								lastPatchDelta = patchPosition
+												- delta.getSource().getPosition()
+												+ delta.getTarget().size()
+												- delta.getSource().size();
 								ctx.lastPatchEnd = delta.getSource().last() + lastPatchDelta;
 						} else {
 								conflictOutput.processConflict(VerifyChunk.CONTENT_DOES_NOT_MATCH_TARGET, delta, ctx.result);
