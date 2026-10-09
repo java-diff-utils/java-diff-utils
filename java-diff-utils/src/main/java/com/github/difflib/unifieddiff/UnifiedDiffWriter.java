@@ -17,14 +17,13 @@ package com.github.difflib.unifieddiff;
 
 import com.github.difflib.patch.AbstractDelta;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @todo use an instance to store contextSize and originalLinesProvider.
@@ -32,23 +31,25 @@ import java.util.logging.Logger;
  */
 public class UnifiedDiffWriter {
 
-		private static final Logger LOG = Logger.getLogger(UnifiedDiffWriter.class.getName());
-
 		public static void write(
 						UnifiedDiff diff, Function<String, List<String>> originalLinesProvider, Writer writer, int contextSize)
 						throws IOException {
 				Objects.requireNonNull(originalLinesProvider, "original lines provider needs to be specified");
-				write(
-								diff,
-								originalLinesProvider,
-								line -> {
-										try {
-												writer.append(line).append("\n");
-										} catch (IOException ex) {
-												LOG.log(Level.SEVERE, null, ex);
-										}
-								},
-								contextSize);
+				try {
+						write(
+										diff,
+										originalLinesProvider,
+										line -> {
+												try {
+														writer.append(line).append("\n");
+												} catch (IOException ex) {
+														throw new UncheckedIOException(ex);
+												}
+										},
+										contextSize);
+				} catch (UncheckedIOException ex) {
+						throw ex.getCause();
+				}
 		}
 
 		public static void write(
