@@ -366,6 +366,13 @@ public final class UnifiedDiffReader {
 				old_size = toInteger(match, 2, 1);
 				new_ln = toInteger(match, 3, 1);
 				new_size = toInteger(match, 4, 1);
+				// an empty range names the line before it
+				if (old_size == 0) {
+						old_ln++;
+				}
+				if (new_size == 0) {
+						new_ln++;
+				}
 				if (old_ln == 0) {
 						old_ln = 1;
 				}

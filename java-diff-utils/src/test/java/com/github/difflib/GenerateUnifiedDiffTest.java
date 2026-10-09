@@ -138,6 +138,35 @@ public class GenerateUnifiedDiffTest {
 				UnifiedDiffUtils.parseUnifiedDiff(udiff);
 		}
 
+		@Test
+		public void testZeroContextEmptyRangeHeader() throws PatchFailedException {
+				List<String> original = Arrays.asList("a", "b", "c");
+				List<String> revised = Arrays.asList("a", "b", "X", "c");
+
+				Patch<String> patch = DiffUtils.diff(original, revised);
+				List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff("original", "revised", original, patch, 0);
+
+				assertEquals("@@ -2,0 +3,1 @@", udiff.get(2));
+				assertEquals(revised, UnifiedDiffUtils.parseUnifiedDiff(udiff).applyTo(original));
+		}
+
+		@Test
+		public void testParseZeroContextEmptyRanges() throws PatchFailedException {
+				// as written by diff -U0 and git diff -U0
+				List<String> insert = Arrays.asList("--- original", "+++ revised", "@@ -2,0 +3 @@", "+X");
+				assertEquals(
+								Arrays.asList("a", "b", "X", "c"),
+								UnifiedDiffUtils.parseUnifiedDiff(insert).applyTo(Arrays.asList("a", "b", "c")));
+
+				List<String> delete = Arrays.asList("--- original", "+++ revised", "@@ -2 +1,0 @@", "-b");
+				assertEquals(
+								Arrays.asList("a", "c"),
+								UnifiedDiffUtils.parseUnifiedDiff(delete).applyTo(Arrays.asList("a", "b", "c")));
+				assertEquals(
+								Arrays.asList("a", "b", "c"),
+								UnifiedDiffUtils.parseUnifiedDiff(delete).restore(Arrays.asList("a", "c")));
+		}
+
 		/**
 		 * Issue 89
 		 */

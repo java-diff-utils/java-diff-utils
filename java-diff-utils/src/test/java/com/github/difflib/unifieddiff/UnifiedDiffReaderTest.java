@@ -21,7 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
+import com.github.difflib.patch.PatchFailedException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
@@ -502,5 +507,17 @@ public class UnifiedDiffReaderTest {
 				assertThat(file1.getCopyFrom()).isEqualTo("modules/configuration/config/web/pcf/account/AccountContactCV.pcf");
 				assertThat(file1.getCopyTo())
 								.isEqualTo("modules/configuration/config/web/pcf/account/AccountContactCV.default.pcf");
+		}
+
+		@Test
+		public void testParseZeroContextEmptyRanges() throws IOException, PatchFailedException {
+				// as written by diff -U0 and git diff -U0
+				String text = "--- a/f\n+++ b/f\n@@ -2,0 +3 @@\n+X\n@@ -4 +4,0 @@\n-d\n";
+				UnifiedDiff diff =
+								UnifiedDiffReader.parseUnifiedDiff(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+
+				Patch<String> patch = diff.getFiles().get(0).getPatch();
+				assertThat(patch.applyTo(Arrays.asList("a", "b", "c", "d"))).containsExactly("a", "b", "X", "c");
+				assertThat(patch.restore(Arrays.asList("a", "b", "X", "c"))).containsExactly("a", "b", "c", "d");
 		}
 }
