@@ -16,12 +16,15 @@
 package com.github.difflib.unifieddiff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -32,6 +35,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  *
@@ -97,6 +102,39 @@ public class UnifiedDiffWriterTest {
 				String[] lines = writer.toString().split("\\n");
 
 				assertEquals("@@ -2,0 +3,1 @@", lines[2]);
+    }
+  
+		@ParameterizedTest
+		@ValueSource(ints = {1, 2, 9, 16})
+		public void testPropagateWriterFailures(int failOnWrite) {
+				List<String> original = Collections.singletonList("old");
+				Patch<String> patch = DiffUtils.diff(original, Collections.singletonList("new"));
+				UnifiedDiff diff = UnifiedDiff.from("header", "tail", UnifiedDiffFile.from("original", "revised", patch));
+				IOException failure = new IOException("write failed");
+				int[] writes = {0};
+				Writer writer = new Writer() {
+						@Override
+						public void write(char[] buffer, int offset, int length) throws IOException {
+								if (++writes[0] == failOnWrite) {
+										throw failure;
+								}
+						}
+
+						@Override
+						public void flush() {
+								// No buffered output in this test writer.
+						}
+
+						@Override
+						public void close() {
+								// No resources to release.
+						}
+				};
+
+				assertSame(
+								failure,
+								assertThrows(IOException.class, () -> UnifiedDiffWriter.write(diff, name -> original, writer, 0)));
+				assertEquals(failOnWrite, writes[0]);
 		}
 
 		static String readFile(URI path, Charset encoding) throws IOException {
