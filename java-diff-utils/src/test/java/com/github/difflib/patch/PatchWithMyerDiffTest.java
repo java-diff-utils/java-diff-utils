@@ -32,6 +32,25 @@ import org.junit.jupiter.api.Test;
 public class PatchWithMyerDiffTest {
 
 		@Test
+		public void fuzzyApplyAfterShrinkingChange() throws PatchFailedException {
+				List<String> source = Arrays.asList("a", "b", "c", "d", "e");
+				List<String> target = Arrays.asList("x", "d", "y");
+				Patch<String> patch = DiffUtils.diff(source, target);
+				assertEquals(target, patch.applyFuzzy(source, 0));
+				assertEquals(
+								Arrays.asList("prefix", "x", "d", "y"),
+								patch.applyFuzzy(Arrays.asList("prefix", "a", "b", "c", "d", "e"), 0));
+		}
+
+		@Test
+		public void fuzzyApplyDoesNotMatchNewlyInsertedLines() throws PatchFailedException {
+				Patch<String> patch = new Patch<>();
+				patch.addDelta(new ChangeDelta<>(new Chunk<>(0, Arrays.asList("a")), new Chunk<>(0, Arrays.asList("x", "c"))));
+				patch.addDelta(new ChangeDelta<>(new Chunk<>(2, Arrays.asList("c")), new Chunk<>(3, Arrays.asList("y"))));
+				assertEquals(Arrays.asList("x", "c", "b", "y"), patch.applyFuzzy(Arrays.asList("a", "b", "c"), 0));
+		}
+
+		@Test
 		public void testPatch_Change_withExceptionProcessor() {
 				final List<String> changeTest_from = Arrays.asList("aaa", "bbb", "ccc", "ddd");
 				final List<String> changeTest_to = Arrays.asList("aaa", "bxb", "cxc", "ddd");
