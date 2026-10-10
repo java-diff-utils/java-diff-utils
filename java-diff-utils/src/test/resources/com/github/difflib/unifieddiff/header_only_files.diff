@@ -1,0 +1,20 @@
+diff --git a/a-image.bin b/a-image.bin
+index eaf36c1..f75c32a 100644
+Binary files a/a-image.bin and b/a-image.bin differ
+diff --git a/b-empty.txt b/b-empty.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/c-script.sh b/c-script.sh
+old mode 100644
+new mode 100755
+diff --git a/d-old.txt b/e-renamed.txt
+similarity index 100%
+rename from d-old.txt
+rename to e-renamed.txt
+diff --git a/z-text.txt b/z-text.txt
+index 3367afd..3e75765 100644
+--- a/z-text.txt
++++ b/z-text.txt
+@@ -1 +1 @@
+-old
++new
