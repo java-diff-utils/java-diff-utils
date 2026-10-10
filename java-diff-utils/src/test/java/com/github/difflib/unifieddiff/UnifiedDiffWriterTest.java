@@ -102,8 +102,8 @@ public class UnifiedDiffWriterTest {
 				String[] lines = writer.toString().split("\\n");
 
 				assertEquals("@@ -2,0 +3,1 @@", lines[2]);
-    }
-  
+		}
+
 		@ParameterizedTest
 		@ValueSource(ints = {1, 2, 9, 16})
 		public void testPropagateWriterFailures(int failOnWrite) {
