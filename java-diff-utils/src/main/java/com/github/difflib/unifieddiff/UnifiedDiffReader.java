@@ -279,7 +279,9 @@ public final class UnifiedDiffReader {
 		}
 
 		private void processDiff(MatchResult match, String line) {
-				// initFileIfNecessary();
+				if (actualFile.getDiffCommand() != null) {
+						initFileIfNecessary();
+				}
 				LOG.log(Level.FINE, "start {0}", line);
 				String[] fromTo = parseFileNames(READER.lastLine());
 				actualFile.setFromFile(fromTo[0]);
