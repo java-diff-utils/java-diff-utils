@@ -199,8 +199,16 @@ public final class UnifiedDiffUtils {
 								}
 						}
 						// don't forget to process the last set of Deltas
+						// A missing original file name only means "new file" when there is no
+						// original side to number. Otherwise the hunk has to be numbered like any
+						// other one, as "diff -U0" and "git diff -U0" do.
 						List<String> curBlock = processDeltas(
-										originalLines, deltas, contextSize, patchDeltas.size() == 1 && originalFileName == null);
+										originalLines,
+										deltas,
+										contextSize,
+										patchDeltas.size() == 1
+														&& originalFileName == null
+														&& delta.getSource().size() == 0);
 						ret.addAll(curBlock);
 						return ret;
 				}
