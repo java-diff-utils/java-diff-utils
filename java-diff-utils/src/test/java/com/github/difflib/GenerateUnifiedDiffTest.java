@@ -150,6 +150,26 @@ public class GenerateUnifiedDiffTest {
 				assertEquals(revised, UnifiedDiffUtils.parseUnifiedDiff(udiff).applyTo(original));
 		}
 
+		/**
+		 * A patch with a single delta and a missing original file name is not a new
+		 * file: the hunk still has to be numbered from the original side, as
+		 * {@code diff -U0} and {@code git diff -U0} do.
+		 */
+		@Test
+		public void testSingleDeltaWithNullOriginalNameKeepsOriginalLineNumbers() throws PatchFailedException {
+				List<String> original = Arrays.asList("a", "b", "c");
+				List<String> revised = Arrays.asList("a", "x", "c");
+				Patch<String> patch = DiffUtils.diff(original, revised);
+
+				List<String> udiff = UnifiedDiffUtils.generateUnifiedDiff(null, "revised", original, patch, 0);
+
+				assertEquals("--- /dev/null", udiff.get(0));
+				assertEquals("+++ revised", udiff.get(1));
+				assertEquals("@@ -2,1 +2,1 @@", udiff.get(2));
+				assertEquals(Arrays.asList("-b", "+x"), udiff.subList(3, 5));
+				assertEquals(revised, UnifiedDiffUtils.parseUnifiedDiff(udiff).applyTo(original));
+		}
+
 		@Test
 		public void testParseZeroContextEmptyRanges() throws PatchFailedException {
 				// as written by diff -U0 and git diff -U0
