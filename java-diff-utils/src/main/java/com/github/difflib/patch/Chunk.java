@@ -73,7 +73,7 @@ public final class Chunk<T> implements Serializable {
 		 */
 		public Chunk(int position, T[] lines, List<Integer> changePosition) {
 				this.position = position;
-				this.lines = Arrays.asList(lines);
+				this.lines = new ArrayList<>(Arrays.asList(lines));
 				this.changePosition = changePosition != null ? new ArrayList<>(changePosition) : null;
 		}
 
